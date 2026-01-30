@@ -26,10 +26,12 @@ public class RobotContainer {
 
     /* init subsystems */
 
-    public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.4675 + BEVEL_IN_CORRECTION, 0.0, 0.0, false); 
-    public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.7705 - BEVEL_IN_CORRECTION, 0.0, 0.0, true); 
-    public SwerveModule leftBackSwerve = new SwerveModule(RobotMap.leftBackDrive, RobotMap.leftBackRotate, RobotMap.leftBackEncoder, 0.1280 - BEVEL_IN_CORRECTION, 0.0, 0.0, false); 
-    public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.4992 + BEVEL_IN_CORRECTION, 0.0, 0.0, true); 
+
+
+    public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.779297 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
+    public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.460205 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
+    public SwerveModule leftBackSwerve = new SwerveModule(RobotMap.leftBackDrive, RobotMap.leftBackRotate, RobotMap.leftBackEncoder, 0.518799 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
+    public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.132324 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
 
     public Gyro gyro = new Gyro(RobotMap.gyro);
   //  public Elevator elevator = new Elevator();
@@ -74,7 +76,7 @@ public class RobotContainer {
   private void configureBindings() {
       // Drive controller bindings
       OI.driveControllerA.onTrue(Commands.runOnce(() -> {
-		  drivetrain.resetPosition();
+		  // drivetrain.resetPosition();
 	  }));
     /*   OI.driveControllerB.whileTrue(new DriveTowardsThing(drivetrain, gyro, camera, elevator, wrist, false));
       OI.driveControllerX.whileTrue(new InstantCommand(() -> elevator.setTarget(ElevatorLevel.FLOOR))); */
