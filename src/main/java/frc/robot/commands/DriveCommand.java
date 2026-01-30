@@ -37,7 +37,8 @@ public class DriveCommand extends Command {
     
     @Override
     public void execute() {
-	double scaleFactor = 0.5 + ( triggerSupplier.getAsDouble() * 0.5);
+	    double scaleFactor = 0.5 + ( triggerSupplier.getAsDouble() * 0.5);
+        drivetrain.drive(ySupplier.getAsDouble() * scaleFactor, xSupplier.getAsDouble() * scaleFactor, omegaSupplier.getAsDouble());
     }
 
 /* 	if(elevator.getTargetLevel() == ElevatorLevel.EXTRA_HIGH || slowDownSupplier.getAsBoolean()) {
