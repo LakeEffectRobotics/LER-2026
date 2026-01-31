@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,13 +35,9 @@ public class RobotContainer {
     public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.132324 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
 
     public Gyro gyro = new Gyro(RobotMap.gyro);
-  //  public Elevator elevator = new Elevator();
-  //  public Wrist wrist = new Wrist(RobotMap.wristSolenoid);
-  /*   public CoralClaw coralClaw = new CoralClaw(RobotMap.coralClawPrimaryMotor, RobotMap.coralClawSecondaryMotor, RobotMap.algaeClawMotor, RobotMap.coralLimitSwitch);
-
-    public Camera camera = new Camera(); */
     public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
     public Camera camera = new Camera();
+    public Pose pose = new Pose(drivetrain, camera, gyro);
   /**
    * The RobotContainer class is where the bulk of the robot should be declared. 
    * Since Command-based is a "declarative" paradigm, very little robot logic 
@@ -76,10 +73,14 @@ public class RobotContainer {
   private void configureBindings() {
       // Drive controller bindings
       OI.driveControllerA.onTrue(Commands.runOnce(() -> {
-		  // drivetrain.resetPosition();
+		  drivetrain.resetPosition();
 	  }));
+
+    OI.driveControllerB.whileTrue(new FaceHubCommand(drivetrain, pose));
+      
     /*   OI.driveControllerB.whileTrue(new DriveTowardsThing(drivetrain, gyro, camera, elevator, wrist, false));
-      OI.driveControllerX.whileTrue(new InstantCommand(() -> elevator.setTarget(ElevatorLevel.FLOOR))); */
+      OI
+      .driveControllerX.whileTrue(new InstantCommand(() -> elevator.setTarget(ElevatorLevel.FLOOR))); */
 //      OI.driveControllerY.onTrue(new DriveDistanceRobotRelative(-0.12, 0.0 , 0.0, 0.2, drivetrain));
       /*OI.driveControllerLB.whileTrue(new AlgaeRemoverCommand(coralClaw, 1));
       OI.driveControllerRB.whileTrue(new AlgaeRemoverCommand(coralClaw, -1.0)); */
