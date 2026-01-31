@@ -69,7 +69,7 @@ public class OI {
 	if (Math.abs(raw) < 0.1) {
 	    raw = 0 ;
 	}
-	return raw;
+	return 0.25*raw;
     }
 
     private static double processRotationInput(double raw) {
