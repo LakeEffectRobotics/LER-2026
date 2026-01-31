@@ -134,6 +134,15 @@ public class Drivetrain extends SubsystemBase {
         return odometry.getPoseMeters();
     }
 
+    public void setOdometryXY(double x, double y)
+    /**
+        set the swerve odometry's x and y values to specified values in meters
+    **/
+    {
+        odometry.resetPose(new Pose2d(x, y, gyro.getRotation2d()));        
+    }
+
+
     public double getAverageRotations() {
         /** return the average drive wheel rotations **/
         return (leftFrontSwerve.getRotations() + rightFrontSwerve.getRotations() + leftBackSwerve.getRotations() + rightBackSwerve.getRotations())/4;
