@@ -40,7 +40,7 @@ public class RobotContainer {
 
     public Camera camera = new Camera(); */
     public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
-    
+    public Camera camera = new Camera();
   /**
    * The RobotContainer class is where the bulk of the robot should be declared. 
    * Since Command-based is a "declarative" paradigm, very little robot logic 
