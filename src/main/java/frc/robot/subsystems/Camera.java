@@ -9,23 +9,27 @@ public class Camera extends SubsystemBase {
 
     private NetworkTable table;
 
-    // TODO: these dont really need to be long, value will not exceed 320
+    private double heartBeat;
     private double tx;
     private double ty;
-    private double[] botpose;
-    private final double[] defaultValue = {-1, -1, -1};
-
-    public Camera() {
-        table = NetworkTableInstance.getDefault().getTable("datatable");
-    }
+    private double[] botpose = new double[32];
+    
+        public Camera() {
+        table = NetworkTableInstance.getDefault().getTable("limelight");
+    }   
 
     @Override
     public void periodic() {
+        
+
+        heartBeat = table.getEntry("hb").getDouble(-1);
+        SmartDashboard.putNumber("camera heartbeat", heartBeat);
+
         tx = table.getEntry("tx").getDouble(0);
         SmartDashboard.putNumber("camera tx", tx);
         ty = table.getEntry("ty").getDouble(0);
         SmartDashboard.putNumber("camera ty", ty);
-        botpose = table.getEntry("botpose").getDoubleArray(defaultValue);
+        botpose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[32]);
         SmartDashboard.putNumber("camera botposex", botpose[0]);
         SmartDashboard.putNumber("camera botposey", botpose[1]);
         SmartDashboard.putNumber("camera botposez", botpose[2]);
@@ -46,6 +50,10 @@ public class Camera extends SubsystemBase {
 
     public double[] getBotpose() {
         return botpose;
+    }
+
+    public double getHb() {
+        return heartBeat;
     }
 
     //public long getHeight() {
