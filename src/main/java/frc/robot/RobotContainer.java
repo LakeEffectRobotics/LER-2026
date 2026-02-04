@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.AutoPositionSuppliers;
 /* import frc.robot.commands.auto.*; */
 /* import frc.robot.commands.instant.*; */
+import frc.robot.commands.auto.TurnCommand;
 
 public class RobotContainer {
     public final String[] AUTOS = {"none", "pass line", "side 1", "side 2", "side 3", "side 5", "side 6"};
@@ -38,6 +40,7 @@ public class RobotContainer {
     public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
     public Camera camera = new Camera();
     public Pose pose = new Pose(drivetrain, camera, gyro);
+    public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
   /**
    * The RobotContainer class is where the bulk of the robot should be declared. 
    * Since Command-based is a "declarative" paradigm, very little robot logic 
@@ -76,7 +79,7 @@ public class RobotContainer {
 		  drivetrain.resetPosition();
 	  }));
 
-    OI.driveControllerB.whileTrue(new FaceHubCommand(drivetrain, pose));
+    OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier));
       
     /*   OI.driveControllerB.whileTrue(new DriveTowardsThing(drivetrain, gyro, camera, elevator, wrist, false));
       OI
@@ -85,6 +88,8 @@ public class RobotContainer {
       /*OI.driveControllerLB.whileTrue(new AlgaeRemoverCommand(coralClaw, 1));
       OI.driveControllerRB.whileTrue(new AlgaeRemoverCommand(coralClaw, -1.0)); */
 
+
+      
       /*
       // Operator controller bindings
       // Elevator level controls
