@@ -13,6 +13,7 @@ public class Pose extends SubsystemBase {
 
     private Pose2d rPose;
     private double lastHeartbeat;
+    private int rejectionCount;
 
 
     public Pose(Drivetrain drivetrain, Camera camera, Gyro gyro)
@@ -20,8 +21,9 @@ public class Pose extends SubsystemBase {
         this.drivetrain = drivetrain;
         this.camera = camera;    
         this.gyro = gyro;
-        lastHeartbeat = -1;
-        rPose = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
+        this.lastHeartbeat = -1;
+        this.rPose = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
+        this.rejectionCount = 0;
     }
 
     @Override
@@ -42,6 +44,19 @@ public class Pose extends SubsystemBase {
             updateDashboard();
             return;
         } else { /* camera can see an april tag */
+            if((Math.abs(rPose.getX()-cameraPose[0]) >= 1 || Math.abs(rPose.getY()-cameraPose[1]) >= 1) && rejectionCount < 3) {
+                System.out.println("rpose rejected");
+                SmartDashboard.putNumber("rpose:reject?", 2);
+                lastHeartbeat = heartbeat;
+                rPose = drivetrainPose;
+                updateDashboard();
+                rejectionCount++;
+                return;
+            } else {
+                SmartDashboard.putNumber("rpose:reject?", 0);
+                rejectionCount = 0;
+            }
+
             lastHeartbeat = heartbeat;
             drivetrain.setOdometryXY(cameraPose[0], cameraPose[1]);
             rPose = new Pose2d(cameraPose[0], cameraPose[1], gyro.getRotation2d());
