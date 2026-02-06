@@ -38,7 +38,8 @@ public class RobotContainer {
 
     public Gyro gyro = new Gyro(RobotMap.gyro);
     public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
-    public Camera camera = new Camera();
+    public FMS FMS = new FMS();
+    public Camera camera = new Camera(FMS);
     public Pose pose = new Pose(drivetrain, camera, gyro);
     public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
   /**
