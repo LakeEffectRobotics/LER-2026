@@ -33,7 +33,7 @@ public class Drivetrain extends SubsystemBase {
     private static SwerveDriveKinematics kinematics;
     private static SwerveDriveOdometry odometry;
     
-    private static final double DISTANCE_FROM_CENTRE = 0.44; // meters
+    private static final double DISTANCE_FROM_CENTRE = 0.275; // meters
 
     private static Translation2d leftFrontLocation = new Translation2d(DISTANCE_FROM_CENTRE, DISTANCE_FROM_CENTRE);
     private static Translation2d rightFrontLocation = new Translation2d(DISTANCE_FROM_CENTRE, -DISTANCE_FROM_CENTRE);
