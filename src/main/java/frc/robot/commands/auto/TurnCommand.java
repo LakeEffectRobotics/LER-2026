@@ -17,7 +17,7 @@ public class TurnCommand extends Command
 
     private double angleDisplacement;
 
-    private static final double P_TERM = 2.5;
+    private static final double P_TERM = 15.0;
 
 
     public TurnCommand(Drivetrain drivetrain,
@@ -44,7 +44,7 @@ public class TurnCommand extends Command
     public void execute()
     {
         angleDisplacement = pose.getRobotPose().getRotation().minus(new Rotation2d(angleSupplier.getAsDouble())).getRadians();
-        drivetrain.drive(xSupplier.getAsDouble(), ySupplier.getAsDouble(), -angleDisplacement * P_TERM);
+        drivetrain.drive(ySupplier.getAsDouble(), xSupplier.getAsDouble(), -angleDisplacement * P_TERM); // order is y,x on purpose
     }
 
     @Override
