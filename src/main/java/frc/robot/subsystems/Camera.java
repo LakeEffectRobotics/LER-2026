@@ -3,18 +3,21 @@ package frc.robot.subsystems;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.FMS.AllianceColor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Camera extends SubsystemBase {
 
     private NetworkTable table;
 
+    private FMS FMS;
     private double heartBeat;
     private double tx;
     private double ty;
     private double[] botpose = new double[32];
     
-        public Camera() {
+        public Camera(FMS FMS) {
+        this.FMS = FMS;
         table = NetworkTableInstance.getDefault().getTable("limelight");
     }   
 
@@ -29,7 +32,13 @@ public class Camera extends SubsystemBase {
         SmartDashboard.putNumber("camera tx", tx);
         ty = table.getEntry("ty").getDouble(0);
         SmartDashboard.putNumber("camera ty", ty);
-        botpose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[32]);
+
+        if(FMS.getAllianceColor() == AllianceColor.RED) {
+            botpose = table.getEntry("botpose_wpired").getDoubleArray(new double[32]);
+        } else {
+            botpose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[32]);            
+        }
+
         SmartDashboard.putNumber("camera botposex", botpose[0]);
         SmartDashboard.putNumber("camera botposey", botpose[1]);
         SmartDashboard.putNumber("camera botposez", botpose[2]);
