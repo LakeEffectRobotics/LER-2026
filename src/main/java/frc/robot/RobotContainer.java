@@ -4,6 +4,7 @@
 
 package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -59,6 +60,8 @@ public class RobotContainer {
     // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, /*elevator,*/ OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
   /*  RobotMap.compressor.enableAnalog(70, 120); */
 
+  DataLogManager.start();
+
     autoSelector.setDefaultOption("default side (2)", AUTO_DEFAULT);
     for(String side : AUTOS) {
       autoSelector.addOption(side, side);
@@ -76,56 +79,23 @@ public class RobotContainer {
    * when the drive controller's button A is pressed, along with operator controls.
    */
   private void configureBindings() {
-      // Drive controller bindings
-      OI.driveControllerA.onTrue(Commands.runOnce(() -> {
-		  // drivetrain.resetPosition();
-	  }));
+    OI.driveControllerA.onTrue(new InstantCommand(() -> {
+      shooter.decrementKP();
+    }));
 
-    // OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier));
-      
-    /*   OI.driveControllerB.whileTrue(new DriveTowardsThing(drivetrain, gyro, camera, elevator, wrist, false));
-      OI
-      .driveControllerX.whileTrue(new InstantCommand(() -> elevator.setTarget(ElevatorLevel.FLOOR))); */
-//      OI.driveControllerY.onTrue(new DriveDistanceRobotRelative(-0.12, 0.0 , 0.0, 0.2, drivetrain));
-      /*OI.driveControllerLB.whileTrue(new AlgaeRemoverCommand(coralClaw, 1));
-      OI.driveControllerRB.whileTrue(new AlgaeRemoverCommand(coralClaw, -1.0)); */
+    OI.driveControllerB.onTrue(new InstantCommand(() -> {
+      shooter.incrementKP();
+    }));
 
+    OI.driveControllerY.onTrue(new InstantCommand(() -> {
+      shooter.incrementKPIncrement();
+    }));
 
-      
-      /*
-      // Operator controller bindings
-      // Elevator level controls
-      // OPERATOR B : INTAKE
-      OI.operatorControllerB.onTrue(new IntakeCommandGroup(elevator, wrist, coralClaw));
-      // OPERATOR RB : TROUGH(L1)
-      OI.operatorControllerRightBumper.onTrue(new ScoreCommandGroup(elevator, wrist, coralClaw, ElevatorLevel.LOW)); 
-      // OPERATOR A : L2 (lowest pole)
-      OI.operatorControllerA.onTrue(new ScoreCommandGroup(elevator, wrist, coralClaw, ElevatorLevel.MED));
-      // OPERATOR X : L3 (2nd pole)
-      OI.operatorControllerX.onTrue(new ScoreCommandGroup(elevator, wrist, coralClaw, ElevatorLevel.HIGH));
-      // OPERATOR Y : L4 (last pole)
-      OI.operatorControllerY.onTrue(new ScoreCommandGroup(elevator, wrist, coralClaw, ElevatorLevel.EXTRA_HIGH));
+    OI.driveControllerX.onTrue(new InstantCommand(() -> {
+      shooter.decrementKPIncrement();
+    }));
 
-      // OPERATOR LB : WRIST TOGGLE 
-      OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() -> wrist.toggle()));
-      
-      // OPERATOR START : TRIM UP
-      OI.operatorControllerStart.onTrue(new InstantCommand(() -> elevator.trimTarget(0.0175)));
-      // OPERATOR BACK : TRIM DOWN
-      OI.operatorControllerBack.onTrue(new InstantCommand(() -> elevator.trimTarget(-0.0175)));
-
-      // OPERATOR RT : INTAKE
-      OI.operatorRightTrigger.whileTrue(new ClawCommand(coralClaw, elevator, OI.operatorRightTriggerSupplier, 1));
-      // OPERATOR LT : OUTTAKE
-      OI.operatorLeftTrigger.whileTrue(new ClawCommand(coralClaw, elevator, OI.operatorLeftTriggerSupplier, 0));
-
-      // Operator Left Stick : Drop Elevator
-      OI.operatorControllerLeftClick.onTrue(new DropElevatorCommand(elevator));
-
-      // Manual control with right stick for testing in simulation
-      // OI.operatorControllerRightBumper.whileTrue(new InstantCommand(() -> 
-          // elevator.setSpeed(OI.processElevatorInput(OI.operatorController.getRightY())), elevator));
-  } */
+  } 
 
   /* 
   public Command getAutonomousCommand() {
@@ -150,6 +120,7 @@ public class RobotContainer {
       // return new DriveDistance(drivetrain, gyro, 7.0, 0.0, 0.0).andThen(new DriveDistance(drivetrain, gyro, 0.0, 3.0, 0.0));
     // return new DriveWithHeadingCommand(drivetrain, gyro, OI.xboxLeftStickXSupplier, OI.xboxRightStickYSupplier, new Rotation2d(0.0));
     // return new DriveMeters(drivetrain, 0.0, 0.0, 0.0);
-  */}
+  *///}
   
 }
+
