@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 
@@ -22,7 +23,9 @@ public class Drivetrain extends SubsystemBase {
     SwerveModule rightBackSwerve;
     SwerveModule leftFrontSwerve;
     SwerveModule rightFrontSwerve;
-    Gyro gyro;
+    private Gyro gyro;
+    private Camera camera;
+
     public static final double FREE_SPEED = 4.17576; //  maximum speed in meters per second
     public static final double DRIVE_RATIO = 1 / 8.14; // 1:8.14 is the ratio of the drive motor from the motor to the wheel output shaft
     public static final double STEER_RATIO = 7 / 150.0; // 7:150 is the ratio of the steering motor from the motor to the wheel output shaft
@@ -40,6 +43,17 @@ public class Drivetrain extends SubsystemBase {
     private static Translation2d leftBackLocation = new Translation2d(-DISTANCE_FROM_CENTRE, DISTANCE_FROM_CENTRE);
     private static Translation2d rightBackLocation = new Translation2d(-DISTANCE_FROM_CENTRE, -DISTANCE_FROM_CENTRE);
 
+    
+    double nowPoseXMeasured = 0.0;
+    double nowPoseYMeasured = 0.0;
+    double lastPoseXMeasured = 0.0;
+    double lastPoseYMeasured = 0.0;
+    double deltaPoseXMeasured = 0.0;
+    double detlaPoseYMeasured = 0.0;
+    public double measuredAngle = 0.0;
+
+    //table = NetworkTableInstance.getDefault().getTable("limelight");
+
       // Simulation objects
     SimDouble gyroSimAngle;
     // private static Rotation2d DummyGyro = new Rotation2d();
@@ -48,12 +62,14 @@ public class Drivetrain extends SubsystemBase {
             SwerveModule rightBackSwerve,
             SwerveModule leftFrontSwerve,
             SwerveModule rightFrontSwerve,
-            Gyro gyro) {
+            Gyro gyro,
+            Camera camera) {
         this.leftBackSwerve = leftBackSwerve;
         this.rightBackSwerve = rightBackSwerve;
         this.leftFrontSwerve = leftFrontSwerve;
         this.rightFrontSwerve = rightFrontSwerve;
         this.gyro = gyro;
+        this.camera = camera;
 
         kinematics = new SwerveDriveKinematics(
                 leftFrontLocation, rightFrontLocation, leftBackLocation, rightBackLocation);
@@ -185,14 +201,13 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
+        
         odometry.update(gyro.getRotation2d(), new SwerveModulePosition[] {
                 leftFrontSwerve.getPos(),
                 rightFrontSwerve.getPos(),
                 leftBackSwerve.getPos(),
                 rightBackSwerve.getPos()
         });
-
-
     
         if (Robot.isSimulation()) {
 
@@ -217,8 +232,27 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("leftfront rotationEncoder position",
                 leftFrontSwerve.rotationController.getEncoder().getPosition());
         SmartDashboard.putNumber("poseY", getPose2d().getY());
-        SmartDashboard.putNumber("poseXMeasure", getPose2d().getMeasureY().in(Units.Meters));
-	
+        SmartDashboard.putNumber("poseYMeasure", getPose2d().getMeasureY().in(Units.Meters));
+        /*
+         * Lines that are commented take x and y position from the swerve modules. 
+         * Uncommented liens take x and y position direct from the limelight
+         */
+
+        //nowPoseXMeasured = getPose2d().getMeasureX().in(Units.Meters);	
+        //nowPoseYMeasured = getPose2d().getMeasureY().in(Units.Meters);	
+
+        nowPoseXMeasured = this.camera.getTx();
+        nowPoseYMeasured = this.camera.getTy();
+
+        measuredAngle = Math.atan2(nowPoseXMeasured, nowPoseYMeasured);
+        //measuredAngle = Math.atan2(nowPoseXMeasured, nowPoseYMeasured);
+
+        //SmartDashboard.putNumber("test", 67);
+        //SmartDashboard.putNumber("measuredAngle", measuredAngle);
+        
+        lastPoseXMeasured = nowPoseXMeasured;
+        lastPoseYMeasured = nowPoseYMeasured;
+
 	SwerveModuleState[] states = {
 	    leftFrontSwerve.getState(),
 	    rightFrontSwerve.getState(),
@@ -238,7 +272,4 @@ public class Drivetrain extends SubsystemBase {
     }
 
     }
-
-
-
 }
