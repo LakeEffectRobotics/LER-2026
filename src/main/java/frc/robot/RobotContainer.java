@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.AutoPositionSuppliers;
@@ -21,7 +22,6 @@ public class RobotContainer {
     public final String AUTO_DEFAULT = AUTOS[1];
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
-    
 
 
     // Constants
@@ -31,17 +31,18 @@ public class RobotContainer {
 
 
 
-    public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.779297 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
-    public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.460205 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
-    public SwerveModule leftBackSwerve = new SwerveModule(RobotMap.leftBackDrive, RobotMap.leftBackRotate, RobotMap.leftBackEncoder, 0.518799 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
-    public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.132324 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
+    // public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.779297 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
+    // public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.460205 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
+    // public SwerveModule leftBackSwerve = new SwerveModule(RobotMap.leftBackDrive, RobotMap.leftBackRotate, RobotMap.leftBackEncoder, 0.518799 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
+    // public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.132324 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
 
     public Gyro gyro = new Gyro(RobotMap.gyro);
-    public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
+    // public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
     public FMS FMS = new FMS();
     public Camera camera = new Camera(FMS);
-    public Pose pose = new Pose(drivetrain, camera, gyro);
-    public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
+    public Shooter shooter = new Shooter(RobotMap.shooterTopMotor, RobotMap.shooterBottomMotor);
+    // public Pose pose = new Pose(drivetrain, camera, gyro);
+    // public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
   /**
    * The RobotContainer class is where the bulk of the robot should be declared. 
    * Since Command-based is a "declarative" paradigm, very little robot logic 
@@ -55,7 +56,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Initialize OI with a reference to this RobotContainer instance
     configureBindings();
-    drivetrain.setDefaultCommand(new DriveCommand(drivetrain, /*elevator,*/ OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
+    // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, /*elevator,*/ OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
   /*  RobotMap.compressor.enableAnalog(70, 120); */
 
     autoSelector.setDefaultOption("default side (2)", AUTO_DEFAULT);
@@ -77,10 +78,10 @@ public class RobotContainer {
   private void configureBindings() {
       // Drive controller bindings
       OI.driveControllerA.onTrue(Commands.runOnce(() -> {
-		  drivetrain.resetPosition();
+		  // drivetrain.resetPosition();
 	  }));
 
-    OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier));
+    // OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier));
       
     /*   OI.driveControllerB.whileTrue(new DriveTowardsThing(drivetrain, gyro, camera, elevator, wrist, false));
       OI
