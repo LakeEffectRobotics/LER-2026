@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
-import frc.robot.AutoPositionSuppliers;
 /* import frc.robot.commands.auto.*; */
 /* import frc.robot.commands.instant.*; */
 import frc.robot.commands.auto.TurnCommand;
