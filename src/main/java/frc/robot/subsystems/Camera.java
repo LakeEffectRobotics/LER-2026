@@ -8,18 +8,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Camera extends SubsystemBase {
 
-    private NetworkTable table;
+    public NetworkTable table;
 
     private FMS FMS;
     private double heartBeat;
-    private double tx;
-    private double ty;
-    private double[] botpose = new double[32];
+    public double tx;
+    public double ty;
+    public double[] botpose = new double[32];
     
         public Camera(FMS FMS) {
         this.FMS = FMS;
         table = NetworkTableInstance.getDefault().getTable("limelight");
     }   
+
+    private Drivetrain drivetrain;
 
     @Override
     public void periodic() {
@@ -42,6 +44,13 @@ public class Camera extends SubsystemBase {
         SmartDashboard.putNumber("camera botposex", botpose[0]);
         SmartDashboard.putNumber("camera botposey", botpose[1]);
         SmartDashboard.putNumber("camera botposez", botpose[2]);
+
+        SmartDashboard.putNumber("measuredAngle", this.drivetrain.measuredAngle);
+        SmartDashboard.putNumber("nowPoseXMeasured", this.drivetrain.nowPoseXMeasured);
+        SmartDashboard.putNumber("nowPoseYMeasured", this.drivetrain.nowPoseYMeasured);
+        SmartDashboard.putNumber("lastPoseXMeasured", this.drivetrain.lastPoseXMeasured);
+        SmartDashboard.putNumber("lastPoseYMeasured", 4);
+
         //height = table.getEntry("height").getInteger(0);
         //SmartDashboard.putNumber("camera height", height);
         //lock = table.getEntry("lock").getBoolean(true);
