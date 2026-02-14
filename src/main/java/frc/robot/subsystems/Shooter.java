@@ -10,7 +10,11 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class Shooter extends SubsystemBase {
 
@@ -18,10 +22,12 @@ public class Shooter extends SubsystemBase {
     private static final double BOTTOM_FF_COEFFICIENT = 5700; // TODO: get value for bottom one: different from top probably
 
     private double topKP;
-    private double topKPIncrementFactor = 0.01; /* for tuning */
+    private double topKPIncrementFactor = 0.1; /* for tuning */
 
     private SparkMax topMotor;
+    private SparkMax topMotorFollower;
     private SparkMax bottomMotor;
+    private SparkMax bottomMotorFollower;
 
     private RelativeEncoder topMotorEncoder;
     private RelativeEncoder bottomMotorEncoder;  
@@ -32,22 +38,47 @@ public class Shooter extends SubsystemBase {
     
     private PIDController topPIDController;
 
+
     private DataLog log;
     private DoubleLogEntry topRPMLog;
 
-    public Shooter(SparkMax topMotor, SparkMax bottomMotor)
+    public Shooter(SparkMax topLeader,
+		   SparkMax topFollower,
+		   SparkMax bottomLeader,
+		   SparkMax bottomFollower)
     {
-        
-        // get motors
-        this.topMotor = topMotor;
-        this.bottomMotor = bottomMotor;
+
+	// setup configurations
+	SparkMaxConfig topLeaderConfig = new SparkMaxConfig();
+	SparkMaxConfig topFollowerConfig = new SparkMaxConfig();
+	SparkMaxConfig bottomLeaderConfig = new SparkMaxConfig();
+	SparkMaxConfig bottomFollowerConfig = new SparkMaxConfig();
+
+	topLeaderConfig.idleMode(IdleMode.kCoast);
+	topFollowerConfig.idleMode(IdleMode.kCoast);
+	bottomLeaderConfig.idleMode(IdleMode.kCoast);
+	bottomFollowerConfig.idleMode(IdleMode.kCoast);
+
+	topFollowerConfig.follow(topLeader); 
+	bottomFollowerConfig.follow(bottomLeader);
+
+	// write configurations
+	topLeader.configure(topLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+	topFollower.configure(topFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+	bottomLeader.configure(bottomLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+	bottomFollower.configure(bottomFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+	
+	this.topMotor = topLeader;
+	this.bottomMotor = bottomLeader;
+
+
 
         // get encoders
         this.topMotorEncoder = topMotor.getEncoder();
         this.bottomMotorEncoder = bottomMotor.getEncoder();
         
         this.topPIDController = new PIDController(0, 0, 0);
-        this.topTargetRPM = 2000;
+        this.topTargetRPM = 0;
         
         this.log = DataLogManager.getLog();
         this.topRPMLog = new DoubleLogEntry(this.log, "/shooter/topRPM");
@@ -97,33 +128,39 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic()
     {
+
+	
         double topSpeed;
         double bottomSpeed;
 
-        double RPMTop;
-        double topRPMError;
+        double topRPM;
+	double bottomRPM;        
 
-        double RPMBottom;        
-
-        RPMTop = topMotorEncoder.getVelocity();
+        topRPM = topMotorEncoder.getVelocity();
+        bottomRPM = bottomMotorEncoder.getVelocity();
         
-        RPMBottom = bottomMotorEncoder.getVelocity();
-        
-        //topFFTerm = calculateTopFFTerm(this.topTargetRPM);
-        topPIDController.setP(this.topKP);
-        topSpeed = (topPIDController.calculate(RPMTop, this.topTargetRPM) + calculateTopFFTerm(this.topTargetRPM));
+        topPIDController.setP(topKP);
+        topSpeed = (topPIDController.calculate(topRPM / TOP_FF_COEFFICIENT, topTargetRPM / TOP_FF_COEFFICIENT) + calculateTopFFTerm(topTargetRPM));
+
+	// bottomPIDController.setP(topKP);
+	bottomSpeed = (topPIDController.calculate(bottomRPM, topTargetRPM) + calculateBottomFFTerm(topTargetRPM));
+	
 
 
-        this.topMotor.set(-topSpeed);
+        this.topMotor.set(topSpeed);
+	this.bottomMotor.set(-topSpeed);
+	// System.out.println("topMotor.set " + -topSpeed);
         
         // dashboard
-        SmartDashboard.putNumber("shooter: top RPM", RPMTop);
-        SmartDashboard.putNumber("shooter: bottom RPM", RPMBottom);
-        SmartDashboard.putNumber("shooter: top RPM target", this.topTargetRPM);
-        SmartDashboard.putNumber("shooter: top RPM target", this.topTargetRPM);
-
+        SmartDashboard.putNumber("shooter: top RPM", topRPM);
+        SmartDashboard.putNumber("shooter: bottom RPM", bottomRPM);
+	SmartDashboard.putNumber("shooter: top speed", topSpeed);
+        SmartDashboard.putNumber("shooter: top RPM target", topTargetRPM);
+        SmartDashboard.putNumber("shooter: top RPM target", topTargetRPM);
+	SmartDashboard.putNumber("shooter: top kP", topKP);
+	SmartDashboard.putNumber("shooter: top p term", topPIDController.calculate(topRPM, topTargetRPM));
         // logs
-        this.topRPMLog.append(RPMTop);
+        this.topRPMLog.append(topRPM);
     }
 
 } 

@@ -31,9 +31,12 @@ public class RobotMap {
         private static final int RIGHT_BACK_DRIVE_CAN = 3;
         private static final int RIGHT_BACK_ROTATE_CAN = 4;
 
-        private static final int SHOOTER_TOP_CAN = 12;
-        private static final int SHOOTER_BOTTOM_CAN = 11;
-
+	private static final int SHOOTER_TOP_FOLLOWER_CAN = 11;
+	private static final int SHOOTER_TOP_LEADER_CAN = 12;
+	
+	private static final int SHOOTER_BOTTOM_FOLLOWER_CAN = 13;
+	private static final int SHOOTER_BOTTOM_LEADER_CAN = 14; 
+	
         /**
          * FRONT
          * |---------|
@@ -44,7 +47,6 @@ public class RobotMap {
          * BACK
          **/
 
-         //Todo: verify that this is the order of the motors after the swerve drive is assembled
     }
 
     // IMPORTANT: Make sure to update the Analog IDs to match the physical configuration of the robot
@@ -74,9 +76,13 @@ public class RobotMap {
     // public static final SparkMax rightFrontRotate = new SparkMax(CAN.RIGHT_FRONT_ROTATE_CAN, MotorType.kBrushless);
     // public static final AnalogInput rightFrontEncoder = new AnalogInput(Analog.RIGHT_FRONT_ENCODER);
 
-
-    public static final SparkMax shooterTopMotor = new SparkMax(CAN.SHOOTER_TOP_CAN, MotorType.kBrushless);
-    public static final SparkMax shooterBottomMotor = new SparkMax(CAN.SHOOTER_BOTTOM_CAN, MotorType.kBrushless);
+    public static SparkMax shooterTopFollower = new SparkMax(CAN.SHOOTER_TOP_FOLLOWER_CAN, MotorType.kBrushless);
+    public static SparkMax shooterTopLeader = new SparkMax(CAN.SHOOTER_TOP_LEADER_CAN, MotorType.kBrushless);
+    public static SparkMax shooterBottomFollower = new SparkMax(CAN.SHOOTER_BOTTOM_FOLLOWER_CAN, MotorType.kBrushless);
+    public static SparkMax shooterBottomLeader = new SparkMax(CAN.SHOOTER_BOTTOM_LEADER_CAN, MotorType.kBrushless);
+     
+    // public static final SparkMax shooterTopMotor = new SparkMax(CAN.SHOOTER_TOP_CAN, MotorType.kBrushless);
+    // public static final SparkMax shooterBottomMotor = new SparkMax(CAN.SHOOTER_BOTTOM_CAN, MotorType.kBrushless);
 
     public static final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 }
