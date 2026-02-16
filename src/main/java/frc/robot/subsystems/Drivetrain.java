@@ -43,16 +43,14 @@ public class Drivetrain extends SubsystemBase {
     private static Translation2d leftBackLocation = new Translation2d(-DISTANCE_FROM_CENTRE, DISTANCE_FROM_CENTRE);
     private static Translation2d rightBackLocation = new Translation2d(-DISTANCE_FROM_CENTRE, -DISTANCE_FROM_CENTRE);
 
-    
-    double nowPoseXMeasured = 0.0;
-    double nowPoseYMeasured = 0.0;
-    double lastPoseXMeasured = 0.0;
-    double lastPoseYMeasured = 0.0;
-    double deltaPoseXMeasured = 0.0;
-    double detlaPoseYMeasured = 0.0;
-    public double measuredAngle = 0.0;
-
-    //table = NetworkTableInstance.getDefault().getTable("limelight");
+    //ATM, static is keeping smart dashboard from not crashing
+    public static double nowPoseXMeasured = 0.0;
+    public static double nowPoseYMeasured = 0.0;
+    public static double lastPoseXMeasured = 0.0;
+    public static double lastPoseYMeasured = 0.0;
+    public static double deltaPoseXMeasured = 0.0;
+    public static double detlaPoseYMeasured = 0.0;
+    public static double measuredAngle = 0.0;
 
       // Simulation objects
     SimDouble gyroSimAngle;
@@ -70,6 +68,8 @@ public class Drivetrain extends SubsystemBase {
         this.rightFrontSwerve = rightFrontSwerve;
         this.gyro = gyro;
         this.camera = camera;
+
+        NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
         kinematics = new SwerveDriveKinematics(
                 leftFrontLocation, rightFrontLocation, leftBackLocation, rightBackLocation);
@@ -245,10 +245,16 @@ public class Drivetrain extends SubsystemBase {
         nowPoseYMeasured = this.camera.getTy();
 
         measuredAngle = Math.atan2(nowPoseXMeasured, nowPoseYMeasured);
-        //measuredAngle = Math.atan2(nowPoseXMeasured, nowPoseYMeasured);
 
         //SmartDashboard.putNumber("test", 67);
         //SmartDashboard.putNumber("measuredAngle", measuredAngle);
+
+        SmartDashboard.putNumber("measuredAngle", measuredAngle);
+        SmartDashboard.putNumber("nowPoseXMeasured", nowPoseXMeasured);
+        SmartDashboard.putNumber("nowPoseYMeasured", nowPoseYMeasured);
+        SmartDashboard.putNumber("lastPoseXMeasured", lastPoseXMeasured);
+        SmartDashboard.putNumber("lastPoseYMeasured", 4);
+        SmartDashboard.putNumber("TEST", 67);
         
         lastPoseXMeasured = nowPoseXMeasured;
         lastPoseYMeasured = nowPoseYMeasured;
