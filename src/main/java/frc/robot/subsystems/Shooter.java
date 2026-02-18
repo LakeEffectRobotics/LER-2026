@@ -86,32 +86,32 @@ public class Shooter extends SubsystemBase {
 
     public void setTopTargetRPM(double output)
     {
-        this.topTargetRPM = output;
+        topTargetRPM = output;
     }
 
     public void setBottomTargetRPM(double output)
     {
-        this.bottomTargetRPM = output;
+        bottomTargetRPM = output;
     }   
 
     public void incrementKP() 
     {
-        this.topKP += this.topKPIncrementFactor;
+        topKP = min(topKP + topKPIncrementFactor, 0.5); // temporary(?) limit of .5 
     }
 
     public void decrementKP()
     {
-        this.topKP -= this.topKPIncrementFactor;
+        topKP -= topKPIncrementFactor;
     }
 
     public void incrementKPIncrement()
     {
-        this.topKPIncrementFactor = this.topKPIncrementFactor * 10;
+        topKPIncrementFactor = topKPIncrementFactor * 10;
     }
 
     public void decrementKPIncrement()
     {
-        this.topKPIncrementFactor = this.topKPIncrementFactor / 10;
+        topKPIncrementFactor = topKPIncrementFactor / 10;
     }
 
     
@@ -128,8 +128,6 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic()
     {
-
-	
         double topSpeed;
         double bottomSpeed;
 
