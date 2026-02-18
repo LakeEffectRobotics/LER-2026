@@ -37,9 +37,10 @@ public class RobotContainer {
     public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.132324 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
 
     public Gyro gyro = new Gyro(RobotMap.gyro);
-    public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
     public FMS FMS = new FMS();
     public Camera camera = new Camera(FMS);
+    public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro, camera);
+
     public Pose pose = new Pose(drivetrain, camera, gyro);
     public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
   /**
