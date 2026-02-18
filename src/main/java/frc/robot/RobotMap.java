@@ -60,21 +60,21 @@ public class RobotMap {
     }
     
 
-    // public static final TalonFX leftBackDrive = new TalonFX(CAN.LEFT_BACK_DRIVE_CAN);
-    // public static final SparkMax leftBackRotate = new SparkMax(CAN.LEFT_BACK_ROTATE_CAN, MotorType.kBrushless);
-    // public static final AnalogInput leftBackEncoder = new AnalogInput(Analog.LEFT_BACK_ENCODER);
+    public static final TalonFX leftBackDrive = new TalonFX(CAN.LEFT_BACK_DRIVE_CAN);
+    public static final SparkMax leftBackRotate = new SparkMax(CAN.LEFT_BACK_ROTATE_CAN, MotorType.kBrushless);
+    public static final AnalogInput leftBackEncoder = new AnalogInput(Analog.LEFT_BACK_ENCODER);
 
-    // public static final TalonFX rightBackDrive = new TalonFX(CAN.RIGHT_BACK_DRIVE_CAN);
-    // public static final SparkMax rightBackRotate = new SparkMax(CAN.RIGHT_BACK_ROTATE_CAN, MotorType.kBrushless);
-    // public static final AnalogInput rightBackEncoder = new AnalogInput(Analog.RIGHT_BACK_ENCODER);
+    public static final TalonFX rightBackDrive = new TalonFX(CAN.RIGHT_BACK_DRIVE_CAN);
+    public static final SparkMax rightBackRotate = new SparkMax(CAN.RIGHT_BACK_ROTATE_CAN, MotorType.kBrushless);
+    public static final AnalogInput rightBackEncoder = new AnalogInput(Analog.RIGHT_BACK_ENCODER);
 
-    // public static final TalonFX leftFrontDrive = new TalonFX(CAN.LEFT_FRONT_DRIVE_CAN);
-    // public static final SparkMax leftFrontRotate = new SparkMax(CAN.LEFT_FRONT_ROTATE_CAN, MotorType.kBrushless);
-    // public static final AnalogInput leftFrontEncoder = new AnalogInput(Analog.LEFT_FRONT_ENCODER);
+    public static final TalonFX leftFrontDrive = new TalonFX(CAN.LEFT_FRONT_DRIVE_CAN);
+    public static final SparkMax leftFrontRotate = new SparkMax(CAN.LEFT_FRONT_ROTATE_CAN, MotorType.kBrushless);
+    public static final AnalogInput leftFrontEncoder = new AnalogInput(Analog.LEFT_FRONT_ENCODER);
 
-    // public static final TalonFX rightFrontDrive = new TalonFX(CAN.RIGHT_FRONT_DRIVE_CAN);
-    // public static final SparkMax rightFrontRotate = new SparkMax(CAN.RIGHT_FRONT_ROTATE_CAN, MotorType.kBrushless);
-    // public static final AnalogInput rightFrontEncoder = new AnalogInput(Analog.RIGHT_FRONT_ENCODER);
+    public static final TalonFX rightFrontDrive = new TalonFX(CAN.RIGHT_FRONT_DRIVE_CAN);
+    public static final SparkMax rightFrontRotate = new SparkMax(CAN.RIGHT_FRONT_ROTATE_CAN, MotorType.kBrushless);
+    public static final AnalogInput rightFrontEncoder = new AnalogInput(Analog.RIGHT_FRONT_ENCODER);
 
     public static SparkMax shooterTopFollower = new SparkMax(CAN.SHOOTER_TOP_FOLLOWER_CAN, MotorType.kBrushless);
     public static SparkMax shooterTopLeader = new SparkMax(CAN.SHOOTER_TOP_LEADER_CAN, MotorType.kBrushless);
