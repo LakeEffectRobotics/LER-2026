@@ -32,13 +32,13 @@ public class RobotContainer {
 
 
 
-    // public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.779297 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
-    // public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.460205 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
-    // public SwerveModule leftBackSwerve = new SwerveModule(RobotMap.leftBackDrive, RobotMap.leftBackRotate, RobotMap.leftBackEncoder, 0.518799 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
-    // public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.132324 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
+    public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.779297 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
+    public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.460205 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
+    public SwerveModule leftBackSwerve = new SwerveModule(RobotMap.leftBackDrive, RobotMap.leftBackRotate, RobotMap.leftBackEncoder, 0.518799 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
+    public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.132324 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
 
     public Gyro gyro = new Gyro(RobotMap.gyro);
-    // public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
+    public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
     public FMS FMS = new FMS();
     public Camera camera = new Camera(FMS);
     public Pose pose = new Pose(drivetrain, camera, gyro);

@@ -16,7 +16,7 @@ public final class Constants {
     public static class FieldPositionConstants
     {
 	public static final double HUB_X = 4.6;
-	public static final double HUB_y = 4.1;
+	public static final double HUB_Y = 4.1;
 	
     }
 

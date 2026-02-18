@@ -4,7 +4,7 @@ import frc.robot.Constants;
 
 import frc.robot.subsystems.Pose;
 
-
+import edu.wpi.first.math.geometry.Pose2d;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
@@ -96,12 +96,12 @@ public class Shooter extends SubsystemBase {
 
     private double getDistanceFromHub()
     {
-	Pose2d currentPose;
+	Pose2d currentPos;
 
 	currentPos = robotPose.getRobotPose();
-	return sqrt(
-	     (currentPos.getX() - Constants.FieldPositionConstants.HUB_X)^2
-	     + (currentPos.getY() - Constants.FieldPositionConstants.HUB_Y)^2);
+	return Math.sqrt(
+		    Math.pow((currentPos.getX() - Constants.FieldPositionConstants.HUB_X), 2)
+		    + Math.pow((currentPos.getY() - Constants.FieldPositionConstants.HUB_Y), 2));
     }
 
     public void setTopTargetRPM(double output)
@@ -116,7 +116,7 @@ public class Shooter extends SubsystemBase {
 
     public void incrementKP() 
     {
-        topKP = min(topKP + topKPIncrementFactor, 0.5); // temporary(?) limit of .5 
+        topKP = Math.min(topKP + topKPIncrementFactor, 0.5); // temporary(?) limit of .5 
     }
 
     public void decrementKP()
