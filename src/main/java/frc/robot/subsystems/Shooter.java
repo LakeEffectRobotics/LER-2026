@@ -1,5 +1,10 @@
 package frc.robot.subsystems;
 
+import frc.robot.Constants;
+
+import frc.robot.subsystems.Pose;
+
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
@@ -18,6 +23,8 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class Shooter extends SubsystemBase {
 
+    private Pose robotPose;
+    
     private static final double TOP_FF_COEFFICIENT = 5700; // RPM ~= 5700*output%
     private static final double BOTTOM_FF_COEFFICIENT = 5700; // TODO: get value for bottom one: different from top probably
 
@@ -45,8 +52,11 @@ public class Shooter extends SubsystemBase {
     public Shooter(SparkMax topLeader,
 		   SparkMax topFollower,
 		   SparkMax bottomLeader,
-		   SparkMax bottomFollower)
+		   SparkMax bottomFollower,
+		   Pose robotPose)
     {
+
+	this.robotPose = robotPose;
 
 	// setup configurations
 	SparkMaxConfig topLeaderConfig = new SparkMaxConfig();
@@ -82,6 +92,16 @@ public class Shooter extends SubsystemBase {
         
         this.log = DataLogManager.getLog();
         this.topRPMLog = new DoubleLogEntry(this.log, "/shooter/topRPM");
+    }
+
+    private double getDistanceFromHub()
+    {
+	Pose2d currentPose;
+
+	currentPos = robotPose.getRobotPose();
+	return sqrt(
+	     (currentPos.getX() - Constants.FieldPositionConstants.HUB_X)^2
+	     + (currentPos.getY() - Constants.FieldPositionConstants.HUB_Y)^2);
     }
 
     public void setTopTargetRPM(double output)

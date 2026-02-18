@@ -40,11 +40,13 @@ public class RobotContainer {
     // public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
     public FMS FMS = new FMS();
     public Camera camera = new Camera(FMS);
+    public Pose pose = new Pose(drivetrain, camera, gyro);
     public Shooter shooter = new Shooter(RobotMap.shooterTopLeader,
 					 RobotMap.shooterTopFollower,
 					 RobotMap.shooterBottomLeader,
-					 RobotMap.shooterBottomFollower);
-    // public Pose pose = new Pose(drivetrain, camera, gyro);
+					 RobotMap.shooterBottomFollower,
+					 pose);
+
     // public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
   /**
    * The RobotContainer class is where the bulk of the robot should be declared. 
