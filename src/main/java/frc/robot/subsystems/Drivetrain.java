@@ -119,20 +119,6 @@ public class Drivetrain extends SubsystemBase {
 	rightFrontSwerve.setState(states[1]);
 	leftBackSwerve.setState(states[2]);
 	rightBackSwerve.setState(states[3]);
-
-    /*
-     * Chassis Speeds Kinematics: TO DO TMRW
-     */
-
-    ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(
-        leftFrontSwerve.getState(), rightFrontSwerve.getState(), leftBackSwerve.getState(), rightBackSwerve.getState()
-    );
-
-    double forward = chassisSpeeds.vxMetersPerSecond;
-    double strafe = chassisSpeeds.vyMetersPerSecond;
-    //double omegaMeasured = chassisSpeeds.omegaRadiansPerSecond;
-
-    double VelocityAngle = Math.atan2(strafe, forward);
 	
         // leftFrontSwerve.setState(states[0]);
         // rightFrontSwerve.setState(states[1]);
@@ -265,17 +251,7 @@ public class Drivetrain extends SubsystemBase {
 	    leftBackSwerve.getState(),
 	    rightBackSwerve.getState()
 	};
-
-    final ChassisSpeeds getMeasuredChassisSpeeds(){
-        return kinematics.toChassisSpeeds(states);
-    }
-
-    private SwerveModuleState getState(){
-        var ChassisSpeeds.vx = getMeasuredChassisSpeeds().vxMetersPerSecond;
-        var ChassisSpeeds.vy = getMeasuredChassisSpeeds().vyMetersPerSecond;
-        var ChassisSpeeds.omega = getMeasuredChassisSpeeds().omegaRadiansPerSecond;
-        return new SwerveModuleState(ChassisSpeeds.vx, ChassisSpeeds.omega);
-    }
+	actualPublisher.set(states);
 
     }
 }
