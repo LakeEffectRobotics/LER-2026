@@ -1,9 +1,8 @@
-package frc.robot.commands;
+package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.subsystems.Pose;
-
 import java.util.DoubleSummaryStatistics;
 import java.util.function.DoubleSupplier;
+import frc.robot.subsystems.Pose;
 
 
 public class AutoPositionSuppliers
