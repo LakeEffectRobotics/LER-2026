@@ -15,9 +15,10 @@ import frc.robot.AutoPositionSuppliers;
 /* import frc.robot.commands.auto.*; */
 /* import frc.robot.commands.instant.*; */
 import frc.robot.commands.auto.TurnCommand;
+import frc.robot.commands.auto.ShootClimbSequence;
 
 public class RobotContainer {
-    public final String[] AUTOS = {"none", "pass line", "side 1", "side 2", "side 3", "side 5", "side 6"};
+    public final String[] AUTOS = {"none", "shoot then climb", "climb then shoot", "middle"};
     public final String AUTO_DEFAULT = AUTOS[1];
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
@@ -58,11 +59,11 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain, /*elevator,*/ OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
   /*  RobotMap.compressor.enableAnalog(70, 120); */
 
-    autoSelector.setDefaultOption("default side (2)", AUTO_DEFAULT);
+    autoSelector.setDefaultOption("default (shoot then climb)", AUTO_DEFAULT);
     for(String side : AUTOS) {
       autoSelector.addOption(side, side);
     }
-    SmartDashboard.putData("Auto Side", autoSelector);
+    SmartDashboard.putData("Auto type", autoSelector);
 
     // set the default drive command to use the left and right stick values from the Xbox controller
     // The left stick controls the forward and backward movement of the robot, while the right stick
@@ -81,7 +82,7 @@ public class RobotContainer {
 	  }));
 
     OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier));
-      
+  }      
     /*   OI.driveControllerB.whileTrue(new DriveTowardsThing(drivetrain, gyro, camera, elevator, wrist, false));
       OI
       .driveControllerX.whileTrue(new InstantCommand(() -> elevator.setTarget(ElevatorLevel.FLOOR))); */
@@ -126,6 +127,18 @@ public class RobotContainer {
           // elevator.setSpeed(OI.processElevatorInput(OI.operatorController.getRightY())), elevator));
   } */
 
+
+    public Command getAutonomousCommand()
+    {
+	String auto = autoSelector.getSelected();
+	if(auto.equals(AUTOS[0])) { // none
+	    return null;
+	} else if(auto.equals(AUTOS[1])) { // shoot then climb
+	    return new ShootClimbSequence(0.0, 0.0, drivetrain, pose);
+	} else {
+	    return null;
+	}
+       
   /* 
   public Command getAutonomousCommand() {
     String auto = autoSelector.getSelected();
