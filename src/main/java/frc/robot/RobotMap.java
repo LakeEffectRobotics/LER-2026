@@ -34,6 +34,9 @@ public class RobotMap {
         private static final int SHOOTER_TOP_CAN = 12;
         private static final int SHOOTER_BOTTOM_CAN = 11;
 
+        private static final int INTAKE_CAN = 15;
+        //private static final int DEPLOY_CAN = ;
+
         /**
          * FRONT
          * |---------|
@@ -77,6 +80,7 @@ public class RobotMap {
 
     public static final SparkMax shooterTopMotor = new SparkMax(CAN.SHOOTER_TOP_CAN, MotorType.kBrushless);
     public static final SparkMax shooterBottomMotor = new SparkMax(CAN.SHOOTER_BOTTOM_CAN, MotorType.kBrushless);
+    public static final SparkMax intakeMotor = new SparkMax(CAN.INTAKE_CAN, MotorType.kBrushless);
 
     public static final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 }

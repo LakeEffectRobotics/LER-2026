@@ -42,6 +42,7 @@ public class RobotContainer {
     public FMS FMS = new FMS();
     public Camera camera = new Camera(FMS);
     public Shooter shooter = new Shooter(RobotMap.shooterTopMotor, RobotMap.shooterBottomMotor);
+    public Intake intake = new Intake(RobotMap.intakeMotor);
     // public Pose pose = new Pose(drivetrain, camera, gyro);
     // public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
   /**
@@ -95,6 +96,8 @@ public class RobotContainer {
       shooter.decrementKPIncrement();
     }));
 
+    OI.driveControllerLB.onTrue((new IntakeCommand(intake, true)));
+    OI.driveControllerRB.onTrue((new IntakeCommand(intake, false)));
   } 
 
   /* 
