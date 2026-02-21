@@ -43,6 +43,9 @@ public class RobotMap {
         private static final int ALGAE_CLAW_MOTOR_CAN = 13; // Algae claw motor
 
 
+        private static final int INTAKE_CAN = 15;
+        //private static final int DEPLOY_CAN = ;
+
         /**
          * FRONT
          * |---------|
@@ -93,33 +96,8 @@ public class RobotMap {
     public static final SparkMax rightFrontRotate = new SparkMax(CAN.RIGHT_FRONT_ROTATE_CAN, MotorType.kBrushless);
     public static final AnalogInput rightFrontEncoder = new AnalogInput(Analog.RIGHT_FRONT_ENCODER);
 
-    // Replace TalonFX with two SparkMax controllers
-    public static final SparkMax elevatorMotorLeader = new SparkMax(CAN.ELEVATOR_MOTOR_LEADER_CAN, MotorType.kBrushless);
-    public static final SparkMax elevatorMotorFollower = new SparkMax(CAN.ELEVATOR_MOTOR_FOLLOWER_CAN, MotorType.kBrushless);
+    public static final SparkMax intakeMotor = new SparkMax(CAN.INTAKE_CAN, MotorType.kBrushless);
 
-    // Pneumatic components
-    public static final PneumaticHub pneumaticHub = new PneumaticHub(CAN.PCM_CAN_ID);
-    public static final Compressor compressor = new Compressor(CAN.PCM_CAN_ID, PneumaticsModuleType.REVPH);
-    
-    public static final DoubleSolenoid wristSolenoid = new DoubleSolenoid(
-        CAN.PCM_CAN_ID, 
-        PneumaticsModuleType.REVPH, 
-        Pneumatics.WRIST_FORWARD_CHANNEL, 
-        Pneumatics.WRIST_REVERSE_CHANNEL
-    );
-    
-    // Create two NEO motors for the coral claw
-    public static final SparkMax coralClawPrimaryMotor = new SparkMax(CAN.CORAL_CLAW_MOTOR_PRIMARY_CAN, MotorType.kBrushless);
-    public static final SparkMax coralClawSecondaryMotor = new SparkMax(CAN.CORAL_CLAW_MOTOR_SECONDARY_CAN, MotorType.kBrushless);
-    public static final SparkMax algaeClawMotor = new SparkMax(CAN.ALGAE_CLAW_MOTOR_CAN, MotorType.kBrushless);
-    
-    // Coral claw limit switch
-    public static final DigitalInput coralLimitSwitch = new DigitalInput(DIO.CORAL_LIMIT_SWITCH);
-    
-    // Remove the subsystem instances from here
-    // public static final Elevator elevator = new Elevator();
-    // public static final Wrist wrist = new Wrist(wristSolenoid);
-    // public static final CoralClaw coralClaw = new CoralClaw(coralClawMotor);
 
     public static final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 }
