@@ -51,9 +51,13 @@ public class GotoPose extends Command
     /**
      * speeds
      **/
-    private static final double FAST_SPEED = 0.6;
-    private static final double MED_SPEED = 0.4;
-    private static final double SLOW_SPEED = 0.25;
+    // private static final double FAST_SPEED = 0.6;
+    // private static final double MED_SPEED = 0.4;
+    // private static final double SLOW_SPEED = 0.25;
+    private static final double FAST_SPEED = 0.2;
+    private static final double MED_SPEED = 0.15;
+    private static final double SLOW_SPEED = 0.1;
+
 
     /**
      * speed thresholds
@@ -212,8 +216,21 @@ public class GotoPose extends Command
 	xSpeed = speedFactor * Math.cos(driveAngle);
 	ySpeed = speedFactor * Math.sin(driveAngle);
 
+	drivetrain.drive(xSpeed, ySpeed, 0.0);
     }
-	
+
+    @Override
+    public boolean isFinished()
+    {
+	return pathIndex >= (path.length - 1);
+    }
+
+    @Override
+    public void end(boolean isInterrupted)
+    {
+	drivetrain.drive(0.0, 0.0, 0.0);
+	return;
+    }
 
        
     
