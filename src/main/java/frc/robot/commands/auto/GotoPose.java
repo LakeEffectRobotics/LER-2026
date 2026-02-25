@@ -58,6 +58,8 @@ public class GotoPose extends Command
     private static final double MED_SPEED = 0.15;
     private static final double SLOW_SPEED = 0.1;
 
+    private static final double ROTATION_KP = 15.0;
+
 
     /**
      * speed thresholds
@@ -170,7 +172,7 @@ public class GotoPose extends Command
 	double yDisplacement;
 	double rotDisplacement;
 	double driveAngle;
-	double speedFactor, xSpeed, ySpeed;
+	double speedFactor, xSpeed, ySpeed, rotSpeed;
 
 	currentPosition = pose.getRobotPose();
 	xDisplacement = (currentPosition.getX() - path[pathIndex].getX());
@@ -202,8 +204,10 @@ public class GotoPose extends Command
 		execute();
 		return;
 	    }
+	rotDisplacement = currentPosition.getRotation().minus(path[pathIndex].getRotation()).getRadians();
 	
 	driveAngle = Math.atan2(-yDisplacement, -xDisplacement);
+	
 	
 	speedFactor = FAST_SPEED;
 	if((nextTurn - pathIndex) <= 4) {
@@ -212,11 +216,12 @@ public class GotoPose extends Command
 	if((nextTurn - pathIndex) <= 1) {
 	    speedFactor = SLOW_SPEED;
 	}
-
+	
 	xSpeed = speedFactor * Math.cos(driveAngle);
 	ySpeed = speedFactor * Math.sin(driveAngle);
+	rotSpeed = -rotDisplacement * ROTATION_KP;
 
-	drivetrain.drive(xSpeed, ySpeed, 0.0);
+	drivetrain.drive(xSpeed, ySpeed, rotSpeed);
     }
 
     @Override
