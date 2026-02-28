@@ -25,8 +25,10 @@ public class Shooter extends SubsystemBase {
 
     private Pose robotPose;
     
-    private static final double TOP_FF_COEFFICIENT = 5700; // RPM ~= 5700*output%
-    private static final double BOTTOM_FF_COEFFICIENT = 5700; // TODO: get value for bottom one: different from top probably
+    private static final double TOP_FF_COEFFICIENT = 6031;
+    private static final double TOP_FF_OFFSET = 400; 
+    private static final double BOTTOM_FF_COEFFICIENT = 5941;
+    private static final double BOTTOM_FF_OFFSET = 272; 
 
     private double topKP;
     private double topKPIncrementFactor = 0.1; /* for tuning */
@@ -42,6 +44,7 @@ public class Shooter extends SubsystemBase {
     private double topTargetRPM = 0;
     private double bottomTargetRPM= 0;
 
+    // private double tmpSpeed = 0;
     
     private PIDController topPIDController;
 
@@ -52,11 +55,11 @@ public class Shooter extends SubsystemBase {
     public Shooter(SparkMax topLeader,
 		   SparkMax topFollower,
 		   SparkMax bottomLeader,
-		   SparkMax bottomFollower,
-		   Pose robotPose)
+		   SparkMax bottomFollower
+		   )
     {
 
-	this.robotPose = robotPose;
+	// this.robotPose = robotPose;
 
 	// setup configurations
 	SparkMaxConfig topLeaderConfig = new SparkMaxConfig();
@@ -90,8 +93,9 @@ public class Shooter extends SubsystemBase {
         this.topPIDController = new PIDController(0, 0, 0);
         this.topTargetRPM = 0;
         
-        this.log = DataLogManager.getLog();
-        this.topRPMLog = new DoubleLogEntry(this.log, "/shooter/topRPM");
+        // this.log = DataLogManager.getLog();
+        // this.topRPMLog = new DoubleLogEntry(this.log, "/shooter/topRPM");
+	// SmartDashboard.putNumber("Shooter: tmp set speed", 0.0);
     }
 
     private double getDistanceFromHub()
@@ -104,6 +108,12 @@ public class Shooter extends SubsystemBase {
 		    + Math.pow((currentPos.getY() - Constants.FieldPositionConstants.HUB_Y), 2));
     }
 
+    public void setTargetRPM(double output)
+    {
+        topTargetRPM = output;
+	bottomTargetRPM = output * 0.5;
+    }
+    
     public void setTopTargetRPM(double output)
     {
         topTargetRPM = output;
@@ -137,17 +147,19 @@ public class Shooter extends SubsystemBase {
     
     private double calculateTopFFTerm(double targetRPM)
     {
-        return targetRPM / TOP_FF_COEFFICIENT;
+        return (targetRPM + TOP_FF_OFFSET) / TOP_FF_COEFFICIENT;
     }
 
     private double calculateBottomFFTerm(double targetRPM)
     {
-        return targetRPM / TOP_FF_COEFFICIENT;
+        return (targetRPM + BOTTOM_FF_OFFSET) / BOTTOM_FF_COEFFICIENT;
     }
 
     @Override
     public void periodic()
     {
+
+	// tmpSpeed = SmartDashboard.getNumber("Shooter: tmp set speed", 0.0);
         double topSpeed;
         double bottomSpeed;
 
@@ -158,15 +170,18 @@ public class Shooter extends SubsystemBase {
         bottomRPM = bottomMotorEncoder.getVelocity();
         
         topPIDController.setP(topKP);
-        topSpeed = (topPIDController.calculate(topRPM / TOP_FF_COEFFICIENT, topTargetRPM / TOP_FF_COEFFICIENT) + calculateTopFFTerm(topTargetRPM));
+        topSpeed = (topPIDController.calculate(topRPM,
+					       topTargetRPM)
+		    + calculateTopFFTerm(topTargetRPM));
 
-	// bottomPIDController.setP(topKP);
-	bottomSpeed = (topPIDController.calculate(bottomRPM, topTargetRPM) + calculateBottomFFTerm(topTargetRPM));
+	bottomSpeed = (topPIDController.calculate(bottomRPM,
+						  bottomTargetRPM)
+		       + calculateBottomFFTerm(bottomTargetRPM));
 	
 
-
-        this.topMotor.set(topSpeed);
-	this.bottomMotor.set(-topSpeed);
+        topMotor.set(topSpeed);
+	bottomMotor.set(-bottomSpeed);
+	// bottomMotor.set(-bottomSpeed);
 	// System.out.println("topMotor.set " + -topSpeed);
         
         // dashboard
@@ -174,11 +189,10 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter: bottom RPM", bottomRPM);
 	SmartDashboard.putNumber("shooter: top speed", topSpeed);
         SmartDashboard.putNumber("shooter: top RPM target", topTargetRPM);
-        SmartDashboard.putNumber("shooter: top RPM target", topTargetRPM);
 	SmartDashboard.putNumber("shooter: top kP", topKP);
 	SmartDashboard.putNumber("shooter: top p term", topPIDController.calculate(topRPM, topTargetRPM));
         // logs
-        this.topRPMLog.append(topRPM);
+        // this.topRPMLog.append(topRPM);
     }
 
 } 
