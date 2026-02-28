@@ -32,17 +32,19 @@ public class RobotContainer {
 
 
 
-    public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.779297 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
-    public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.460205 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
-    public SwerveModule leftBackSwerve = new SwerveModule(RobotMap.leftBackDrive, RobotMap.leftBackRotate, RobotMap.leftBackEncoder, 0.518799 - (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, false); 
-    public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.132324 + (0 * BEVEL_IN_CORRECTION), 0.0, 0.0, true); 
-
+    public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.262207, 0.0, 0.0, false); 
+    public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.459717, 0.0, 0.0, true); 
+    public SwerveModule leftBackSwerve = new SwerveModule(RobotMap.leftBackDrive, RobotMap.leftBackRotate, RobotMap.leftBackEncoder, 0.480713, 0.0, 0.0, false); 
+    public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.133057, 0.0, 0.0, true); 
+  
     public Gyro gyro = new Gyro(RobotMap.gyro);
     public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
     public FMS FMS = new FMS();
     public Camera camera = new Camera(FMS);
     public Pose pose = new Pose(drivetrain, camera, gyro);
+
     public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
+
   /**
    * The RobotContainer class is where the bulk of the robot should be declared. 
    * Since Command-based is a "declarative" paradigm, very little robot logic 
@@ -106,6 +108,7 @@ public class RobotContainer {
       // OPERATOR Y : L4 (last pole)
       OI.operatorControllerY.onTrue(new ScoreCommandGroup(elevator, wrist, coralClaw, ElevatorLevel.EXTRA_HIGH));
 
+
       // OPERATOR LB : WRIST TOGGLE 
       OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() -> wrist.toggle()));
       
@@ -128,6 +131,7 @@ public class RobotContainer {
   } */
 
 
+
     public Command getAutonomousCommand()
     {
 	String auto = autoSelector.getSelected();
@@ -138,30 +142,9 @@ public class RobotContainer {
 	} else {
 	    return null;
 	}
-       
-  /* 
-  public Command getAutonomousCommand() {
-    String auto = autoSelector.getSelected();
-    if(auto == AUTOS[0]) { 
-      return null;
-    } else if(auto == AUTOS[1]) { // pass line
-      return new ScoreTest(0, false, drivetrain, gyro, camera, elevator, wrist, coralClaw);
-    } else if(auto == AUTOS[2]) { // side 1 (middle )
-      return new ScoreTest(1, false, drivetrain, gyro, camera, elevator, wrist, coralClaw);
-    } else if(auto == AUTOS[3]) { // side 2 (right)
-      return new ScoreTest(2, true, drivetrain, gyro, camera, elevator, wrist, coralClaw);
-    } else if(auto == AUTOS[4]) { // side 3 (right 2)
-	  return new ScoreTest(3, true, drivetrain, gyro, camera, elevator, wrist, coralClaw);
-    } else if(auto == AUTOS[5]) { // side 5
-	  return new ScoreTest(5, true, drivetrain, gyro, camera, elevator, wrist, coralClaw);
-    } else if(auto == AUTOS[6]) { // side 6 
-      return new ScoreTest(6, true, drivetrain, gyro, camera, elevator, wrist, coralClaw);
-    } else {
-      return null;
-    }
-      // return new DriveDistance(drivetrain, gyro, 7.0, 0.0, 0.0).andThen(new DriveDistance(drivetrain, gyro, 0.0, 3.0, 0.0));
-    // return new DriveWithHeadingCommand(drivetrain, gyro, OI.xboxLeftStickXSupplier, OI.xboxRightStickYSupplier, new Rotation2d(0.0));
-    // return new DriveMeters(drivetrain, 0.0, 0.0, 0.0);
-  */}
+    }       
+
+
+
   
 }
