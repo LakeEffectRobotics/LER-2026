@@ -60,8 +60,8 @@ public class RobotMap {
     private class Analog {
         // Drivetrain
         // This also uses all 4 available ports
-        private static final int LEFT_FRONT_ENCODER = 2;
-        private static final int RIGHT_FRONT_ENCODER = 0;
+        private static final int LEFT_FRONT_ENCODER = 0;
+        private static final int RIGHT_FRONT_ENCODER = 2;
         private static final int LEFT_BACK_ENCODER = 3;
         private static final int RIGHT_BACK_ENCODER = 1;
     }
