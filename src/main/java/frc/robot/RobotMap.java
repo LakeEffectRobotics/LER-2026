@@ -4,7 +4,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;  // Add this import
+import edu.wpi.first.wpilibj.DigitalInput;  
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -31,12 +31,15 @@ public class RobotMap {
         private static final int RIGHT_BACK_DRIVE_CAN = 3;
         private static final int RIGHT_BACK_ROTATE_CAN = 4;
 
+	/* SHOOTER */
 	private static final int SHOOTER_TOP_FOLLOWER_CAN = 11;
 	private static final int SHOOTER_TOP_LEADER_CAN = 12;
 	
 	private static final int SHOOTER_BOTTOM_FOLLOWER_CAN = 13;
 	private static final int SHOOTER_BOTTOM_LEADER_CAN = 14; 
-	
+
+	private static final int CONVEYOR_CAN = -1; // TODO: put actual ID here, remove assertion from checkIDS
+
         /**
          * FRONT
          * |---------|
@@ -50,7 +53,8 @@ public class RobotMap {
     }
 
     // IMPORTANT: Make sure to update the Analog IDs to match the physical configuration of the robot
-    private class Analog {
+    private class Analog
+    {
         // Drivetrain
         // This also uses all 4 available ports
         private static final int LEFT_FRONT_ENCODER = 0;
@@ -58,7 +62,6 @@ public class RobotMap {
         private static final int LEFT_BACK_ENCODER = 3;
         private static final int RIGHT_BACK_ENCODER = 1;
     }
-    
 
     public static final TalonFX leftBackDrive = new TalonFX(CAN.LEFT_BACK_DRIVE_CAN);
     public static final SparkMax leftBackRotate = new SparkMax(CAN.LEFT_BACK_ROTATE_CAN, MotorType.kBrushless);
@@ -80,9 +83,8 @@ public class RobotMap {
     public static SparkMax shooterTopLeader = new SparkMax(CAN.SHOOTER_TOP_LEADER_CAN, MotorType.kBrushless);
     public static SparkMax shooterBottomFollower = new SparkMax(CAN.SHOOTER_BOTTOM_FOLLOWER_CAN, MotorType.kBrushless);
     public static SparkMax shooterBottomLeader = new SparkMax(CAN.SHOOTER_BOTTOM_LEADER_CAN, MotorType.kBrushless);
-     
-    // public static final SparkMax shooterTopMotor = new SparkMax(CAN.SHOOTER_TOP_CAN, MotorType.kBrushless);
-    // public static final SparkMax shooterBottomMotor = new SparkMax(CAN.SHOOTER_BOTTOM_CAN, MotorType.kBrushless);
+    
+    public static SparkMax conveyorMotor = new SparkMax(CAN.CONVEYOR_CAN, MotorType.kBrushless);
 
     public static final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 }
