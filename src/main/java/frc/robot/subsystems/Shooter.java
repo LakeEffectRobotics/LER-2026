@@ -15,8 +15,8 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -80,8 +80,7 @@ public class Shooter extends SubsystemBase {
 		   SparkMax topFollower,
 		   SparkMax bottomLeader,
 		   SparkMax bottomFollower,
-		   Pose robotPose
-		   )
+		   Pose robotPose)
     {
 
 	this.robotPose = robotPose;
