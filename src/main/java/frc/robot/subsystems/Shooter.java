@@ -54,14 +54,16 @@ public class Shooter extends SubsystemBase {
 
     private static final double SHOOTER_RPM_MAX_ERROR = 400; // maximum shooter error before conveyor is turned off
 
+    private static final double CONVEYOR_SPEED = 0.4; // TODO: tune this value
+    
+
     private double topKP;
     private double topKPIncrementFactor = 0.1; /* for tuning */
 
     
     private SparkMax topMotor;
-    private SparkMax topMotorFollower;
     private SparkMax bottomMotor;
-    private SparkMax bottomMotorFollower;
+    private SparkMax conveyorMotor;
 
     private RelativeEncoder topMotorEncoder;
     private RelativeEncoder bottomMotorEncoder;  
@@ -80,6 +82,7 @@ public class Shooter extends SubsystemBase {
 		   SparkMax topFollower,
 		   SparkMax bottomLeader,
 		   SparkMax bottomFollower,
+		   SparkMax conveyorMotor,
 		   Pose robotPose)
     {
 
@@ -107,6 +110,7 @@ public class Shooter extends SubsystemBase {
 	
 	this.topMotor = topLeader;
 	this.bottomMotor = bottomLeader;
+	this.conveyorMotor = conveyorMotor;
 
         // get encoders
         this.topMotorEncoder = topMotor.getEncoder();
@@ -221,7 +225,7 @@ public class Shooter extends SubsystemBase {
 	if(shooterMode == ShooterMode.DEAD) {
 	    topMotor.set(0.0);
 	    bottomMotor.set(0.0);
-	    // TODO: set conveyor motor to 0
+	    conveyorMotor.set(0.0);
 	    return;
 	}
         double topSpeed;
@@ -248,9 +252,9 @@ public class Shooter extends SubsystemBase {
 	if(shooterMode == ShooterMode.FIRE
 	   && (Math.abs(topTargetRPM - topRPM) < SHOOTER_RPM_MAX_ERROR)
 	   && (Math.abs(bottomTargetRPM - bottomRPM) < SHOOTER_RPM_MAX_ERROR)) {
-	    // TODO: set conveyor motor to forward
+	       conveyorMotor.set(CONVEYOR_SPEED);
 	} else {
-	    // TODO: set conveyor motor to 0
+	    conveyorMotor.set(0.0);
 	}
         
         // dashboard

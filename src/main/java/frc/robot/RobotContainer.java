@@ -47,6 +47,7 @@ public class RobotContainer {
 					 RobotMap.shooterTopFollower,
 					 RobotMap.shooterBottomLeader,
 					 RobotMap.shooterBottomFollower,
+					 RobotMap.conveyorMotor,
 					 pose);
 
     public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
