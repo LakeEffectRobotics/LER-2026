@@ -38,7 +38,7 @@ public class RobotMap {
 	private static final int SHOOTER_BOTTOM_FOLLOWER_CAN = 13;
 	private static final int SHOOTER_BOTTOM_LEADER_CAN = 14; 
 
-	private static final int CONVEYOR_CAN = -1; // TODO: put actual ID here, remove assertion from checkIDS
+	private static final int CONVEYOR_CAN = 16;
 
         /**
          * FRONT
