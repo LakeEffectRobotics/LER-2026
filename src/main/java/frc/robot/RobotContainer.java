@@ -3,6 +3,8 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Strategy;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -18,6 +20,7 @@ import frc.robot.AutoPositionSuppliers;
 /* import frc.robot.commands.instant.*; */
 import frc.robot.commands.auto.TurnCommand;
 
+@Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer {
     public final String[] AUTOS = {"none", "pass line", "side 1", "side 2", "side 3", "side 5", "side 6"};
     public final String AUTO_DEFAULT = AUTOS[1];
