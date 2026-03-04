@@ -86,30 +86,44 @@ public class RobotContainer {
    * when the drive controller's button A is pressed, along with operator controls.
    */
   private void configureBindings() {
-    OI.driveControllerA.onTrue(new InstantCommand(() -> {
-      shooter.decrementKP();
-    }));
+    // OI.driveControllerA.onTrue(new InstantCommand(() -> {
+      // shooter.decrementKP();
+    // }));
 
-    OI.driveControllerB.onTrue(new InstantCommand(() -> {
-      shooter.incrementKP();
-    }));
+    // OI.driveControllerB.onTrue(new InstantCommand(() -> {
+    //   shooter.incrementKP();
+    // }));
 
-    OI.driveControllerY.onTrue(new InstantCommand(() -> {
-      shooter.incrementKPIncrement();
-    }));
+    // OI.driveControllerY.onTrue(new InstantCommand(() -> {
+    //   shooter.incrementKPIncrement();
+    // }));
 
-    OI.driveControllerX.onTrue(new InstantCommand(() -> {
-      shooter.decrementKPIncrement();
-    }));
+    // OI.driveControllerX.onTrue(new InstantCommand(() -> {
+    //   shooter.decrementKPIncrement();
+    // }));
 
 
         OI.driveControllerRB.onTrue(new InstantCommand(() -> {
-		    shooter.setTopTargetRPM(4000);
+		    shooter.setTargetRPM(4000);
     }));
 
            OI.driveControllerLB.onTrue(new InstantCommand(() -> {
-		       shooter.setTopTargetRPM(1000);
+		       shooter.setTargetRPM(1000);
     }));
+
+	   OI.driveControllerX.onTrue(new InstantCommand(() -> {
+		       shooter.setShooterMode(Shooter.ShooterMode.FIRE);
+	   }));
+
+	   OI.driveControllerA.onTrue(new InstantCommand(() -> {
+		       shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
+	   }));
+
+	   OI.driveControllerB.onTrue(new InstantCommand(() -> {
+		       shooter.setShooterMode(Shooter.ShooterMode.DEAD);
+	   })); 
+	   
+	   
 
   } 
 

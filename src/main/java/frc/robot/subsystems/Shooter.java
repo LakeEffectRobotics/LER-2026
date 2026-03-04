@@ -54,12 +54,15 @@ public class Shooter extends SubsystemBase {
 
     private static final double SHOOTER_RPM_MAX_ERROR = 400; // maximum shooter error before conveyor is turned off
 
-    private static final double CONVEYOR_SPEED = 0.4; // TODO: tune this value
+    private static final double CONVEYOR_SPEED = 1.0; // TODO: tune this value
     
 
-    private double topKP;
+    private double topKP = 0.001;
+    private double topKD = 0.0;
     private double topKPIncrementFactor = 0.1; /* for tuning */
 
+
+    
     
     private SparkMax topMotor;
     private SparkMax bottomMotor;
@@ -85,7 +88,7 @@ public class Shooter extends SubsystemBase {
 		   SparkMax conveyorMotor,
 		   Pose robotPose)
     {
-
+	SmartDashboard.putNumber("shooter: set target RPM", 0);
 	this.robotPose = robotPose;
 
 	// setup configurations
@@ -116,7 +119,7 @@ public class Shooter extends SubsystemBase {
         this.topMotorEncoder = topMotor.getEncoder();
         this.bottomMotorEncoder = bottomMotor.getEncoder();
         
-        this.topPIDController = new PIDController(0, 0, 0);
+        this.topPIDController = new PIDController(topKP, 0, topKD);
         this.topTargetRPM = 0;
         
         // this.log = DataLogManager.getLog();
@@ -220,6 +223,9 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic()
     {
+	topTargetRPM = SmartDashboard.getNumber("shooter: set target RPM", topTargetRPM);
+	bottomTargetRPM = topTargetRPM;
+	
 	displayShooterMode();
 	
 	if(shooterMode == ShooterMode.DEAD) {
@@ -234,8 +240,8 @@ public class Shooter extends SubsystemBase {
         double topRPM;
 	double bottomRPM;        
 
-        topRPM = topMotorEncoder.getVelocity();
-        bottomRPM = bottomMotorEncoder.getVelocity();
+        topRPM = Math.abs(topMotorEncoder.getVelocity());
+        bottomRPM = Math.abs(bottomMotorEncoder.getVelocity());
         
         topPIDController.setP(topKP);
         topSpeed = (topPIDController.calculate(topRPM,
@@ -245,7 +251,7 @@ public class Shooter extends SubsystemBase {
 	bottomSpeed = (topPIDController.calculate(bottomRPM,
 						  bottomTargetRPM)
 		       + calculateBottomFFTerm(bottomTargetRPM));
-	
+	System.out.println("SHOOTER: top=" + topSpeed + " bottom=" + bottomSpeed + "");   
         topMotor.set(topSpeed);
 	bottomMotor.set(-bottomSpeed);
 
@@ -262,6 +268,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter: bottom RPM", bottomRPM);
 	SmartDashboard.putNumber("shooter: top speed", topSpeed);
         SmartDashboard.putNumber("shooter: top RPM target", topTargetRPM);
+	SmartDashboard.putNumber("shooter: bottom RPM target", bottomTargetRPM);
 	SmartDashboard.putNumber("shooter: top kP", topKP);
 	SmartDashboard.putNumber("shooter: top p term", topPIDController.calculate(topRPM, topTargetRPM));
         // logs
