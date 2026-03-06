@@ -35,7 +35,7 @@ public class RobotMap {
         private static final int ELEVATOR_MOTOR_FOLLOWER_CAN = 9; // Follower elevator motor
         
         /* PNEUMATICS */
-        private static final int PCM_CAN_ID = 27; // Updated PCM ID (moved from 10)
+        private static final int PCM_CAN_ID = 27; // copied from 2025
         
         /* MECHANISMS */
         private static final int CORAL_CLAW_MOTOR_PRIMARY_CAN = 11; // First coral claw motor
@@ -44,7 +44,9 @@ public class RobotMap {
 
 
         private static final int INTAKE_CAN = 15;
-        //private static final int DEPLOY_CAN = ;
+	
+
+	
 
         /**
          * FRONT
@@ -69,15 +71,10 @@ public class RobotMap {
         private static final int RIGHT_BACK_ENCODER = 1;
     }
     
-    // Digital I/O port configuration
-    private class DIO {
-        private static final int CORAL_LIMIT_SWITCH = 0;  // Digital I/O port for coral limit switch
-    }
-    
     // Pneumatic port configuration
     private class Pneumatics {
-        private static final int WRIST_FORWARD_CHANNEL = 0;
-        private static final int WRIST_REVERSE_CHANNEL = 1;
+        private static final int INTAKE_FORWARD_CHANNEL = 0;
+        private static final int INTAKE_REVERSE_CHANNEL = 1;
     }
 
     public static final TalonFX leftBackDrive = new TalonFX(CAN.LEFT_BACK_DRIVE_CAN);
@@ -97,7 +94,12 @@ public class RobotMap {
     public static final AnalogInput rightFrontEncoder = new AnalogInput(Analog.RIGHT_FRONT_ENCODER);
 
     public static final SparkMax intakeMotor = new SparkMax(CAN.INTAKE_CAN, MotorType.kBrushless);
-
+    
+    public static DoubleSolenoid intakeSolenoid
+	= new DoubleSolenoid(CAN.PCM_CAN_ID, 
+			     PneumaticsModuleType.REVPH, 
+			     Pneumatics.INTAKE_FORWARD_CHANNEL, 
+			     Pneumatics.INTAKE_REVERSE_CHANNEL);
 
     public static final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 }
