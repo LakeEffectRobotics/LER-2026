@@ -60,7 +60,7 @@ public class Shooter extends SubsystemBase {
 
     private static final double SHOOTER_RPM_MAX_ERROR = 400; // maximum shooter error before conveyor is turned off
 
-    private static final double CONVEYOR_SPEED = 1.0; // TODO: tune this value
+    private static final double CONVEYOR_SPEED = 1.0;
     
 
     private double topKP = 0.001;
