@@ -9,6 +9,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -24,6 +25,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 /**
  * subsystem for controlling the shooter
  **/
+@Logged
 public class Shooter extends SubsystemBase {
 
     /**
