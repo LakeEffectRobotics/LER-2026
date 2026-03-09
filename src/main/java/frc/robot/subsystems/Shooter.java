@@ -47,15 +47,15 @@ public class Shooter extends SubsystemBase {
     
     private Pose robotPose;
 
-    /**
-     * RPM = FF_COEFFICIENT * VOLTAGE(0-1) - FF_OFFSET
-     * VOLTAGE = (RPM - FF_OFFSET) / FF_COEFFICIENT
-     **/
-    private static final double TOP_FF_COEFFICIENT = 6031;
-    private static final double TOP_FF_OFFSET = 400; 
-    private static final double BOTTOM_FF_COEFFICIENT = 5941;
-    private static final double BOTTOM_FF_OFFSET = 272;
 
+    /**
+     * values for calculating the FF term in volts given the distance from the target
+     * FF = FF_COEFFICIENT*distance+FF_OFFSET
+     **/
+    private static final double FF_COEFFICIENT = 0.229;
+    private static final double FF_OFFSET = -0.276;
+
+    
     private static final double MAX_RPM_RAMP = 450 / 50;
 
     private static final double SHOOTER_RPM_MAX_ERROR = 400; // maximum shooter error before conveyor is turned off
@@ -93,8 +93,11 @@ public class Shooter extends SubsystemBase {
     /** bottom target RPM when shooter is in manual override mode **/
     private double bottomOverrideTargetRPM = 0;
     
-    
-    
+    /**
+     * field position targets
+     **/
+    private double xTarget = 0;
+    private double yTarget = 0;
 
     
     private PIDController shooterPIDController;
@@ -145,38 +148,28 @@ public class Shooter extends SubsystemBase {
     }
 
 
+    /**
+     * return whether 'RPM' differs from 'target' by an amount greater than SHOOTER_RPM_MAX_ERROR
+     **/
     private boolean isWithinMaxRPMError(double RPM, double target)
     {
 	return (Math.abs(target - RPM) < SHOOTER_RPM_MAX_ERROR);
     }
 
-    private double getDistanceFromHub()
+    /**
+     * get the distance from the current target position
+     **/
+    private double getDistanceFromTarget()
     {
 	Pose2d currentPos;
 
 	currentPos = robotPose.getRobotPose();
 	return Math.sqrt(
-		    Math.pow((currentPos.getX() - Constants.FieldPositionConstants.HUB_X), 2)
-		    + Math.pow((currentPos.getY() - Constants.FieldPositionConstants.HUB_Y), 2));
+		    Math.pow((currentPos.getX() - xTarget), 2)
+		    + Math.pow((currentPos.getY() -  yTarget), 2));
     }
 
-    private void displayShooterMode()
-    {
-	switch(shooterMode) {
-	case DEAD:
-	    SmartDashboard.putString("shooter: mode", "dead");
-	    break;
-	case STANDBY:
-	    SmartDashboard.putString("shooter: mode", "standby");
-	    break;
-	case FIRE:
-	    SmartDashboard.putString("shooter: mode", "firing");
-	    break;
-	default:		
-	    SmartDashboard.putString("shooter: mode", "?");
-	}
-	return;
-    }
+
     
     /**
      * get the current shooter mode 
@@ -192,6 +185,15 @@ public class Shooter extends SubsystemBase {
     public void setShooterMode(ShooterMode mode)
     {
 	shooterMode = mode;
+    }
+
+    /**
+     * set the target field position of the shooter
+     **/
+    public void setShooterTarget(double x, double y)
+    {
+	xTarget = x;
+	yTarget = y;
     }
 
     /**
@@ -220,16 +222,6 @@ public class Shooter extends SubsystemBase {
 	topOverrideTargetRPM += v;
 	bottomOverrideTargetRPM += v;
     }
-    
-    public void setTopTargetRPM(double output)
-    {
-        topTargetRPM = output;
-    }
-
-    public void setBottomTargetRPM(double output)
-    {
-        bottomTargetRPM = output;
-    }   
 
     // public void incrementKP() 
     // {
@@ -251,16 +243,6 @@ public class Shooter extends SubsystemBase {
         // topKPIncrementFactor = topKPIncrementFactor / 10;
     // }
 
-    
-    private double calculateTopFFTerm(double targetRPM)
-    {
-        return (targetRPM + TOP_FF_OFFSET) / TOP_FF_COEFFICIENT;
-    }
-
-    private double calculateBottomFFTerm(double targetRPM)
-    {
-        return (targetRPM + BOTTOM_FF_OFFSET) / BOTTOM_FF_COEFFICIENT;
-    }
 
     @Override
     public void periodic()
@@ -285,7 +267,7 @@ public class Shooter extends SubsystemBase {
 	}
 	
 	
-	displayShooterMode();
+	SmartDashboard.putString("shooter: mode", shooterMode.toString());
 	if(shooterMode == ShooterMode.DEAD) {
 	    topMotor.set(0.0);
 	    bottomMotor.set(0.0);
@@ -304,10 +286,10 @@ public class Shooter extends SubsystemBase {
 	    return;
 	case OVERRIDE:
 	    conveyorMotor.set(CONVEYOR_SPEED);
-	    topSpeed = calculateTopFFTerm(topOverrideTargetRPM)
-		+ shooterPIDController.calculate(topRPM, topOverrideTargetRPM);
-	    bottomSpeed = calculateBottomFFTerm(bottomOverrideTargetRPM)
-		+ shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
+	    // topSpeed = calculateTopFFTerm(topOverrideTargetRPM)
+	    // 	+ shooterPIDController.calculate(topRPM, topOverrideTargetRPM);
+	    // bottomSpeed = calculateBottomFFTerm(bottomOverrideTargetRPM)
+	    // 	+ shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
 	    return;
 	case FIRE:
 	    if(isWithinMaxRPMError(topRPM, topControlTargetRPM)
@@ -315,10 +297,10 @@ public class Shooter extends SubsystemBase {
 		conveyorMotor.set(CONVEYOR_SPEED);
 	    }
 	case STANDBY:
-	    topSpeed = calculateTopFFTerm(topControlTargetRPM)
-		+ shooterPIDController.calculate(topRPM, topControlTargetRPM);
-	    bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM)
-		+ shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);	    
+	    // topSpeed = calculateTopFFTerm(topControlTargetRPM)
+	    // 	+ shooterPIDController.calculate(topRPM, topControlTargetRPM);
+	    // bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM)
+	    // 	+ shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);	    
 	    
 	}
 
