@@ -89,30 +89,6 @@ public class RobotContainer {
    * when the drive controller's button A is pressed, along with operator controls.
    */
   private void configureBindings() {
-    // OI.driveControllerA.onTrue(new InstantCommand(() -> {
-      // shooter.decrementKP();
-    // }));
-
-    // OI.driveControllerB.onTrue(new InstantCommand(() -> {
-    //   shooter.incrementKP();
-    // }));
-
-    // OI.driveControllerY.onTrue(new InstantCommand(() -> {
-    //   shooter.incrementKPIncrement();
-    // }));
-
-    // OI.driveControllerX.onTrue(new InstantCommand(() -> {
-    //   shooter.decrementKPIncrement();
-    // }));
-
-
-        OI.driveControllerRB.onTrue(new InstantCommand(() -> {
-		    shooter.setTargetRPM(4000);
-    }));
-
-           OI.driveControllerLB.onTrue(new InstantCommand(() -> {
-		       shooter.setTargetRPM(1000);
-    }));
 
 	   OI.driveControllerX.onTrue(new InstantCommand(() -> {
 		       shooter.setShooterMode(Shooter.ShooterMode.FIRE);
@@ -121,10 +97,14 @@ public class RobotContainer {
 	   OI.driveControllerA.onTrue(new InstantCommand(() -> {
 		       shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
 	   }));
-
+	   
 	   OI.driveControllerB.onTrue(new InstantCommand(() -> {
 		       shooter.setShooterMode(Shooter.ShooterMode.DEAD);
-	   })); 
+	   }));
+
+	   OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter,
+								       Constants.FieldPositionConstants.HUB_X,
+								       Constants.FieldPositionConstants.HUB_Y));
 	   
 	   
 
