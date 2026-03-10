@@ -57,10 +57,18 @@ public class Shooter extends SubsystemBase {
     private static final double FF_COEFFICIENT = 0.229;
     private static final double FF_OFFSET = -0.276;
 
+    /**
+     * values for calculating target RPM to control to with PID
+     * RPM = RPM_TARGET_COEFFICIENT*distance+RPM_TARGET_OFFSET
+     **/
+    private static final double RPM_TARGET_COEFFICIENT = 848;
+    private static final double RPM_TARGET_OFFSET = -0.276;
     
     private static final double MAX_RPM_RAMP = 450 / 50;
+    private static final double SHOOTER_RAMP_MIN_ERROR = 1000;
 
     private static final double SHOOTER_RPM_MAX_ERROR = 400; // maximum shooter error before conveyor is turned off
+
 
     private static final double CONVEYOR_SPEED = 1.0;
     
@@ -172,6 +180,15 @@ public class Shooter extends SubsystemBase {
     }
 
 
+    private double calculateFFTerm(double distance)
+    {
+	return FF_COEFFICIENT * distance + FF_OFFSET;
+    }
+
+    private double calculateTargetRPM(double distance)
+    {
+	return RPM_TARGET_COEFFICIENT * distance + RPM_TARGET_COEFFICIENT;
+    }
     
     /**
      * get the current shooter mode 
@@ -251,6 +268,8 @@ public class Shooter extends SubsystemBase {
     {
 	double topRPM;
 	double bottomRPM;
+	double targetDistance;
+	double ffTerm;
 	double topSpeed = 0;
 	double bottomSpeed = 0;
 	
@@ -259,7 +278,8 @@ public class Shooter extends SubsystemBase {
 	SmartDashboard.putNumber("shooter: top RPM", topRPM);
         SmartDashboard.putNumber("shooter: bottom RPM", bottomRPM);
 	
-	if(topControlTargetRPM != topTargetRPM) {
+	if(topControlTargetRPM != topTargetRPM
+	   || bottomControlTargetRPM != bottomTargetRPM) {
 	    if(topControlTargetRPM > topTargetRPM) { // controlling to RPM higher than needed: ramping not needed
 		topControlTargetRPM = topTargetRPM;
 	    } else { // controlling to RPM lower than needed: ramping needed
@@ -276,6 +296,17 @@ public class Shooter extends SubsystemBase {
 	    conveyorMotor.set(0.0);
 	    return;
 	}
+
+	targetDistance = getDistanceFromTarget();
+	topTargetRPM = calculateTargetRPM(targetDistance);
+	bottomTargetRPM = topTargetRPM;
+	if((topTargetRPM - topRPM < SHOOTER_RAMP_MIN_ERROR)
+	    && (bottomTargetRPM - bottomRPM < SHOOTER_RAMP_MIN_ERROR)) {
+	    topControlTargetRPM = topTargetRPM;
+	    bottomControlTargetRPM = bottomTargetRPM;
+	    
+	}
+	    
 
 
 	switch(shooterMode) {
@@ -299,11 +330,13 @@ public class Shooter extends SubsystemBase {
 		conveyorMotor.set(CONVEYOR_SPEED);
 	    }
 	case STANDBY:
+	    ffTerm = calculateFFTerm(targetDistance);
+	    topSpeed = ffTerm + shooterPIDController.calculate(topRPM, topControlTargetRPM);
+	    topSpeed = ffTerm + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);
 	    // topSpeed = calculateTopFFTerm(topControlTargetRPM)
 	    // 	+ shooterPIDController.calculate(topRPM, topControlTargetRPM);
 	    // bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM)
 	    // 	+ shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);	    
-	    
 	}
 
 	topMotor.set(topSpeed);
