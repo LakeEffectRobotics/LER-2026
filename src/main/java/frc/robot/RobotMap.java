@@ -4,7 +4,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;  // Add this import
+import edu.wpi.first.wpilibj.DigitalInput;  
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -30,18 +30,18 @@ public class RobotMap {
 
         private static final int RIGHT_BACK_DRIVE_CAN = 3;
         private static final int RIGHT_BACK_ROTATE_CAN = 4;
-
-        private static final int ELEVATOR_MOTOR_LEADER_CAN = 10; // Leader elevator motor
-        private static final int ELEVATOR_MOTOR_FOLLOWER_CAN = 9; // Follower elevator motor
-        
+       
         /* PNEUMATICS */
         private static final int PCM_CAN_ID = 27; // copied from 2025
         
-        /* MECHANISMS */
-        private static final int CORAL_CLAW_MOTOR_PRIMARY_CAN = 11; // First coral claw motor
-        private static final int CORAL_CLAW_MOTOR_SECONDARY_CAN = 12; // Second coral claw motor
-        private static final int ALGAE_CLAW_MOTOR_CAN = 13; // Algae claw motor
+	/* SHOOTER */
+	private static final int SHOOTER_TOP_FOLLOWER_CAN = 11;
+	private static final int SHOOTER_TOP_LEADER_CAN = 12;
+	
+	private static final int SHOOTER_BOTTOM_FOLLOWER_CAN = 13;
+	private static final int SHOOTER_BOTTOM_LEADER_CAN = 14; 
 
+	private static final int CONVEYOR_CAN = 16;
 
         private static final int INTAKE_CAN = 15;
 	
@@ -58,11 +58,11 @@ public class RobotMap {
          * BACK
          **/
 
-         //Todo: verify that this is the order of the motors after the swerve drive is assembled
     }
 
     // IMPORTANT: Make sure to update the Analog IDs to match the physical configuration of the robot
-    private class Analog {
+    private class Analog
+    {
         // Drivetrain
         // This also uses all 4 available ports
         private static final int LEFT_FRONT_ENCODER = 0;
@@ -70,6 +70,7 @@ public class RobotMap {
         private static final int LEFT_BACK_ENCODER = 3;
         private static final int RIGHT_BACK_ENCODER = 1;
     }
+
     
     // Pneumatic port configuration
     private class Pneumatics {
@@ -93,6 +94,7 @@ public class RobotMap {
     public static final SparkMax rightFrontRotate = new SparkMax(CAN.RIGHT_FRONT_ROTATE_CAN, MotorType.kBrushless);
     public static final AnalogInput rightFrontEncoder = new AnalogInput(Analog.RIGHT_FRONT_ENCODER);
 
+
     public static final SparkMax intakeMotor = new SparkMax(CAN.INTAKE_CAN, MotorType.kBrushless);
     
     public static DoubleSolenoid intakeSolenoid
@@ -100,6 +102,14 @@ public class RobotMap {
 			     PneumaticsModuleType.REVPH, 
 			     Pneumatics.INTAKE_FORWARD_CHANNEL, 
 			     Pneumatics.INTAKE_REVERSE_CHANNEL);
+
+    public static SparkMax shooterTopFollower = new SparkMax(CAN.SHOOTER_TOP_FOLLOWER_CAN, MotorType.kBrushless);
+    public static SparkMax shooterTopLeader = new SparkMax(CAN.SHOOTER_TOP_LEADER_CAN, MotorType.kBrushless);
+    public static SparkMax shooterBottomFollower = new SparkMax(CAN.SHOOTER_BOTTOM_FOLLOWER_CAN, MotorType.kBrushless);
+    public static SparkMax shooterBottomLeader = new SparkMax(CAN.SHOOTER_BOTTOM_LEADER_CAN, MotorType.kBrushless);
+    
+    public static SparkMax conveyorMotor = new SparkMax(CAN.CONVEYOR_CAN, MotorType.kBrushless);
+
 
     public static final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 }

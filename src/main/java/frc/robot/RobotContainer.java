@@ -3,12 +3,16 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Strategy;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.AutoPositionSuppliers;
@@ -16,12 +20,12 @@ import frc.robot.AutoPositionSuppliers;
 /* import frc.robot.commands.instant.*; */
 import frc.robot.commands.auto.TurnCommand;
 
+@Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer {
     public final String[] AUTOS = {"none", "pass line", "side 1", "side 2", "side 3", "side 5", "side 6"};
     public final String AUTO_DEFAULT = AUTOS[1];
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
-    
 
 
     // Constants
@@ -44,8 +48,14 @@ public class RobotContainer {
 
     public Pose pose = new Pose(drivetrain, camera, gyro);
 
-    public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
+    public Shooter shooter = new Shooter(RobotMap.shooterTopLeader,
+					 RobotMap.shooterTopFollower,
+					 RobotMap.shooterBottomLeader,
+					 RobotMap.shooterBottomFollower,
+					 RobotMap.conveyorMotor,
+					 pose);
 
+    public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
   /**
    * The RobotContainer class is where the bulk of the robot should be declared. 
    * Since Command-based is a "declarative" paradigm, very little robot logic 
@@ -59,8 +69,10 @@ public class RobotContainer {
   public RobotContainer() {
     // Initialize OI with a reference to this RobotContainer instance
     configureBindings();
-    drivetrain.setDefaultCommand(new DriveCommand(drivetrain, /*elevator,*/ OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
+    // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, /*elevator,*/ OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
   /*  RobotMap.compressor.enableAnalog(70, 120); */
+
+  DataLogManager.start();
 
     autoSelector.setDefaultOption("default side (2)", AUTO_DEFAULT);
     for(String side : AUTOS) {
@@ -79,62 +91,29 @@ public class RobotContainer {
    * when the drive controller's button A is pressed, along with operator controls.
    */
   private void configureBindings() {
-      // Drive controller bindings
-      OI.driveControllerA.onTrue(Commands.runOnce(() -> {
-		  drivetrain.resetPosition();
-	  }));
 
-    OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier));
-      
-    /*   OI.driveControllerB.whileTrue(new DriveTowardsThing(drivetrain, gyro, camera, elevator, wrist, false));
-      OI
-      .driveControllerX.whileTrue(new InstantCommand(() -> elevator.setTarget(ElevatorLevel.FLOOR))); */
-//      OI.driveControllerY.onTrue(new DriveDistanceRobotRelative(-0.12, 0.0 , 0.0, 0.2, drivetrain));
-      /*OI.driveControllerLB.whileTrue(new AlgaeRemoverCommand(coralClaw, 1));
-      OI.driveControllerRB.whileTrue(new AlgaeRemoverCommand(coralClaw, -1.0)); */
+	   OI.driveControllerX.onTrue(new InstantCommand(() -> {
+		       shooter.setShooterMode(Shooter.ShooterMode.FIRE);
+	   }));
 
+	   OI.driveControllerA.onTrue(new InstantCommand(() -> {
+		       shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
+	   }));
+	   
+	   OI.driveControllerB.onTrue(new InstantCommand(() -> {
+		       shooter.setShooterMode(Shooter.ShooterMode.DEAD);
+	   }));
 
-      
-      /*
-      // Operator controller bindings
-      // Elevator level controls
-      // OPERATOR B : INTAKE
-      OI.operatorControllerB.onTrue(new IntakeCommandGroup(elevator, wrist, coralClaw));
-      // OPERATOR RB : TROUGH(L1)
-      OI.operatorControllerRightBumper.onTrue(new ScoreCommandGroup(elevator, wrist, coralClaw, ElevatorLevel.LOW)); 
-      // OPERATOR A : L2 (lowest pole)
-      OI.operatorControllerA.onTrue(new ScoreCommandGroup(elevator, wrist, coralClaw, ElevatorLevel.MED));
-      // OPERATOR X : L3 (2nd pole)
-      OI.operatorControllerX.onTrue(new ScoreCommandGroup(elevator, wrist, coralClaw, ElevatorLevel.HIGH));
-      // OPERATOR Y : L4 (last pole)
-      OI.operatorControllerY.onTrue(new ScoreCommandGroup(elevator, wrist, coralClaw, ElevatorLevel.EXTRA_HIGH));
+	   OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter,
+								       Constants.FieldPositionConstants.HUB_X,
+								Constants.FieldPositionConstants.HUB_Y));
+	   
+	   
+	   
+	   
+	   OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
 
-
-      // OPERATOR LB : WRIST TOGGLE 
-      OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() -> wrist.toggle()));
-      
-      // OPERATOR START : TRIM UP
-      OI.operatorControllerStart.onTrue(new InstantCommand(() -> elevator.trimTarget(0.0175)));
-      // OPERATOR BACK : TRIM DOWN
-      OI.operatorControllerBack.onTrue(new InstantCommand(() -> elevator.trimTarget(-0.0175)));
-
-      // OPERATOR RT : INTAKE
-      OI.operatorRightTrigger.whileTrue(new ClawCommand(coralClaw, elevator, OI.operatorRightTriggerSupplier, 1));
-      // OPERATOR LT : OUTTAKE
-      OI.operatorLeftTrigger.whileTrue(new ClawCommand(coralClaw, elevator, OI.operatorLeftTriggerSupplier, 0));
-
-      // Operator Left Stick : Drop Elevator
-      OI.operatorControllerLeftClick.onTrue(new DropElevatorCommand(elevator));
-
-      // Manual control with right stick for testing in simulation
-      // OI.operatorControllerRightBumper.whileTrue(new InstantCommand(() -> 
-          // elevator.setSpeed(OI.processElevatorInput(OI.operatorController.getRightY())), elevator));
-  } */
-    // OI.driveControllerLB.onTrue((new IntakeCommand(intake, true)));
-    // OI.driveControllerRB.onTrue((new IntakeCommand(intake, false)));
-    OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
-
-  } 
-
+  }
   
 }
+

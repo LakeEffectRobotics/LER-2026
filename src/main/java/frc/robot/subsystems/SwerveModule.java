@@ -37,12 +37,13 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 
-
+@Logged
 public class SwerveModule extends SubsystemBase {
 
     // Constants from Mk4i product page https://www.swervedrivespecialties.com/products/mk4i-swerve-module
@@ -145,6 +146,7 @@ public class SwerveModule extends SubsystemBase {
         setOutput(state.speedMetersPerSecond / FREE_SPEED, state.angle.getRotations());
     }
 
+    @Logged(name="Current State")
     public SwerveModuleState getState() {
         return new SwerveModuleState(
             driveController.getVelocity().getValueAsDouble() * DRIVE_RATIO * 0.1016 * Math.PI, 
@@ -166,7 +168,8 @@ public class SwerveModule extends SubsystemBase {
      * Get the angle read by the absolute encoder
      * @return Angle in 0-1, with 0 being robot forward
      */
-    private double getAbsoluteAngle(){
+    @Logged(name="Absolute Angle")
+    public double getAbsoluteAngle(){
         // Function returns 0-4096 (12-bit value), so divide to get 0-1
         double val = (wheelEncoder.getValue() / 4096.0) - offset;
         // Keep in range 0-1, may be negative due to offset otherwise
@@ -176,6 +179,7 @@ public class SwerveModule extends SubsystemBase {
     }
 
 
+    @Logged(name="Current Position")
     public SwerveModulePosition getPos() {
         return new SwerveModulePosition(
 					driveController.getPosition().getValue().in(Revolutions) * Math.PI * 0.102 * DRIVE_RATIO, new Rotation2d(rotationController.getEncoder().getPosition() * (Math.PI * 2)));

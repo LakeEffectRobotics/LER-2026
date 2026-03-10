@@ -1,11 +1,13 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.FMS.AllianceColor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+@Logged
 public class Camera extends SubsystemBase {
 
     private NetworkTable table;
