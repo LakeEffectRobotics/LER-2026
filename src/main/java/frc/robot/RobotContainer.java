@@ -130,8 +130,9 @@ public class RobotContainer {
       // OI.operatorControllerRightBumper.whileTrue(new InstantCommand(() -> 
           // elevator.setSpeed(OI.processElevatorInput(OI.operatorController.getRightY())), elevator));
   } */
-    OI.driveControllerLB.onTrue((new IntakeCommand(intake, true)));
-    OI.driveControllerRB.onTrue((new IntakeCommand(intake, false)));
+    // OI.driveControllerLB.onTrue((new IntakeCommand(intake, true)));
+    // OI.driveControllerRB.onTrue((new IntakeCommand(intake, false)));
+    OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
 
   } 
 
