@@ -8,14 +8,15 @@ public class IntakeCommand extends Command{
     private static final long TIMEOUT_TIME = 60;
     
     private Intake intake;
-    private boolean intakeEnabled;
-    private long timer;
+    private DoubleSupplier triggerSupplier;
+    private long timer = 0;
 
     public IntakeCommand(Intake intake, DoubleSupplier triggerSupplier){
         this.intake = intake;
 	this.triggerSupplier = triggerSupplier;
-        this.intakeEnabled = intakeEnabled;
     }
+
+    
 
     @Override
     public void execute(){
