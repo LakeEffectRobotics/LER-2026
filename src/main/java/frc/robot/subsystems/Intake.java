@@ -10,35 +10,32 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
 
     private SparkMax intakeMotor;
-    private DoubleSolenoid intakeSolenoid;
+    private DoubleSolenoid solenoid;
 
     private static final double intakeConstantSpeed = -0.66666666667;
 
-    public static boolean intakeEnabled = false;
-
     public Intake(SparkMax intakeMotor, DoubleSolenoid intakeSolenoid){
         this.intakeMotor = intakeMotor;
+	this.solenoid = intakeSolenoid;
     }
 
-    public void StartIntake(){
+    public void start(){
         intakeMotor.set(intakeConstantSpeed);
-        intakeEnabled = true;
     }
 
-    public void StopIntake(){
+    public void stop(){
         intakeMotor.set(0.0);
-        intakeEnabled = false;
     }
 
-    // public void extend()
-    // {
-    // 	solenoid.set(DoubleSolenoid.Value.kForward);
-    // }
+    public void extend()
+    {
+	solenoid.set(DoubleSolenoid.Value.kForward);
+    }
 
-    // public void retract()
-    // {
-    // 	solenoid.set(DoubleSolenoid.Value.kReverse);
-    // }
+    public void retract()
+    {
+	solenoid.set(DoubleSolenoid.Value.kReverse);
+    }
 
     @Override
     public void periodic(){
