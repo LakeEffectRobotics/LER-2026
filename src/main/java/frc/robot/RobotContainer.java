@@ -28,13 +28,7 @@ public class RobotContainer {
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
 
 
-    // Constants
-    private static final double BEVEL_IN_CORRECTION = 0.25;
-
     /* init subsystems */
-
-
-
     public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.762207, 0.0, 0.0, false); 
     public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.459717, 0.0, 0.0, true); 
     public SwerveModule leftBackSwerve = new SwerveModule(RobotMap.leftBackDrive, RobotMap.leftBackRotate, RobotMap.leftBackEncoder, 0.480713, 0.0, 0.0, false); 
@@ -67,10 +61,7 @@ public class RobotContainer {
    * for the drivetrain subsystem, and configures the button bindings.
    */
   public RobotContainer() {
-    // Initialize OI with a reference to this RobotContainer instance
     configureBindings();
-    // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, /*elevator,*/ OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
-  /*  RobotMap.compressor.enableAnalog(70, 120); */
 
   DataLogManager.start();
 
@@ -80,9 +71,6 @@ public class RobotContainer {
     }
     SmartDashboard.putData("Auto Side", autoSelector);
 
-    // set the default drive command to use the left and right stick values from the Xbox controller
-    // The left stick controls the forward and backward movement of the robot, while the right stick
-    // controls the rotation of the robot.
   }
 
   /**
@@ -107,7 +95,6 @@ public class RobotContainer {
 	   OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter,
 								       Constants.FieldPositionConstants.HUB_X,
 								Constants.FieldPositionConstants.HUB_Y));
-	   
 	   
 	   
 	   
