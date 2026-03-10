@@ -40,8 +40,5 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic(){
 
-        //Smart Dashboard
-        SmartDashboard.putBoolean("IntakeEnabled", intakeEnabled);
-
     }
 }
