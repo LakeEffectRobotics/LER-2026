@@ -12,7 +12,7 @@ public class Intake extends SubsystemBase {
     private SparkMax intakeMotor;
     private DoubleSolenoid intakeSolenoid;
 
-    private static final double intakeConstantSpeed = -0.66666666667;
+    private static final double intakeConstantSpeed = -1.0;
 
     public static boolean intakeEnabled = false;
 
