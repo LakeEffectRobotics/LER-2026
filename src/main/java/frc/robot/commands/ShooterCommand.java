@@ -13,15 +13,12 @@ public class ShooterCommand extends Command
 {
     private Shooter shooter;
 
-    /**
-     * true if command was contructed with DoubleSuppliers for the target x and y
-     **/
+    /** true if command was contructed with DoubleSuppliers for the target x and y **/
     private boolean isSupplier;
     private double targetX;
     private double targetY;
     private DoubleSupplier targetXSupplier;
     private DoubleSupplier targetYSupplier;
-    
 
     /**
      * construct ShooterCommand with a target provided by DoubleSuppliers
@@ -56,8 +53,7 @@ public class ShooterCommand extends Command
 	    targetX = targetXSupplier.getAsDouble();
 	    targetY = targetYSupplier.getAsDouble();
 	}
-	
-	// TODO: set shooter target
+	shooter.setShooterTarget(targetX, targetY);
 	shooter.setShooterMode(Shooter.ShooterMode.FIRE);
     }
 
