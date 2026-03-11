@@ -1,10 +1,12 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+@Logged
 public class Pose extends SubsystemBase {
 
     private Drivetrain drivetrain;
@@ -59,6 +61,7 @@ public class Pose extends SubsystemBase {
 
             lastHeartbeat = heartbeat;
             drivetrain.setOdometryXY(cameraPose[0], cameraPose[1]);
+	    gyro.setGyroDegrees(cameraPose[5]);
             rPose = new Pose2d(cameraPose[0], cameraPose[1], gyro.getRotation2d());
             updateDashboard();
             return;

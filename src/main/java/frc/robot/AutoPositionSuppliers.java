@@ -16,7 +16,9 @@ public class AutoPositionSuppliers
 
     public DoubleSupplier hubAngleSupplier = () -> {
         Pose2d robotPosition = pose.getRobotPose();
-        return Math.atan2(robotPosition.getY() - 4.1, robotPosition.getX() - 4.6);
+        return Math.atan2(
+			  robotPosition.getY() - Constants.FieldPositionConstants.HUB_Y,
+			  robotPosition.getX() - Constants.FieldPositionConstants.HUB_X);
     };
 
 
