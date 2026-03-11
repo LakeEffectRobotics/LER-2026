@@ -73,32 +73,29 @@ public class RobotContainer {
 
   }
 
-  /**
-   * Configures the bindings for the robot controls.
-   * This method sets up the action to manually reset the robot's position
-   * when the drive controller's button A is pressed, along with operator controls.
-   */
+
   private void configureBindings() {
+      /** driver binds **/
+      
+      drivetrain.setDefaultCommand(new DriveCommand(drivetrain, OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
+      
+      OI.driveControllerA.onTrue(new InstantCommand(() -> { gyro.reset(); }));
+      
+      OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.xboxLeftStickXSupplier, OI.xboxLeftStickXSupplier));
 
-	   OI.driveControllerX.onTrue(new InstantCommand(() -> {
-		       shooter.setShooterMode(Shooter.ShooterMode.FIRE);
-	   }));
+      /** operator binds **/
+      OI.operatorControllerB.onTrue(new InstantCommand(() -> {
+		  shooter.setShooterMode(Shooter.ShooterMode.DEAD);
+      }));
 
-	   OI.driveControllerA.onTrue(new InstantCommand(() -> {
-		       shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
-	   }));
-	   
-	   OI.driveControllerB.onTrue(new InstantCommand(() -> {
-		       shooter.setShooterMode(Shooter.ShooterMode.DEAD);
-	   }));
-
-	   OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter,
-								       Constants.FieldPositionConstants.HUB_X,
-								Constants.FieldPositionConstants.HUB_Y));
-	   
-	   
-	   
-	   OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
+      OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() -> {
+		  intake.retract();
+      }));
+      
+      OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter,
+							   Constants.FieldPositionConstants.HUB_X,
+							   Constants.FieldPositionConstants.HUB_Y));
+      OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
 
   }
   
