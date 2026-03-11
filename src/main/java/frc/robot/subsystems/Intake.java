@@ -12,7 +12,7 @@ public class Intake extends SubsystemBase {
     private SparkMax intakeMotor;
     private DoubleSolenoid solenoid;
 
-    private static final double intakeConstantSpeed = -1.0;
+    private static final double intakeConstantSpeed = -0.8;
 
     public Intake(SparkMax intakeMotor, DoubleSolenoid intakeSolenoid){
         this.intakeMotor = intakeMotor;
