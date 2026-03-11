@@ -97,6 +97,17 @@ public class RobotContainer {
 							   Constants.FieldPositionConstants.HUB_Y));
       OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
 
+      OI.operatorControllerLeftClick.onTrue(new InstantCommand(() -> {
+	  shooter.setShooterMode(Shooter.ShooterMode.OVERRIDE);
+      }));
+
+      OI.operatorControllerStart.onTrue(new InstantCommand(() -> {
+	  shooter.incrementOverrideTargetRPM(1);
+      }));
+      
+      OI.operatorControllerBack.onTrue(new InstantCommand(() -> {
+	  shooter.incrementOverrideTargetRPM(-1);
+      }));
   }
   
 }

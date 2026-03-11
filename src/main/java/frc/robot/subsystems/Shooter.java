@@ -66,13 +66,11 @@ public class Shooter extends SubsystemBase {
     
     private static final double MAX_RPM_RAMP = 450 / 50;
     private static final double SHOOTER_RAMP_MIN_ERROR = 1000;
-
     private static final double SHOOTER_RPM_MAX_ERROR = 400; // maximum shooter error before conveyor is turned off
 
     private static final double STANDBY_SPEED = 0.4; // speed to spin shooter motors at while in STANDBY mode
-
-
     private static final double CONVEYOR_SPEED = 1.0;
+    private static final double OVERRIDE_RPM_STEP = 200;
     
 
     private double topKP = 0.001;
@@ -238,10 +236,10 @@ public class Shooter extends SubsystemBase {
     /**
      * increment the target RPM for override mode
     **/
-    public void incrementOverrideTargetRPM(double v)
+    public void incrementOverrideTargetRPM(int factor)
     {
-	topOverrideTargetRPM += v;
-	bottomOverrideTargetRPM += v;
+	topOverrideTargetRPM += OVERRIDE_RPM_STEP * factor;
+	bottomOverrideTargetRPM += OVERRIDE_RPM_STEP * factor;
     }
 
     // public void incrementKP() 
@@ -323,6 +321,8 @@ public class Shooter extends SubsystemBase {
 	    return;
 	case OVERRIDE:
 	    conveyorMotor.set(CONVEYOR_SPEED);
+	    topSpeed = shooterPIDController.calculate(topRPM, topOverrideTargetRPM);
+	    bottomSpeed = shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
 	    // topSpeed = calculateTopFFTerm(topOverrideTargetRPM)
 	    // 	+ shooterPIDController.calculate(topRPM, topOverrideTargetRPM);
 	    // bottomSpeed = calculateBottomFFTerm(bottomOverrideTargetRPM)
