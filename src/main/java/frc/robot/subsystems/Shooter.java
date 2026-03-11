@@ -62,7 +62,7 @@ public class Shooter extends SubsystemBase {
      * RPM = RPM_TARGET_COEFFICIENT*distance+RPM_TARGET_OFFSET
      **/
     private static final double RPM_TARGET_COEFFICIENT = 848;
-    private static final double RPM_TARGET_OFFSET = -0.276;
+    private static final double RPM_TARGET_OFFSET = -528;
     
     private static final double MAX_RPM_RAMP = 450 / 50;
     private static final double SHOOTER_RAMP_MIN_ERROR = 1000;
@@ -187,7 +187,7 @@ public class Shooter extends SubsystemBase {
 
     private double calculateTargetRPM(double distance)
     {
-	return RPM_TARGET_COEFFICIENT * distance + RPM_TARGET_COEFFICIENT;
+	return RPM_TARGET_COEFFICIENT * distance + RPM_TARGET_OFFSET;
     }
     
     /**
@@ -298,8 +298,10 @@ public class Shooter extends SubsystemBase {
 	}
 
 	targetDistance = getDistanceFromTarget();
+	SmartDashboard.putNumber("shooter: distance", targetDistance);
 	topTargetRPM = calculateTargetRPM(targetDistance);
 	bottomTargetRPM = topTargetRPM;
+	SmartDashboard.putNumber("shooter: targetRPM", topTargetRPM);
 	if((topTargetRPM - topRPM < SHOOTER_RAMP_MIN_ERROR)
 	    && (bottomTargetRPM - bottomRPM < SHOOTER_RAMP_MIN_ERROR)) {
 	    topControlTargetRPM = topTargetRPM;
@@ -331,8 +333,11 @@ public class Shooter extends SubsystemBase {
 	    }
 	case STANDBY:
 	    ffTerm = calculateFFTerm(targetDistance);
+	    SmartDashboard.putNumber("shooter: ff term", ffTerm);
 	    topSpeed = ffTerm + shooterPIDController.calculate(topRPM, topControlTargetRPM);
-	    topSpeed = ffTerm + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);
+	    bottomSpeed = ffTerm + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);
+	    SmartDashboard.putNumber("shooter: top speed", topSpeed);
+	    SmartDashboard.putNumber("shooter: bottom speed", bottomSpeed);
 	    // topSpeed = calculateTopFFTerm(topControlTargetRPM)
 	    // 	+ shooterPIDController.calculate(topRPM, topControlTargetRPM);
 	    // bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM)
