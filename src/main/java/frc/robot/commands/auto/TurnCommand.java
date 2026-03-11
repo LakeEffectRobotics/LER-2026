@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Pose;
+import edu.wpi.first.math.controller.PIDController;
 
 public class TurnCommand extends Command
 {
@@ -14,10 +15,13 @@ public class TurnCommand extends Command
     private DoubleSupplier xSupplier;
     private DoubleSupplier ySupplier;
     private DoubleSupplier angleSupplier;
+    private PIDController pidController;
 
     private double angleDisplacement;
 
-    private static final double P_TERM = 15.0;
+    private static final double P_TERM = 8.0;
+    private static final double I_TERM = 5.0;
+    private static final double D_TERM = 0.0;
 
 
     public TurnCommand(Drivetrain drivetrain,
@@ -37,14 +41,20 @@ public class TurnCommand extends Command
     @Override
     public void initialize()
     {
-
+	pidController = new PIDController(P_TERM, I_TERM, D_TERM);
     }
 
     @Override
     public void execute()
     {
-        angleDisplacement = pose.getRobotPose().getRotation().minus(new Rotation2d(angleSupplier.getAsDouble())).getRadians();
-        drivetrain.drive(ySupplier.getAsDouble(), xSupplier.getAsDouble(), -angleDisplacement * P_TERM); // order is y,x on purpose
+        // angleDisplacement = pose.getRobotPose().getRotation().minus(new Rotation2d(angleSupplier.getAsDouble())).getRadians();
+        drivetrain.drive(
+			 ySupplier.getAsDouble(),
+			 xSupplier.getAsDouble(),
+			 pidController.calculate(
+						 pose.getRobotPose().getRotation().getRadians(),
+						 angleSupplier.getAsDouble()));
+			 // pidController.calculate(pose.getRobotPose().getRotation().getRadians(), Rotation2d(angleSupplier.getAsDouble())));
     }
 
     @Override
