@@ -61,6 +61,7 @@ public class Pose extends SubsystemBase {
 
             lastHeartbeat = heartbeat;
             drivetrain.setOdometryXY(cameraPose[0], cameraPose[1]);
+	    gyro.setGyroDegrees(cameraPose[5]);
             rPose = new Pose2d(cameraPose[0], cameraPose[1], gyro.getRotation2d());
             updateDashboard();
             return;

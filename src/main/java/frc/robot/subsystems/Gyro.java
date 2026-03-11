@@ -29,6 +29,11 @@ public class Gyro extends SubsystemBase {
 	offset = new Rotation2d(desiredAngle);
     }
 
+    public void setGyroDegrees(double desiredAngle) {
+	gyro.reset();
+	offset = new Rotation2d(desiredAngle * (Math.PI / 180));
+    }
+
     // public void setAngle(Rotation2d r) {
     //     gyro.setAngleAdjustment(r.getDegrees());
     // }
@@ -36,6 +41,6 @@ public class Gyro extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("gyro angle", Math.toDegrees(getRotation2d().getRadians()));
-
+        SmartDashboard.putNumber("gyro offset", Math.toDegrees(offset.getRadians()));
     }
 }
