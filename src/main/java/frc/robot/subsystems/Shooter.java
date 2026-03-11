@@ -106,8 +106,8 @@ public class Shooter extends SubsystemBase {
     /**
      * field position targets
      **/
-    private double xTarget = 0;
-    private double yTarget = 0;
+    private double xTarget = Constants.FieldPositionConstants.HUB_X;
+    private double yTarget = Constants.FieldPositionConstants.HUB_Y;
 
     
     private PIDController shooterPIDController;
