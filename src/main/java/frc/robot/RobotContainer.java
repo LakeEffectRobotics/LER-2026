@@ -77,11 +77,11 @@ public class RobotContainer {
   private void configureBindings() {
       /** driver binds **/
       
-      drivetrain.setDefaultCommand(new DriveCommand(drivetrain, OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
+      drivetrain.setDefaultCommand(new DriveCommand(drivetrain, OI.driveLeftStickXSupplier, OI.driveLeftStickYSupplier, OI.driveRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
       
       OI.driveControllerA.onTrue(new InstantCommand(() -> { gyro.reset(); }));
       
-      OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.xboxLeftStickXSupplier, OI.xboxLeftStickXSupplier));
+      OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.driveLeftStickXSupplier, OI.driveLeftStickXSupplier));
 
       /** operator binds **/
       OI.operatorControllerB.onTrue(new InstantCommand(() -> {
