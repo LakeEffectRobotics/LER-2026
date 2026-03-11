@@ -35,7 +35,7 @@ public class Shooter extends SubsystemBase {
     {
 	/** conveyor: off, shooter: off **/
 	DEAD,
-	/** conveyor: off, shooter: on, shooter will stay at target speed but not shoot **/
+	/** conveyor: off, shooter: on, shooter will run at STANDBY_SPEED **/
 	STANDBY,
 	/**conveyor: on if shooter is at target, shooter: on, shooter will fire if it's reached target speed **/
 	FIRE,
@@ -68,6 +68,8 @@ public class Shooter extends SubsystemBase {
     private static final double SHOOTER_RAMP_MIN_ERROR = 1000;
 
     private static final double SHOOTER_RPM_MAX_ERROR = 400; // maximum shooter error before conveyor is turned off
+
+    private static final double STANDBY_SPEED = 0.4; // speed to spin shooter motors at while in STANDBY mode
 
 
     private static final double CONVEYOR_SPEED = 1.0;
@@ -331,23 +333,20 @@ public class Shooter extends SubsystemBase {
 	       && isWithinMaxRPMError(bottomRPM, bottomControlTargetRPM)) {
 		conveyorMotor.set(CONVEYOR_SPEED);
 	    }
-	case STANDBY:
 	    ffTerm = calculateFFTerm(targetDistance);
 	    SmartDashboard.putNumber("shooter: ff term", ffTerm);
 	    topSpeed = ffTerm + shooterPIDController.calculate(topRPM, topControlTargetRPM);
 	    bottomSpeed = ffTerm + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);
-	    SmartDashboard.putNumber("shooter: top speed", topSpeed);
-	    SmartDashboard.putNumber("shooter: bottom speed", bottomSpeed);
-	    // topSpeed = calculateTopFFTerm(topControlTargetRPM)
-	    // 	+ shooterPIDController.calculate(topRPM, topControlTargetRPM);
-	    // bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM)
-	    // 	+ shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);	    
+	    break;
+	case STANDBY:
+	    topSpeed = STANDBY_SPEED;
+	    bottomSpeed = STANDBY_SPEED;
 	}
-
+	
+	SmartDashboard.putNumber("shooter: top speed", topSpeed);
+	SmartDashboard.putNumber("shooter: bottom speed", bottomSpeed);
 	topMotor.set(topSpeed);
 	bottomMotor.set(-bottomSpeed);
-	
-	    
     }
 	
 
