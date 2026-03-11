@@ -22,7 +22,7 @@ import frc.robot.commands.auto.ShootClimbSequence;
 
 @Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer {
-    public final String[] AUTOS = {"none", "shoot then climb", "climb then shoot", "middle"};
+    public final String[] AUTOS = {"none", "left", "right"};
     public final String AUTO_DEFAULT = AUTOS[1];
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
