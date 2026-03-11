@@ -15,9 +15,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.auto.*;
 import frc.robot.AutoPositionSuppliers;
-/* import frc.robot.commands.auto.*; */
-/* import frc.robot.commands.instant.*; */
 import frc.robot.commands.auto.TurnCommand;
 import frc.robot.commands.auto.ShootClimbSequence;
 
@@ -44,83 +43,87 @@ public class RobotContainer {
     public Pose pose = new Pose(drivetrain, camera, gyro);
 
     public Shooter shooter = new Shooter(RobotMap.shooterTopLeader,
-					 RobotMap.shooterTopFollower,
-					 RobotMap.shooterBottomLeader,
-					 RobotMap.shooterBottomFollower,
-					 RobotMap.conveyorMotor,
-					 pose);
+    RobotMap.shooterTopFollower,
+    RobotMap.shooterBottomLeader,
+    RobotMap.shooterBottomFollower,
+    RobotMap.conveyorMotor,
+    pose);
 
     public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
-  /**
-   * The RobotContainer class is where the bulk of the robot should be declared. 
-   * Since Command-based is a "declarative" paradigm, very little robot logic 
-   * should actually be handled in the Robot periodic methods (other than the 
-   * scheduler calls). Instead, the structure of the robot (including subsystems, 
-   * commands, and button mappings) should be declared here.
-   *
-   * The constructor initializes the RobotContainer, sets up the default command 
-   * for the drivetrain subsystem, and configures the button bindings.
-   */
-  public RobotContainer() {
-    configureBindings();
+    /**
+    * The RobotContainer class is where the bulk of the robot should be declared.
+    * Since Command-based is a "declarative" paradigm, very little robot logic
+    * should actually be handled in the Robot periodic methods (other than the
+    * scheduler calls). Instead, the structure of the robot (including subsystems,
+    * commands, and button mappings) should be declared here.
+    *
+    * The constructor initializes the RobotContainer, sets up the default command
+    * for the drivetrain subsystem, and configures the button bindings.
+    */
+    public RobotContainer() {
+	configureBindings();
 
-  DataLogManager.start();
+	DataLogManager.start();
 
-    autoSelector.setDefaultOption("default (shoot then climb)", AUTO_DEFAULT);
-    for(String side : AUTOS) {
-      autoSelector.addOption(side, side);
+	autoSelector.setDefaultOption("default (shoot then climb)", AUTO_DEFAULT);
+	for(String side : AUTOS) {
+	    autoSelector.addOption(side, side);
+	}
+	SmartDashboard.putData("Auto type", autoSelector);
+
     }
-    SmartDashboard.putData("Auto type", autoSelector);
-
-  }
 
 
-  private void configureBindings() {
+    private void configureBindings() {
 
-      /** driver binds **/
-      
-      drivetrain.setDefaultCommand(new DriveCommand(drivetrain, OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
-      
-      OI.driveControllerA.onTrue(new InstantCommand(() -> { gyro.reset(); }));
-      
-      OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.xboxLeftStickXSupplier, OI.xboxLeftStickXSupplier));
+	/** driver binds **/
 
-      /** operator binds **/
-      OI.operatorControllerB.onTrue(new InstantCommand(() -> {
-		  shooter.setShooterMode(Shooter.ShooterMode.DEAD);
-      }));
+	drivetrain.setDefaultCommand(new DriveCommand(drivetrain, OI.xboxLeftStickXSupplier, OI.xboxLeftStickYSupplier, OI.xboxRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
 
-      OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() -> {
-		  intake.retract();
-      }));
-      
-      OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter,
-							   Constants.FieldPositionConstants.HUB_X,
-							   Constants.FieldPositionConstants.HUB_Y));
-      OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
+	OI.driveControllerA.onTrue(new InstantCommand(() -> { gyro.reset(); }));
+
+	OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.xboxLeftStickXSupplier, OI.xboxLeftStickXSupplier));
+
+	/** operator binds **/
+	OI.operatorControllerB.onTrue(new InstantCommand(() -> {
+	    shooter.setShooterMode(Shooter.ShooterMode.DEAD);
+	}));
+
+	OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() -> {
+	    intake.retract();
+	}));
+
+	OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter,
+	Constants.FieldPositionConstants.HUB_X,
+	Constants.FieldPositionConstants.HUB_Y));
+	OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
 
 
-      // Manual control with right stick for testing in simulation
-      // OI.operatorControllerRightBumper.whileTrue(new InstantCommand(() -> 
-          // elevator.setSpeed(OI.processElevatorInput(OI.operatorController.getRightY())), elevator));
-  }
+	// Manual control with right stick for testing in simulation
+	// OI.operatorControllerRightBumper.whileTrue(new InstantCommand(() ->
+	// elevator.setSpeed(OI.processElevatorInput(OI.operatorController.getRightY())), elevator));
+    }
 
 
     public Command getAutonomousCommand()
     {
 	String auto = autoSelector.getSelected();
-	if(auto.equals(AUTOS[0])) { // none
-	    return null;
-	} else if(auto.equals(AUTOS[1])) { // shoot then climb
-	    return new ShootClimbSequence(0.0, 0.0, drivetrain, pose);
+	if(auto.equals(AUTOS[0])) {
+	    /* none */
+	    return null;	// none
+	} else if(auto == AUTOS[1]) {
+	    /* left */
+	    return new ShootIntakeSequence(true, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	} else if(auto == AUTOS[2]) {
+		/* right */
+		return new ShootIntakeSequence(false, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
 	} else {
 	    return null;
 	}
-    }       
+    }
 
 
 
 
-  
+
 }
-
