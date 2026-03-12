@@ -16,6 +16,7 @@ public class Pose extends SubsystemBase {
     private Pose2d rPose;
     private double lastHeartbeat;
     private int rejectionCount;
+    private boolean noCameraMode = false;
 
 
     public Pose(Drivetrain drivetrain, Camera camera, Gyro gyro)
@@ -26,6 +27,11 @@ public class Pose extends SubsystemBase {
         this.lastHeartbeat = -1;
         this.rPose = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
         this.rejectionCount = 0;
+    }
+
+    public void setNoCameraMode(boolean value)
+    {
+	noCameraMode = value;
     }
 
     @Override
@@ -40,7 +46,11 @@ public class Pose extends SubsystemBase {
         drivetrainPose = drivetrain.getPose2d();
         cameraPose = camera.getBotpose();
 
-        if(heartbeat == lastHeartbeat || (cameraPose[0] == 0.0 && cameraPose[1] == 0.0)) {
+	SmartDashboard.putBoolean("pose: no camera?", noCameraMode);
+        if(heartbeat == lastHeartbeat
+	   || (cameraPose[0] == 0.0 && cameraPose[1] == 0.0)
+	   || noCameraMode
+	   || cameraPose[7] < 2) {
             lastHeartbeat = heartbeat;
             rPose = drivetrainPose;
             updateDashboard();
