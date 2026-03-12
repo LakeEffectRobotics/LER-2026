@@ -1,5 +1,6 @@
 package frc.robot.commands.auto;
 
+import edu.wpi.first.epilogue.Logged;
 import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,6 +16,7 @@ import frc.robot.subsystems.Pose;
  * and will create a specified number of middle points for each position in the input.
  * Uses constant speeds that step down dependant on the # of remaining points before the next turn
  **/
+@Logged
 public class GotoPose extends Command
 {
     private Drivetrain drivetrain;
@@ -51,14 +53,14 @@ public class GotoPose extends Command
     /**
      * speeds
      **/
-    // private static final double FAST_SPEED = 0.6;
-    // private static final double MED_SPEED = 0.4;
-    // private static final double SLOW_SPEED = 0.25;
-    private static final double FAST_SPEED = 0.2;
-    private static final double MED_SPEED = 0.15;
+    private static final double FAST_SPEED = 0.4;
+    private static final double MED_SPEED = 0.25;
     private static final double SLOW_SPEED = 0.1;
+    // private static final double FAST_SPEED = 0.;
+    // private static final double MED_SPEED = 0.15;
+    // private static final double SLOW_SPEED = 0.1;
 
-    private static final double ROTATION_KP = 15.0;
+    private static final double ROTATION_KP = 5.0;
 
 
     /**
@@ -157,6 +159,7 @@ public class GotoPose extends Command
     @Override
     public void initialize()
     {
+	System.out.println("GotoPose: initialize");
 	path = generatePath(pose.getRobotPose());
 	pathIndex = 1;
 	nextTurn = 0;
@@ -167,6 +170,7 @@ public class GotoPose extends Command
     @Override
     public void execute()
     {
+	System.out.println("GotoPose: execute");
 	Pose2d currentPosition;
 	double xDisplacement;
 	double yDisplacement;
@@ -183,13 +187,14 @@ public class GotoPose extends Command
 	    drivetrain.drive(0.0, 0.0, 0.0);
 	    return;
 	}
+
 	
 	// robot has reached or passed the target point
-	if((Math.abs(xDisplacement) + Math.abs(yDisplacement) <= 0.1) || (-xDisplacement * xDirection < 0) || (-yDisplacement * yDirection < 0)) {
+	if((Math.abs(xDisplacement) <= 0.1 && Math.abs(yDisplacement) <= 0.1) || (-xDisplacement * xDirection < 0) || (-yDisplacement * yDirection < 0)) {
 		// robot has reached or passed the turning point
 		if(pathIndex >= nextTurn) {
 		    nextTurn = path.length - 1;
-		    for(int i=pathIndex + 1; i<path.length; i++) {
+		    for(int i=pathIndex + 1; i<path.length - 1; i++) {
 			if((getPathXDirection(path[i - 1], path[i]) != xDirection) || (getPathYDirection(path[i], path[i + 1]) != yDirection)) {
 			    nextTurn = i;
 			}
@@ -227,12 +232,14 @@ public class GotoPose extends Command
     @Override
     public boolean isFinished()
     {
+	
 	return pathIndex >= (path.length - 1);
     }
 
     @Override
     public void end(boolean isInterrupted)
     {
+	System.out.println("GotoPose: end");
 	drivetrain.drive(0.0, 0.0, 0.0);
 	return;
     }
