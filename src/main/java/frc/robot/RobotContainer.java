@@ -15,13 +15,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.auto.*;
 import frc.robot.AutoPositionSuppliers;
 import frc.robot.commands.auto.TurnCommand;
+import frc.robot.commands.auto.ShootClimbSequence;
 
 @Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer {
-    public final String[] AUTOS = {"none", "pass line", "side 1", "side 2", "side 3", "side 5", "side 6"};
-    public final String AUTO_DEFAULT = AUTOS[1];
+    public final String[] AUTOS = {"none", "left", "right"};
+    public final String AUTO_DEFAULT = AUTOS[0];
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
 
@@ -41,13 +43,14 @@ public class RobotContainer {
     public Pose pose = new Pose(drivetrain, camera, gyro);
 
     public Shooter shooter = new Shooter(RobotMap.shooterTopLeader,
-					 RobotMap.shooterTopFollower,
-					 RobotMap.shooterBottomLeader,
-					 RobotMap.shooterBottomFollower,
-					 RobotMap.conveyorMotor,
-					 pose);
+    RobotMap.shooterTopFollower,
+    RobotMap.shooterBottomLeader,
+    RobotMap.shooterBottomFollower,
+    RobotMap.conveyorMotor,
+    pose);
 
     public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
+
   /**
    * The RobotContainer class is where the bulk of the robot should be declared. 
    * Since Command-based is a "declarative" paradigm, very little robot logic 
@@ -63,12 +66,10 @@ public class RobotContainer {
     RobotMap.compressor.enableAnalog(70, 120);
     DataLogManager.start();
     
-    autoSelector.setDefaultOption("default side (2)", AUTO_DEFAULT);
+    autoSelector.setDefaultOption("default (none)", AUTO_DEFAULT);
     for(String side : AUTOS) {
       autoSelector.addOption(side, side);
     }
-    SmartDashboard.putData("Auto Side", autoSelector);
-
   }
 
 
@@ -85,7 +86,7 @@ public class RobotContainer {
       OI.operatorControllerB.onTrue(new InstantCommand(() -> {
 		  shooter.setShooterMode(Shooter.ShooterMode.DEAD);
       }));
-
+      
       OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() -> {
 		  intake.retract();
       }));
@@ -94,8 +95,31 @@ public class RobotContainer {
 							   Constants.FieldPositionConstants.HUB_X,
 							   Constants.FieldPositionConstants.HUB_Y));
       OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
-
+      
+      
+      // Manual control with right stick for testing in simulation
+      // OI.operatorControllerRightBumper.whileTrue(new InstantCommand(() ->
+      // elevator.setSpeed(OI.processElevatorInput(OI.operatorController.getRightY())), elevator));
   }
   
-}
+  
+    public Command getAutonomousCommand()
+    {
+	String auto = autoSelector.getSelected();
+	if(auto.equals(AUTOS[0])) {
+	    /* none */
+	    return null;	// none
+	} else if(auto == AUTOS[1]) {
+	    /* left */
+	    return new ShootIntakeSequence(true, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	} else if(auto == AUTOS[2]) {
+		/* right */
+		return new ShootIntakeSequence(false, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	} else {
+	    return null;
+	}
+    }
 
+
+
+}
