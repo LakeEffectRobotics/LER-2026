@@ -43,6 +43,9 @@ here	   |   |
 
 	 public static final double BALLS_FAR_RIGHT_X = 9.1697;
 	 public static final double BALLS_FAR_RIGHT_Y = 1.7112;
+
+	public static final double RIGHT_SHOOT_X = 3.52;
+	public static final double RIGHT_SHOOT_Y = 2.08;
     }
 
 }
