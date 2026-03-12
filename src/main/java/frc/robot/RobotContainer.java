@@ -16,8 +16,6 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.AutoPositionSuppliers;
-/* import frc.robot.commands.auto.*; */
-/* import frc.robot.commands.instant.*; */
 import frc.robot.commands.auto.TurnCommand;
 
 @Logged(strategy = Strategy.OPT_OUT)
@@ -62,9 +60,9 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureBindings();
-
-  DataLogManager.start();
-
+    RobotMap.compressor.enableAnalog(70, 120);
+    DataLogManager.start();
+    
     autoSelector.setDefaultOption("default side (2)", AUTO_DEFAULT);
     for(String side : AUTOS) {
       autoSelector.addOption(side, side);

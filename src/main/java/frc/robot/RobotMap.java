@@ -97,6 +97,9 @@ public class RobotMap {
 
     public static final SparkMax intakeMotor = new SparkMax(CAN.INTAKE_CAN, MotorType.kBrushless);
     
+    public static PneumaticHub pneumaticHub = new PneumaticHub(CAN.PCM_CAN_ID);
+    public static Compressor compressor = new Compressor(CAN.PCM_CAN_ID, PneumaticsModuleType.REVPH);
+    
     public static DoubleSolenoid intakeSolenoid
 	= new DoubleSolenoid(CAN.PCM_CAN_ID, 
 			     PneumaticsModuleType.REVPH, 
