@@ -27,9 +27,10 @@ public class ShootIntakeSequence extends SequentialCommandGroup
     private double delayA;
     private double delayB;
 
-    private static final double TRENCH_END_OFFSET = 1.0; // (m) x distance from middle of trench to place start and end pose
-    private static final double INTAKE_IN_OFFSET = 0.7;  // (m) x distance from close end of ball pile to offset intake position by
-    private static final double INTAKE_DISTANCE = 4.0;	  // (m) y distance to drive to intake balls
+    private static final double TRENCH_END_OFFSET = 2.0; // (m) x distance from middle of trench to place start and end pose
+    private static final double INTAKE_IN_OFFSET = 1.4;	// (m) x distance from close end of ball pile to offset intake position by
+    private static final double INTAKE_DISTANCE = 4.0; // (m) y distance to drive to intake balls
+    private static final double INTAKE_INWARD_PUSH = 1.0; // (m) x distance to move toward driver while intaking
     private static final long SHOOT_TIME = 5000;	  // (ms) time to spend shooting
 
     public ShootIntakeSequence(boolean isLeft, long initialDelay, Drivetrain drivetrain,
@@ -48,7 +49,7 @@ public class ShootIntakeSequence extends SequentialCommandGroup
 	    trenchEndPose = new Pose2d( // position on neutral side of trench
 	    FieldPositionConstants.LEFT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
 	    intakeStartPose = new Pose2d( // position to go before starting intake
-	    FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y, new Rotation2d(Math.PI/2));
+					  FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y, new Rotation2d(Math.PI/2));
 	    intakeEndPose = new Pose2d( // position to drive to while intaking
 	    FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y - INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
 	    shootPose = new Pose2d( // position to drive to to shoot
@@ -61,9 +62,9 @@ public class ShootIntakeSequence extends SequentialCommandGroup
 	    intakeStartPose = new Pose2d( // position to go before starting intake
 	    FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y, new Rotation2d(Math.PI/2));
 	    intakeEndPose = new Pose2d( // position to drive to while intaking
-	    FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y + INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
+					FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET - INTAKE_INWARD_PUSH, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y + INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
 	    shootPose = new Pose2d( // position to drive to to shoot
-	    FieldPositionConstants.RIGHT_TRENCH_CENTER_X + 1.5, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y + 1.0, new Rotation2d(Math.PI/2)); // TODO: find good spots for shooting, add to fieldpositionconstants
+	    FieldPositionConstants.RIGHT_SHOOT_X, FieldPositionConstants.RIGHT_SHOOT_Y, new Rotation2d(Math.PI/2)); // TODO: find good spots for shooting, add to fieldpositionconstants
 	}
 
 	/** position sequences (for GotoPose) **/
@@ -77,24 +78,28 @@ public class ShootIntakeSequence extends SequentialCommandGroup
 	    trenchEndPose, trenchStartPose, shootPose
 	};
 
+	// Pose2d[] testPoses = {new Pose2d(3.7, 8.0, new Rotation2d(0))};
+	// addCommands(
+	// 	    new GotoPose(testPoses, 2, drivetrain, pose)
+	// 	    );
 	/** initialization commands **/
-	addCommands(
-	new InstantCommand(() -> {
-	    shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
-	}),
-	new WaitCommand(initialDelay / 1000)
-	);
+	// addCommands(
+	// new InstantCommand(() -> {
+	//     shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
+	// }),
+	// new WaitCommand(initialDelay / 1000)
+	// );
 
 	addCommands(
-	new GotoPose(startToIntakeStart, 8, drivetrain, pose), // drive through trench then drive to intake start
-	new AutoIntakeCommand(intake, true), // enable intake
-	new GotoPose(intakeStartToEnd, 4, drivetrain, pose), // drive forward
-	new AutoIntakeCommand(intake, false), // disable intake
-	new GotoPose(intakeEndToShoot, 8, drivetrain, pose), 	// go to shooting position
-	new ParallelCommandGroup(
-	new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME), // turn to face hub
-	new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME) // shoot
-	)
+		    new GotoPose(startToIntakeStart, 6, drivetrain, pose), // drive through trench then drive to intake start
+		    new AutoIntakeCommand(intake, true), // enable intake
+		    new GotoPose(intakeStartToEnd, 4, drivetrain, pose), // drive forward
+		    new AutoIntakeCommand(intake, false), // disable intake
+		    new GotoPose(intakeEndToShoot, 8, drivetrain, pose) 	// go to shooting position
+		    // new ParallelCommandGroup(
+					     // new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME), // turn to face hub
+					     // new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME) // shoot
+	// )
 	);
     }
 
