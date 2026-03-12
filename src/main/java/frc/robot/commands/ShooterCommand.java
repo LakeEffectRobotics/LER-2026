@@ -3,7 +3,9 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
 
+
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Pose;
 
 
 /**
@@ -12,6 +14,7 @@ import frc.robot.subsystems.Shooter;
 public class ShooterCommand extends Command
 {
     private Shooter shooter;
+    private Pose pose;
 
     /** true if command was contructed with DoubleSuppliers for the target x and y **/
     private boolean isSupplier;
@@ -23,10 +26,11 @@ public class ShooterCommand extends Command
     /**
      * construct ShooterCommand with a target provided by DoubleSuppliers
      **/
-    public ShooterCommand(Shooter shooter, DoubleSupplier targetX, DoubleSupplier targetY)
+    public ShooterCommand(Shooter shooter, Pose pose, DoubleSupplier targetX, DoubleSupplier targetY)
     {
 	addRequirements(shooter);
 	this.shooter = shooter;
+	this.pose = pose;
 	this.isSupplier = true;
 	this.targetXSupplier = targetX;
 	this.targetYSupplier = targetY;
@@ -37,10 +41,11 @@ public class ShooterCommand extends Command
     /**
      * construct ShooterCommand with a constant target
      **/
-    public ShooterCommand(Shooter shooter, double targetX, double targetY)
+    public ShooterCommand(Shooter shooter, Pose pose, double targetX, double targetY)
     {
 	addRequirements(shooter);
 	this.shooter = shooter;
+	this.pose = pose;
 	this.isSupplier = false;
 	this.targetX = targetX;
 	this.targetY = targetY;
@@ -55,6 +60,7 @@ public class ShooterCommand extends Command
 	}
 	shooter.setShooterTarget(targetX, targetY);
 	shooter.setShooterMode(Shooter.ShooterMode.FIRE);
+	pose.setNoCameraMode(true);
     }
 
     @Override
@@ -67,5 +73,6 @@ public class ShooterCommand extends Command
     public void end(boolean isInterrupted)
     {
 	shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
+	pose.setNoCameraMode(false);
     }
 }

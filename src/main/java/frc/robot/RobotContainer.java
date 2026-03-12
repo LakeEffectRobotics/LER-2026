@@ -70,6 +70,7 @@ public class RobotContainer {
     for(String side : AUTOS) {
       autoSelector.addOption(side, side);
     }
+    SmartDashboard.putData("Auto Selector", autoSelector);
   }
 
 
@@ -91,7 +92,7 @@ public class RobotContainer {
 		  intake.retract();
       }));
       
-      OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter,
+      OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter, pose,
 							   Constants.FieldPositionConstants.HUB_X,
 							   Constants.FieldPositionConstants.HUB_Y));
       OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
@@ -105,19 +106,23 @@ public class RobotContainer {
   
     public Command getAutonomousCommand()
     {
-	String auto = autoSelector.getSelected();
-	if(auto.equals(AUTOS[0])) {
-	    /* none */
-	    return null;	// none
-	} else if(auto == AUTOS[1]) {
-	    /* left */
-	    return new ShootIntakeSequence(true, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
-	} else if(auto == AUTOS[2]) {
-		/* right */
-		return new ShootIntakeSequence(false, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
-	} else {
-	    return null;
-	}
+	System.out.println("getautonomouscommand");
+	return new ShootIntakeSequence(false, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+		
+	// 	return new ShootIntakeSequence(false, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	// String auto = autoSelector.getSelected();
+	// if(auto.equals(AUTOS[0])) {
+	//     /* none */
+	//     return null;	// none
+	// } else if(auto.equals(AUTOS[1])) {
+	//     /* left */
+	//     return new ShootIntakeSequence(true, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	// } else if(auto.equals(AUTOS[2])) {
+	// 	/* right */
+	// 	return new ShootIntakeSequence(false, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	// } else {
+	//     return null;
+	// }
     }
 
 
