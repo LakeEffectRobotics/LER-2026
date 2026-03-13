@@ -68,9 +68,9 @@ public class Shooter extends SubsystemBase {
     private static final double SHOOTER_RAMP_MIN_ERROR = 1000;
 
     private static final double CENTER_TO_FRAME_OFFSET = 0.3302; // (m) distance from frame to center of robot
-    
 
     private static final double SHOOTER_RPM_MAX_ERROR = 400; // maximum shooter error before conveyor is turned off
+    private static final double MAX_TARGET_RPM = 5800;	     // maximum shooter target RPM for conveyor to wait on, if target rpm > MAX_TARGET_RPM conveyor will run unconditionally
 
     private static final double STANDBY_SPEED = 0.4; // speed to spin shooter motors at while in STANDBY mode
 
@@ -332,8 +332,9 @@ public class Shooter extends SubsystemBase {
 	    // 	+ shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
 	    return;
 	case FIRE:
-	    if(isWithinMaxRPMError(topRPM, topControlTargetRPM)
-	       && isWithinMaxRPMError(bottomRPM, bottomControlTargetRPM)) {
+	    if((isWithinMaxRPMError(topRPM, topControlTargetRPM)
+		&& isWithinMaxRPMError(bottomRPM, bottomControlTargetRPM))
+	       || topTargetRPM >= MAX_TARGET_RPM) {
 		conveyorMotor.set(CONVEYOR_SPEED);
 	    }
 	    ffTerm = calculateFFTerm(targetDistance);
