@@ -66,8 +66,8 @@ public class GotoPose extends Command
     /**
      * speed thresholds
      **/
-    private static final int MED_THRESHOLD = 4; // 4 or less spaces until next turn
-    private static final int SLOW_THRESHOLD = 1; // 1 space
+    private static final int MED_THRESHOLD = 2; // 2 or less meters until next turn
+    private static final int SLOW_THRESHOLD = 1; // 1 meter
     
     /**
      * generate path from inputPath, with sliceCount slices in between each point
@@ -176,6 +176,7 @@ public class GotoPose extends Command
 	double yDisplacement;
 	double rotDisplacement;
 	double driveAngle;
+	double nextTurnDistance;
 	double speedFactor, xSpeed, ySpeed, rotSpeed;
 
 	currentPosition = pose.getRobotPose();
@@ -215,10 +216,14 @@ public class GotoPose extends Command
 	
 	
 	speedFactor = FAST_SPEED;
-	if((nextTurn - pathIndex) <= 4) {
+	nextTurnDistance = Math.sqrt(
+				     Math.pow(path[nextTurn].getX() - path[pathIndex].getX(), 2)
+				     + Math.pow(path[nextTurn].getY() - path[pathIndex].getY(), 2));
+	
+	if(nextTurnDistance <= MED_THRESHOLD) {
 	    speedFactor = MED_SPEED;
 	}
-	if((nextTurn - pathIndex) <= 1) {
+	if(nextTurnDistance <= SLOW_THRESHOLD) {
 	    speedFactor = SLOW_SPEED;
 	}
 	
