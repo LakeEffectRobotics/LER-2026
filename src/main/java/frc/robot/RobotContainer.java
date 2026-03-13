@@ -91,6 +91,8 @@ public class RobotContainer {
       OI.operatorControllerB.onTrue(new InstantCommand(() -> {
 		  shooter.setShooterMode(Shooter.ShooterMode.DEAD);
       }));
+
+      OI.operatorControllerA.whileTrue(new IntakeRetractCommand(intake));
       
       OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() -> {
 		  intake.retract();
