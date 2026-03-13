@@ -33,7 +33,7 @@ public class ShootIntakeSequence extends SequentialCommandGroup
     private static final double INTAKE_INWARD_PUSH = 1.0; // (m) x distance to move toward driver while intaking
     private static final long SHOOT_TIME = 5000;	  // (ms) time to spend shooting
 
-    public ShootIntakeSequence(boolean isLeft, long initialDelay, Drivetrain drivetrain,
+    public ShootIntakeSequence(boolean isLeft, double initialDelay, Drivetrain drivetrain,
     Pose pose, Shooter shooter, Intake intake, AutoPositionSuppliers autoPositionSuppliers)
     {
 	Pose2d trenchStartPose;

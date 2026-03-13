@@ -22,7 +22,7 @@ import frc.robot.commands.auto.ShootClimbSequence;
 
 @Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer {
-    public final String[] AUTOS = {"none", "left", "right"};
+    public final String[] AUTOS = {"none", "left", "right", "human player"};
     public final String AUTO_DEFAULT = AUTOS[0];
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
@@ -71,6 +71,7 @@ public class RobotContainer {
       autoSelector.addOption(side, side);
     }
     SmartDashboard.putData("Auto Selector", autoSelector);
+    SmartDashboard.putNumber("Set auto initial delay", 0);
   }
 
 
@@ -109,11 +110,28 @@ public class RobotContainer {
   
     public Command getAutonomousCommand()
     {
+	String auto = autoSelector.getSelected();
+	double delay = SmartDashboard.getNumber("Set auto initial delay", 0);
 	System.out.println("getautonomouscommand");
-	return new ShootIntakeSequence(false, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	if(auto.equals(AUTOS[0])) {
+	    /* none */
+	    return null;
+	} else if(auto.equals(AUTOS[1])) {
+	    /* left */
+	    return new ShootIntakeSequence(true, delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	} else if(auto.equals(AUTOS[2])) {
+	    /* right */
+	    return new ShootIntakeSequence(false, delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	} else if(auto.equals(AUTOS[3])) {
+	    return new HumanPlayerShootSequence(delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	} else {
+	    System.out.println("auto invalid");
+	    return null;
+	}
+
 		
 	// 	return new ShootIntakeSequence(false, 0, drivetrain, pose, shooter, intake, autoPositionSuppliers);
-	// String auto = autoSelector.getSelected();
+
 	// if(auto.equals(AUTOS[0])) {
 	//     /* none */
 	//     return null;	// none

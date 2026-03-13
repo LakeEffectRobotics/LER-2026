@@ -30,7 +30,7 @@ public class HumanPlayerShootSequence extends SequentialCommandGroup
     private static final long INTAKE_WAIT_TIME = 5000; // (ms) time to wait at intake station
     private static final long SHOOT_TIME = 5000;	  // (ms) time to spend shooting
 
-    public HumanPlayerShootSequence(long initialDelay, Drivetrain drivetrain,
+    public HumanPlayerShootSequence(double initialDelay, Drivetrain drivetrain,
     Pose pose, Shooter shooter, Intake intake, AutoPositionSuppliers autoPositionSuppliers)
     {
 	Pose2d intakePose;
