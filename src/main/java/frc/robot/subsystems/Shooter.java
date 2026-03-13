@@ -181,7 +181,7 @@ public class Shooter extends SubsystemBase {
 	currentPos = robotPose.getRobotPose();
 	return Math.sqrt(
 		    Math.pow((currentPos.getX() - xTarget), 2)
-		    + Math.pow((currentPos.getY() -  yTarget), 2)) - CENTER_TO_FRAME_OFFSET;
+		    + Math.pow((currentPos.getY() -  yTarget), 2)) + CENTER_TO_FRAME_OFFSET;
     }
 
 
