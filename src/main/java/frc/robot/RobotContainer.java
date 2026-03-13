@@ -63,7 +63,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureBindings();
-    RobotMap.compressor.enableAnalog(70, 120);
+    // RobotMap.compressor.enableAnalog(70, 120);
     DataLogManager.start();
     
     autoSelector.setDefaultOption("default (none)", AUTO_DEFAULT);
