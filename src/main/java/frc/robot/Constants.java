@@ -53,6 +53,11 @@ here	   |   |
 	
 	public static final double LEFT_FEED_X = 2.3128;
 	public static final double LEFT_FEED_Y = 6.0520;
+
+	/** human player feeder position **/
+	public static final double HUMAN_PLAYER_FEEDER_X = 0.635;
+	public static final double HUMAN_PLAYER_FEEDER_Y = 0.4318;
+	    
     }
 
 }
