@@ -83,23 +83,23 @@ public class ShootIntakeSequence extends SequentialCommandGroup
 	// 	    new GotoPose(testPoses, 2, drivetrain, pose)
 	// 	    );
 	/** initialization commands **/
-	// addCommands(
-	// new InstantCommand(() -> {
-	//     shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
-	// }),
-	// new WaitCommand(initialDelay / 1000)
-	// );
+	addCommands(
+	new InstantCommand(() -> {
+	    shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
+	}),
+	new WaitCommand(initialDelay / 1000)
+	);
 
 	addCommands(
 		    new GotoPose(startToIntakeStart, 6, drivetrain, pose), // drive through trench then drive to intake start
 		    new AutoIntakeCommand(intake, true), // enable intake
 		    new GotoPose(intakeStartToEnd, 4, drivetrain, pose), // drive forward
 		    new AutoIntakeCommand(intake, false), // disable intake
-		    new GotoPose(intakeEndToShoot, 8, drivetrain, pose) 	// go to shooting position
-		    // new ParallelCommandGroup(
-					     // new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME), // turn to face hub
-					     // new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME) // shoot
-	// )
+		    new GotoPose(intakeEndToShoot, 8, drivetrain, pose), 	// go to shooting position
+		    new ParallelCommandGroup(
+					     new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME), // turn to face hub
+					     new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME) // shoot
+	)
 	);
     }
 
