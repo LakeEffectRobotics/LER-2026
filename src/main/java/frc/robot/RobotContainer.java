@@ -84,6 +84,9 @@ public class RobotContainer {
       OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.driveLeftStickXSupplier, OI.driveLeftStickXSupplier));
 
       /** operator binds **/
+      OI.operatorControllerY.whileTrue(new ShooterCommand(shooter, pose, autoPositionSuppliers.robotFrontXSupplier, autoPositionSuppliers.robotFrontYSupplier));
+      OI.operatorControllerX.whileTrue(new ShooterCommand(shooter, pose, autoPositionSuppliers.feedXSupplier, autoPositionSuppliers.feedYSupplier));
+      
       OI.operatorControllerB.onTrue(new InstantCommand(() -> {
 		  shooter.setShooterMode(Shooter.ShooterMode.DEAD);
       }));

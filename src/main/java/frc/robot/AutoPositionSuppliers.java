@@ -21,7 +21,40 @@ public class AutoPositionSuppliers
 			  robotPosition.getX() - Constants.FieldPositionConstants.HUB_X);
     };
 
+    public DoubleSupplier robotFrontXSupplier = () -> {
+	Pose2d robotPosition = pose.getRobotPose();
+	return robotPosition.getX() + 0.5;
+    };
+    
+    public DoubleSupplier robotFrontYSupplier = () -> {
+	Pose2d robotPosition = pose.getRobotPose();
+	return robotPosition.getY() + 0.5;
+    };
 
+        
+    public DoubleSupplier feedXSupplier = () -> {
+	Pose2d robotPosition = pose.getRobotPose();
+	if(robotPosition.getX() > Constants.FieldPositionConstants.HUB_X) {
+	    return Constants.FieldPositionConstants.LEFT_FEED_X;
+	} else {
+	    return Constants.FieldPositionConstants.RIGHT_FEED_X;
+	}
+    };
 
+        public DoubleSupplier feedYSupplier = () -> {
+	Pose2d robotPosition = pose.getRobotPose();
+	if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_X) {
+	    return Constants.FieldPositionConstants.LEFT_FEED_Y;
+	} else {
+	    return Constants.FieldPositionConstants.RIGHT_FEED_Y;
+	}
+    };
+
+    
+
+    
+    
+    
+    
     
 }

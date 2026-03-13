@@ -32,20 +32,27 @@ driver	   |   |
 here	   |   |
 	CR |---| FR
 	 **/
-	 public static final double BALLS_CLOSE_LEFT_X = 7.3434;
-	 public static final double BALLS_CLOSE_LEFT_Y = 6.3315;
-	 
+	public static final double BALLS_CLOSE_LEFT_X = 7.3434;
+	public static final double BALLS_CLOSE_LEFT_Y = 6.3315;
+	
 	 public static final double BALLS_CLOSE_RIGHT_X = 7.3434;
-	 public static final double BALLS_CLOSE_RIGHT_Y = 1.7112;
-
-	 public static final double BALLS_FAR_LEFT_X = 9.1697;
-	 public static final double BALLS_FAR_LEFT_Y = 6.3315;
-
-	 public static final double BALLS_FAR_RIGHT_X = 9.1697;
-	 public static final double BALLS_FAR_RIGHT_Y = 1.7112;
-
+	public static final double BALLS_CLOSE_RIGHT_Y = 1.7112;
+	
+	public static final double BALLS_FAR_LEFT_X = 9.1697;
+	public static final double BALLS_FAR_LEFT_Y = 6.3315;
+	
+	public static final double BALLS_FAR_RIGHT_X = 9.1697;
+	public static final double BALLS_FAR_RIGHT_Y = 1.7112;
+	
 	public static final double RIGHT_SHOOT_X = 3.52;
 	public static final double RIGHT_SHOOT_Y = 2.08;
+
+	/** team feeding positions **/
+	public static final double RIGHT_FEED_X = 2.3128;
+	public static final double RIGHT_FEED_Y = 2.0173;
+	
+	public static final double LEFT_FEED_X = 2.3128;
+	public static final double LEFT_FEED_Y = 6.0520;
     }
 
 }
