@@ -19,7 +19,7 @@ public class TurnCommand extends Command
 
     private double angleDisplacement;
 
-    private static final double P_TERM = 8.0;
+    private static final double P_TERM = 5.0;
     private static final double I_TERM = 5.0;
     private static final double D_TERM = 0.0;
 
