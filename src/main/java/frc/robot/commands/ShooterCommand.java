@@ -64,7 +64,13 @@ public class ShooterCommand extends Command
     }
 
     @Override
-    public void execute() {}
+    public void execute()
+    {
+	if(isSupplier) {
+	    shooter.setShooterTarget(targetXSupplier.getAsDouble(), targetYSupplier.getAsDouble());
+	}
+	
+    }
 
     @Override
     public boolean isFinished() { return false; }
