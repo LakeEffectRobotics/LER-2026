@@ -45,7 +45,7 @@ public class Shooter extends SubsystemBase {
 	REVERSE
     };
 
-    private ShooterMode shooterMode = ShooterMode.STANDBY;
+    private ShooterMode shooterMode = ShooterMode.DEAD;
     
     private Pose robotPose;
 
