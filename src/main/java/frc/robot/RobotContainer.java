@@ -104,6 +104,10 @@ public class RobotContainer {
       OI.operatorControllerX.whileTrue(new ShooterCommand(shooter, pose, autoPositionSuppliers.feedXSupplier, autoPositionSuppliers.feedYSupplier));
       
       OI.operatorControllerB.onTrue(new InstantCommand(() -> {
+		  shooter.setConveyorOutput(0.0);
+		  // shooter.setShooterMode(Shooter.ShooterMode.DEAD);
+      }));
+      OI.operatorControllerRightClick.onTrue(new InstantCommand(() -> {
 		  shooter.setShooterMode(Shooter.ShooterMode.DEAD);
       }));
 
@@ -147,14 +151,7 @@ public class RobotContainer {
 	    return new HumanPlayerShootSequence(delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
 	} else if(auto.equals(AUTOS[4])) {
 	    /* shoot preload*/
-	    return new SequentialCommandGroup(
-					      new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, 3000), // turn to face hub
-					      new ParallelCommandGroup(
-									      new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, -1), // turn to face hub
-									      new AutoShootCommand(shooter, Constants.FieldPositionConstants.HUB_X, Constants.FieldPositionConstants.HUB_Y, -1) // shoot
-									      
-								       )
-					      );
+	    return new PreloadShootSequence(delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
 	} else {
 	    System.out.println("auto invalid");
 	    return null;
