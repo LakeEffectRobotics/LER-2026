@@ -43,9 +43,13 @@ here	   |   |
 	
 	public static final double BALLS_FAR_RIGHT_X = 9.1697;
 	public static final double BALLS_FAR_RIGHT_Y = 1.7112;
-	
+
+
 	public static final double RIGHT_SHOOT_X = 3.52;
 	public static final double RIGHT_SHOOT_Y = 2.08;
+
+	public static final double CENTER_SHOOT_X = HUB_X - 2.5;
+	public static final double CENTER_SHOOT_Y = HUB_Y;
 
 	/** team feeding positions **/
 	public static final double RIGHT_FEED_X = 2.3128;
