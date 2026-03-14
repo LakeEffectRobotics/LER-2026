@@ -24,6 +24,11 @@ public class Intake extends SubsystemBase {
         intakeMotor.set(intakeConstantSpeed);
     }
 
+    public void setOutput(double output)
+    {
+	intakeMotor.set(output);
+    }
+
     public void stop(){
         intakeMotor.set(0.0);
     }

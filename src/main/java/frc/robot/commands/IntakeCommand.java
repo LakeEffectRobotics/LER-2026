@@ -16,12 +16,17 @@ public class IntakeCommand extends Command{
 	this.triggerSupplier = triggerSupplier;
     }
 
+    @Override
+    public void initialize()
+    {
+	intake.extend();
+    }
     
 
     @Override
     public void execute(){
-	intake.start();
-	intake.extend();
+	intake.setOutput(-triggerSupplier.getAsDouble());
+	// intake.start();
     }
 
     @Override
