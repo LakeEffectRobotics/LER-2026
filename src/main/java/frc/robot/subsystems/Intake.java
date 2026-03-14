@@ -11,6 +11,7 @@ public class Intake extends SubsystemBase {
 
     private SparkMax intakeMotor;
     private DoubleSolenoid solenoid;
+    private boolean isExtended = false;
 
     private static final double intakeConstantSpeed = -0.8;
 
@@ -30,11 +31,18 @@ public class Intake extends SubsystemBase {
     public void extend()
     {
 	solenoid.set(DoubleSolenoid.Value.kForward);
+	isExtended = true;
     }
 
     public void retract()
     {
 	solenoid.set(DoubleSolenoid.Value.kReverse);
+	isExtended = false;
+    }
+
+    public boolean getIsExtended()
+    {
+	return isExtended;
     }
 
     @Override

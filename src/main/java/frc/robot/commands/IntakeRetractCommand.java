@@ -14,19 +14,20 @@ public class IntakeRetractCommand extends Command{
     @Override
     public void initialize()
     {
-	intake.retract();
+	if(intake.getIsExtended()) {
+	    intake.retract();
+	} else {
+	    intake.extend();
+	}
     }
 
     @Override
     public boolean isFinished()
     {
-	return false;
+	return true;
     }
 
     @Override
-    public void end(boolean isInterrupted)
-    {
-	intake.extend();
-    }
+    public void end(boolean isInterrupted) {}
 	
 }
