@@ -22,7 +22,7 @@ import frc.robot.commands.auto.ShootClimbSequence;
 
 @Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer {
-    public final String[] AUTOS = {"none", "left", "right", "human player"};
+    public final String[] AUTOS = {"none", "also none", "right", "human player"};
     public final String AUTO_DEFAULT = AUTOS[0];
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
@@ -63,7 +63,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureBindings();
-    // RobotMap.compressor.enableAnalog(70, 120);
+    RobotMap.compressor.enableAnalog(70, 120);
     DataLogManager.start();
     
     autoSelector.setDefaultOption("default (none)", AUTO_DEFAULT);
@@ -92,7 +92,7 @@ public class RobotContainer {
 		  shooter.setShooterMode(Shooter.ShooterMode.DEAD);
       }));
 
-      OI.operatorControllerA.whileTrue(new IntakeRetractCommand(intake));
+      OI.operatorControllerA.onTrue(new IntakeRetractCommand(intake));
       
       OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() -> {
 		  intake.retract();
@@ -120,7 +120,8 @@ public class RobotContainer {
 	    return null;
 	} else if(auto.equals(AUTOS[1])) {
 	    /* left */
-	    return new ShootIntakeSequence(true, delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	    return null;
+	    // return new ShootIntakeSequence(true, delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
 	} else if(auto.equals(AUTOS[2])) {
 	    /* right */
 	    return new ShootIntakeSequence(false, delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
