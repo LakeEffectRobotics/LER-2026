@@ -43,7 +43,7 @@ public class AutoPositionSuppliers
 
         public DoubleSupplier feedYSupplier = () -> {
 	Pose2d robotPosition = pose.getRobotPose();
-	if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_X) {
+	if(robotPosition.getX() > Constants.FieldPositionConstants.HUB_X) {
 	    return Constants.FieldPositionConstants.LEFT_FEED_Y;
 	} else {
 	    return Constants.FieldPositionConstants.RIGHT_FEED_Y;
