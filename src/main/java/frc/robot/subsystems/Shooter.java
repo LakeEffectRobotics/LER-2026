@@ -332,8 +332,8 @@ public class Shooter extends SubsystemBase {
 	    // 	+ shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
 	    return;
 	case FIRE:
-	    if((isWithinMaxRPMError(topRPM, topControlTargetRPM)
-		&& isWithinMaxRPMError(bottomRPM, bottomControlTargetRPM))
+	    if((isWithinMaxRPMError(topRPM, topTargetRPM)
+		&& isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
 	       || topTargetRPM >= MAX_TARGET_RPM) {
 		conveyorMotor.set(CONVEYOR_SPEED);
 	    }
