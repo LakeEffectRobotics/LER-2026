@@ -75,7 +75,7 @@ public class RobotMap {
     // Pneumatic port configuration
     private class Pneumatics {
         private static final int INTAKE_FORWARD_CHANNEL = 0;
-        private static final int INTAKE_REVERSE_CHANNEL = 1;
+        private static final int INTAKE_REVERSE_CHANNEL = 2;
     }
 
     public static final TalonFX leftBackDrive = new TalonFX(CAN.LEFT_BACK_DRIVE_CAN);
