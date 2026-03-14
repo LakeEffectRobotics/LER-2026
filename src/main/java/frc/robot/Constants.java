@@ -15,6 +15,8 @@ package frc.robot;
 public final class Constants {
     public static class FieldPositionConstants
     {
+	public static final double SHOOTING_DISTANCE = 2.5; // ideal shooting distance
+	
 	/** hub **/
 	public static final double HUB_X = 4.6;
 	public static final double HUB_Y = 4.1;
@@ -48,7 +50,7 @@ here	   |   |
 	public static final double RIGHT_SHOOT_X = 3.52;
 	public static final double RIGHT_SHOOT_Y = 2.08;
 
-	public static final double CENTER_SHOOT_X = HUB_X - 2.5;
+	public static final double CENTER_SHOOT_X = HUB_X - SHOOTING_DISTANCE;
 	public static final double CENTER_SHOOT_Y = HUB_Y;
 
 	/** team feeding positions **/
