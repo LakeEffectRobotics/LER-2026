@@ -20,11 +20,13 @@ import frc.robot.commands.auto.*;
 import frc.robot.AutoPositionSuppliers;
 import frc.robot.commands.auto.TurnCommand;
 import frc.robot.commands.auto.ShootClimbSequence;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
 @Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer {
 
-    public final String[] AUTOS = {"none", "also none", "right", "human player"};
+    public final String[] AUTOS = {"none", "also none", "right", "human player", "shootpreload"};
     public final String AUTO_DEFAULT = AUTOS[0];
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
@@ -139,7 +141,20 @@ public class RobotContainer {
 	    /* right */
 	    return new ShootIntakeSequence(false, delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
 	} else if(auto.equals(AUTOS[3])) {
+	    // return new SequentialCommandGroup(
+	    // 				      					     new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, 5000), // turn to face hub
+	    // 									     new AutoShootCommand(shooter, Constants.FieldPositionConstants.HUB_X, Constants.FieldPositionConstants.HUB_Y, 5000) // shoot
 	    return new HumanPlayerShootSequence(delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+	} else if(auto.equals(AUTOS[4])) {
+	    /* shoot preload*/
+	    return new SequentialCommandGroup(
+					      new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, 3000), // turn to face hub
+					      new ParallelCommandGroup(
+									      new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, -1), // turn to face hub
+									      new AutoShootCommand(shooter, Constants.FieldPositionConstants.HUB_X, Constants.FieldPositionConstants.HUB_Y, -1) // shoot
+									      
+								       )
+					      );
 	} else {
 	    System.out.println("auto invalid");
 	    return null;
