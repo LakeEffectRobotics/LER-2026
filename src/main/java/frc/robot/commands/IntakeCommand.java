@@ -40,7 +40,6 @@ public class IntakeCommand extends Command{
     public void end(boolean isInterrupted)
     {
 	intake.stop();
-	intake.retract();
     }
 	
 }
