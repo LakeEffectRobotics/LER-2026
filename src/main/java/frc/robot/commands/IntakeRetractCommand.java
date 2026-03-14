@@ -15,8 +15,10 @@ public class IntakeRetractCommand extends Command{
     public void initialize()
     {
 	if(intake.getIsExtended()) {
+	    System.out.println("IntakeRetractCommand:retracting");
 	    intake.retract();
 	} else {
+	    System.out.println("IntakeRetractCommand:extending");
 	    intake.extend();
 	}
     }
