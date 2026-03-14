@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,10 +23,14 @@ import frc.robot.commands.auto.ShootClimbSequence;
 
 @Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer {
+
     public final String[] AUTOS = {"none", "also none", "right", "human player"};
     public final String AUTO_DEFAULT = AUTOS[0];
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
+
+  // Constants
+  private static final double BEVEL_IN_CORRECTION = 0.25;
 
 
     /* init subsystems */
@@ -51,18 +56,20 @@ public class RobotContainer {
 
     public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
 
+
   /**
-   * The RobotContainer class is where the bulk of the robot should be declared. 
-   * Since Command-based is a "declarative" paradigm, very little robot logic 
-   * should actually be handled in the Robot periodic methods (other than the 
-   * scheduler calls). Instead, the structure of the robot (including subsystems, 
+   * The RobotContainer class is where the bulk of the robot should be declared.
+   * Since Command-based is a "declarative" paradigm, very little robot logic
+   * should actually be handled in the Robot periodic methods (other than the
+   * scheduler calls). Instead, the structure of the robot (including subsystems,
    * commands, and button mappings) should be declared here.
    *
-   * The constructor initializes the RobotContainer, sets up the default command 
+   * The constructor initializes the RobotContainer, sets up the default command
    * for the drivetrain subsystem, and configures the button bindings.
    */
   public RobotContainer() {
     configureBindings();
+
     RobotMap.compressor.enableAnalog(70, 120);
     DataLogManager.start();
     
@@ -83,6 +90,12 @@ public class RobotContainer {
       OI.driveControllerA.onTrue(new InstantCommand(() -> { gyro.reset(); }));
       
       OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.driveLeftStickXSupplier, OI.driveLeftStickXSupplier));
+          OI.driveControllerY.whileTrue(new SnakeDriveCommand(
+        drivetrain,
+        gyro,
+        OI.driveLeftStickXSupplier,
+        OI.driveLeftStickYSupplier,
+        OI.driveControllerRightTriggerSupplier));
 
       /** operator binds **/
       OI.operatorControllerY.whileTrue(new ShooterCommand(shooter, pose, autoPositionSuppliers.robotFrontXSupplier, autoPositionSuppliers.robotFrontYSupplier));
@@ -148,7 +161,5 @@ public class RobotContainer {
 	//     return null;
 	// }
     }
-
-
 
 }
