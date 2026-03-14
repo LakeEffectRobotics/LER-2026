@@ -4,6 +4,8 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
@@ -17,6 +19,7 @@ public class Pose extends SubsystemBase {
     private double lastHeartbeat;
     private int rejectionCount;
     private boolean noCameraMode = false;
+    private Field2d fieldDisplay;
 
 
     public Pose(Drivetrain drivetrain, Camera camera, Gyro gyro)
@@ -27,11 +30,18 @@ public class Pose extends SubsystemBase {
         this.lastHeartbeat = -1;
         this.rPose = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
         this.rejectionCount = 0;
+	fieldDisplay = new Field2d();
     }
 
     public void setNoCameraMode(boolean value)
     {
 	noCameraMode = value;
+    }
+
+    public void updateField2d()
+    {
+	fieldDisplay.setRobotPose(rPose.getX(), rPose.getY(), rPose.getRotation());
+	SmartDashboard.putData("robotposefield2d", fieldDisplay);
     }
 
     @Override
@@ -45,8 +55,9 @@ public class Pose extends SubsystemBase {
         heartbeat = camera.getHb();
         drivetrainPose = drivetrain.getPose2d();
         cameraPose = camera.getBotpose();
-
+	
 	SmartDashboard.putBoolean("pose: no camera?", noCameraMode);
+	updateField2d();
         if(heartbeat == lastHeartbeat
 	   || (cameraPose[0] == 0.0 && cameraPose[1] == 0.0)
 	   || noCameraMode
