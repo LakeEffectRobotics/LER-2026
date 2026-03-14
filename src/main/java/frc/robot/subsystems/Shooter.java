@@ -211,6 +211,12 @@ public class Shooter extends SubsystemBase {
 	shooterMode = mode;
     }
 
+
+    public void setConveyorOutput(double output)
+    {
+	conveyorMotor.set(output);
+    }
+    
     /**
      * set the target field position of the shooter
      **/
@@ -336,13 +342,16 @@ public class Shooter extends SubsystemBase {
 		&& isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
 	       || topTargetRPM >= MAX_TARGET_RPM) {
 		conveyorMotor.set(CONVEYOR_SPEED);
-	    }
+	    } //else {
+	    //conveyorMotor.set(0.0);
+	    //	    }
 	    ffTerm = calculateFFTerm(targetDistance);
 	    SmartDashboard.putNumber("shooter: ff term", ffTerm);
 	    topSpeed = ffTerm + shooterPIDController.calculate(topRPM, topControlTargetRPM);
 	    bottomSpeed = ffTerm + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);
 	    break;
 	case STANDBY:
+	    conveyorMotor.set(0.0);
 	    topSpeed = STANDBY_SPEED;
 	    bottomSpeed = STANDBY_SPEED;
 	}
