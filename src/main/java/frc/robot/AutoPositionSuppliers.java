@@ -21,6 +21,17 @@ public class AutoPositionSuppliers
 			  robotPosition.getX() - Constants.FieldPositionConstants.HUB_X);
     };
 
+    public DoubleSupplier hubAlignmentXSupplier = () -> {
+	double angle = hubAngleSupplier.getAsDouble();
+	return Constants.FieldPositionConstants.HUB_X - Constants.FieldPositionConstants.SHOOTING_DISTANCE*Math.cos(angle);
+	
+    };
+
+    public DoubleSupplier hubAlignmentYSupplier = () -> {
+	double angle = hubAngleSupplier.getAsDouble();
+	return Constants.FieldPositionConstants.HUB_Y - Constants.FieldPositionConstants.SHOOTING_DISTANCE*Math.sin(angle);
+    };
+
     public DoubleSupplier robotFrontXSupplier = () -> {
 	Pose2d robotPosition = pose.getRobotPose();
 	return robotPosition.getX() + 0.5;
