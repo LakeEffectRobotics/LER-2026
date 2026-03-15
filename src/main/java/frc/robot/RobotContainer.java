@@ -36,7 +36,7 @@ public class RobotContainer {
 
 
     /* init subsystems */
-    public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.762207, 0.0, 0.0, false); 
+    public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.773, 0.0, 0.0, false); 
     public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.459717, 0.0, 0.0, true); 
     public SwerveModule leftBackSwerve = new SwerveModule(RobotMap.leftBackDrive, RobotMap.leftBackRotate, RobotMap.leftBackEncoder, 0.480713, 0.0, 0.0, false); 
     public SwerveModule rightBackSwerve = new SwerveModule(RobotMap.rightBackDrive, RobotMap.rightBackRotate, RobotMap.rightBackEncoder, 0.133057, 0.0, 0.0, true); 
@@ -92,12 +92,14 @@ public class RobotContainer {
       OI.driveControllerA.onTrue(new InstantCommand(() -> { gyro.reset(); }));
       
       OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.driveLeftStickXSupplier, OI.driveLeftStickXSupplier));
-          OI.driveControllerY.whileTrue(new SnakeDriveCommand(
-        drivetrain,
-        gyro,
-        OI.driveLeftStickXSupplier,
-        OI.driveLeftStickYSupplier,
-        OI.driveControllerRightTriggerSupplier));
+      OI.driveControllerY.whileTrue(new SnakeDriveCommand(
+							  drivetrain,
+							  gyro,
+							  OI.driveLeftStickXSupplier,
+							  OI.driveLeftStickYSupplier,
+							  OI.driveControllerRightTriggerSupplier));
+      
+      OI.driveControllerX.whileTrue(new SweetSpotCommand(drivetrain, pose, autoPositionSuppliers));
 
       /** operator binds **/
       OI.operatorControllerY.whileTrue(new ShooterCommand(shooter, pose, autoPositionSuppliers.robotFrontXSupplier, autoPositionSuppliers.robotFrontYSupplier));
@@ -117,9 +119,10 @@ public class RobotContainer {
 		  intake.retract();
       }));
       
-      OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter, pose,
+      OI.driveControllerRightTrigger.whileTrue(new ShooterCommand(shooter, pose,
 							   Constants.FieldPositionConstants.HUB_X,
 							   Constants.FieldPositionConstants.HUB_Y));
+
       OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
       
       
@@ -145,9 +148,6 @@ public class RobotContainer {
 	    /* right */
 	    return new ShootIntakeSequence(false, delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
 	} else if(auto.equals(AUTOS[3])) {
-	    // return new SequentialCommandGroup(
-	    // 				      					     new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, 5000), // turn to face hub
-	    // 									     new AutoShootCommand(shooter, Constants.FieldPositionConstants.HUB_X, Constants.FieldPositionConstants.HUB_Y, 5000) // shoot
 	    return new HumanPlayerShootSequence(delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
 	} else if(auto.equals(AUTOS[4])) {
 	    /* shoot preload*/
