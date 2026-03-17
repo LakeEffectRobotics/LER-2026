@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import edu.wpi.first.wpilibj.XboxController;
-edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 public class OI {
 
@@ -22,7 +22,7 @@ public class OI {
     // Trigger thresholds
     public static final double TRIGGER_THRESHOLD = 0.1;
 
-    private static final double RUMBLE_INTENSITY = 0.5;
+    private static final double RUMBLE_INTENSITY = 0.75;
 
 
     /**
@@ -103,9 +103,10 @@ public class OI {
 	return raw*3;
     }
 
+    /** enable/disable the left/right rumble of the driver controller **/
     private static void setDriverRumble(boolean leftEnabled, boolean rightEnabled)
     {
- 	if(leftEnabled) {
+	if(leftEnabled) {
 	    driveController.setRumble(RumbleType.kLeftRumble, RUMBLE_INTENSITY);
 	} else {
 	    driveController.setRumble(RumbleType.kLeftRumble, 0.0);
@@ -117,9 +118,10 @@ public class OI {
 	}
     }
 
+        /** enable/disable the left/right rumble of the operator controller **/
         private static void setOperatorRumble(boolean leftEnabled, boolean rightEnabled)
     {
- 	if(leftEnabled) {
+	if(leftEnabled) {
 	    operatorController.setRumble(RumbleType.kLeftRumble, RUMBLE_INTENSITY);
 	} else {
 	    operatorController.setRumble(RumbleType.kLeftRumble, 0.0);
