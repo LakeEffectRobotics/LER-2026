@@ -136,6 +136,29 @@ public class Drivetrain extends SubsystemBase {
         return odometry.getPoseMeters();
     }
 
+    /**
+     * Returns the robot's current chassis speeds in the robot-relative frame.
+     * Derived from the current swerve module states via kinematics.
+     */
+    public ChassisSpeeds getRobotVelocity() {
+        SwerveModuleState[] states = {
+            leftFrontSwerve.getState(),
+            rightFrontSwerve.getState(),
+            leftBackSwerve.getState(),
+            rightBackSwerve.getState()
+        };
+        return kinematics.toChassisSpeeds(states);
+    }
+
+    /**
+     * Returns the robot's current velocity in the field-relative frame as ChassisSpeeds.
+     * Used by ShotCalculator to compensate for robot motion during ball flight.
+     */
+    public ChassisSpeeds getFieldVelocity() {
+        ChassisSpeeds robotSpeeds = getRobotVelocity();
+        return ChassisSpeeds.fromRobotRelativeSpeeds(robotSpeeds, gyro.getRotation2d());
+    }
+
     public void setOdometryXY(double x, double y)
     /**
         set the swerve odometry's x and y values to specified values in meters

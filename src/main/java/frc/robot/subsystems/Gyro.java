@@ -24,6 +24,16 @@ public class Gyro extends SubsystemBase {
         gyro.reset();
     }
 
+    /** Returns the pitch (nose up/down tilt) as a Rotation2d. Used by ShotCalculator tilt gate. */
+    public Rotation2d getPitch() {
+        return Rotation2d.fromDegrees(gyro.getPitch());
+    }
+
+    /** Returns the roll (left/right tilt) as a Rotation2d. Used by ShotCalculator tilt gate. */
+    public Rotation2d getRoll() {
+        return Rotation2d.fromDegrees(gyro.getRoll());
+    }
+
     public void setGyro(double desiredAngle) {
 	gyro.reset();
 	offset = new Rotation2d(desiredAngle);

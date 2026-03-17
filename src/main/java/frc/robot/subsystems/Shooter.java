@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import frc.robot.Constants;
 
 import frc.robot.subsystems.Pose;
+import frc.robot.firecontrol.ShotCalculator;
+import frc.robot.firecontrol.ProjectileSimulator;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import com.revrobotics.AbsoluteEncoder;
@@ -39,6 +41,8 @@ public class Shooter extends SubsystemBase {
 	STANDBY,
 	/**conveyor: on if shooter is at target, shooter: on, shooter will fire if it's reached target speed **/
 	FIRE,
+	/** shoot-on-the-move: RPM set externally by ShootOnMoveCommand via ShotCalculator **/
+	SHOOT_ON_MOVE,
 	/** conveyor: on, shooter: on, target is overrideTargetRPM**/
 	OVERRIDE,
 	/** conveyer: reversed, shooter: off **/
@@ -48,6 +52,38 @@ public class Shooter extends SubsystemBase {
     private ShooterMode shooterMode = ShooterMode.DEAD;
     
     private Pose robotPose;
+
+    // -----------------------------------------------------------------------
+    // Shoot-on-the-move (SOTM) components
+    // -----------------------------------------------------------------------
+
+    /**
+     * Physics parameters for the projectile simulator.
+     * TODO: Replace placeholder values with real measurements from CAD:
+     *   ballMassKg       - weigh the actual game piece
+     *   exitHeightM      - measure in CAD from floor to ball exit
+     *   wheelDiameterM   - measure launcher wheel with calipers
+     *   fixedLaunchAngleDeg - measure launcher angle from CAD
+     *   slipFactor       - tune on the real robot (start 0.6, adjust)
+     */
+    private static final ProjectileSimulator.SimParameters SIM_PARAMS =
+        new ProjectileSimulator.SimParameters(
+            0.215,   // ballMassKg      - TODO: update from actual game piece
+            0.1501,  // ballDiameterM
+            0.47,    // dragCoeff       - smooth sphere
+            0.2,     // magnusCoeff
+            1.225,   // airDensity      - kg/m^3 at sea level
+            0.43,    // exitHeightM     - TODO: measure from CAD
+            0.1016,  // wheelDiameterM  - TODO: measure with calipers
+            1.83,    // targetHeightM   - from game manual
+            0.6,     // slipFactor      - TODO: tune on robot
+            45.0,    // fixedLaunchAngleDeg - TODO: measure from CAD
+            0.001,   // dt
+            1500, 6000, 25, 5.0 // rpmMin, rpmMax, searchIters, maxSimTime
+        );
+
+    private final ShotCalculator shotCalc;
+
 
 
     /**
@@ -160,6 +196,21 @@ public class Shooter extends SubsystemBase {
         this.bottomMotorEncoder = bottomMotor.getEncoder();
         
         shooterPIDController = new PIDController(topKP, 0, topKD);
+
+        // Build the physics-based LUT and load it into ShotCalculator
+        ShotCalculator.Config sotmConfig = new ShotCalculator.Config();
+        sotmConfig.launcherOffsetX = CENTER_TO_FRAME_OFFSET; // shooter is ~one frame-half forward
+        sotmConfig.launcherOffsetY = 0.0;
+        shotCalc = new ShotCalculator(sotmConfig);
+
+        ProjectileSimulator sim = new ProjectileSimulator(SIM_PARAMS);
+        ProjectileSimulator.GeneratedLUT lut = sim.generateLUT();
+        for (ProjectileSimulator.LUTEntry entry : lut.entries()) {
+            if (entry.reachable()) {
+                shotCalc.loadLUTEntry(entry.distanceM(), entry.rpm(), entry.tof());
+            }
+        }
+        System.out.println("SOTM LUT generated: " + lut.reachableCount() + " reachable entries, max range " + lut.maxRangeM() + "m");
     }
 
 
@@ -253,6 +304,45 @@ public class Shooter extends SubsystemBase {
 	bottomOverrideTargetRPM += v;
     }
 
+    // -----------------------------------------------------------------------
+    // Shoot-on-the-move helpers
+    // -----------------------------------------------------------------------
+
+    /**
+     * Get the ShotCalculator instance so ShootOnMoveCommand can call calculate() each cycle.
+     */
+    public ShotCalculator getShotCalc()
+    {
+        return shotCalc;
+    }
+
+    /**
+     * Push a SOTM-computed RPM into the shooter. Called by ShootOnMoveCommand each cycle.
+     * Only has effect when mode is SHOOT_ON_MOVE.
+     */
+    public void setRPMFromShotCalc(double rpm)
+    {
+        topTargetRPM = rpm;
+        bottomTargetRPM = rpm;
+    }
+
+    /**
+     * Bump the operator's in-match RPM trim via the ShotCalculator's offset mechanism.
+     * Bind to operator D-pad Up (+25) / Down (-25).
+     */
+    public void adjustShotOffset(double delta)
+    {
+        shotCalc.adjustOffset(delta);
+    }
+
+    /**
+     * Reset the operator RPM trim to zero. Call on mode transitions.
+     */
+    public void resetShotOffset()
+    {
+        shotCalc.resetOffset();
+    }
+
     // public void incrementKP() 
     // {
         // topKP = Math.min(topKP + topKPIncrementFactor, 0.5); // temporary(?) limit of .5 
@@ -332,19 +422,25 @@ public class Shooter extends SubsystemBase {
 	    return;
 	case OVERRIDE:
 	    conveyorMotor.set(CONVEYOR_SPEED);
-	    // topSpeed = calculateTopFFTerm(topOverrideTargetRPM)
-	    // 	+ shooterPIDController.calculate(topRPM, topOverrideTargetRPM);
-	    // bottomSpeed = calculateBottomFFTerm(bottomOverrideTargetRPM)
-	    // 	+ shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
 	    return;
+	case SHOOT_ON_MOVE:
+	    // RPM is set externally each cycle by ShootOnMoveCommand via setRPMFromShotCalc().
+	    // Conveyor logic is identical to FIRE: only engage when motors are up to speed.
+	    if((isWithinMaxRPMError(topRPM, topTargetRPM)
+		&& isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
+	       || topTargetRPM >= MAX_TARGET_RPM) {
+		conveyorMotor.set(CONVEYOR_SPEED);
+	    }
+	    ffTerm = calculateFFTerm(targetDistance);
+	    topSpeed = ffTerm + shooterPIDController.calculate(topRPM, topControlTargetRPM);
+	    bottomSpeed = ffTerm + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);
+	    break;
 	case FIRE:
 	    if((isWithinMaxRPMError(topRPM, topTargetRPM)
 		&& isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
 	       || topTargetRPM >= MAX_TARGET_RPM) {
 		conveyorMotor.set(CONVEYOR_SPEED);
-	    } //else {
-	    //conveyorMotor.set(0.0);
-	    //	    }
+	    }
 	    ffTerm = calculateFFTerm(targetDistance);
 	    SmartDashboard.putNumber("shooter: ff term", ffTerm);
 	    topSpeed = ffTerm + shooterPIDController.calculate(topRPM, topControlTargetRPM);

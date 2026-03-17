@@ -22,6 +22,7 @@ import frc.robot.commands.auto.TurnCommand;
 import frc.robot.commands.auto.ShootClimbSequence;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.commands.ShootOnMoveCommand;
 
 @Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer {
@@ -123,12 +124,17 @@ public class RobotContainer {
 							   Constants.FieldPositionConstants.HUB_X,
 							   Constants.FieldPositionConstants.HUB_Y));
 
+      // Shoot-on-the-move: hold drive LB to activate
+      OI.driveControllerLB.whileTrue(new ShootOnMoveCommand(shooter, drivetrain, pose, gyro));
+
       OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
-      
-      
-      // Manual control with right stick for testing in simulation
-      // OI.operatorControllerRightBumper.whileTrue(new InstantCommand(() ->
-      // elevator.setSpeed(OI.processElevatorInput(OI.operatorController.getRightY())), elevator));
+
+      // Operator D-pad Up/Down: trim SOTM RPM ±25 per press during a match
+      OI.operatorControllerStart.onTrue(Commands.runOnce(() -> shooter.adjustShotOffset(25)));
+      OI.operatorControllerBack.onTrue(Commands.runOnce(() -> shooter.adjustShotOffset(-25)));
+
+      // Reset RPM trim each time teleop enables so it doesn't carry over between matches
+      RobotModeTriggers.teleop().onTrue(Commands.runOnce(() -> shooter.resetShotOffset()));
   }
   
   
