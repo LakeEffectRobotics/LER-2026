@@ -9,6 +9,7 @@ public class IntakeCommand extends Command{
     
     private Intake intake;
     private DoubleSupplier triggerSupplier;
+    private static final double INTAKE_MAX_SPEED = 0.8;
     private long timer = 0;
 
     public IntakeCommand(Intake intake, DoubleSupplier triggerSupplier){
@@ -25,7 +26,7 @@ public class IntakeCommand extends Command{
 
     @Override
     public void execute(){
-	intake.setOutput(-triggerSupplier.getAsDouble());
+	intake.setOutput(-triggerSupplier.getAsDouble() * INTAKE_MAX_SPEED);
 	// intake.start();
     }
 
