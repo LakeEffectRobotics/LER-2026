@@ -56,11 +56,13 @@ public class Shooter extends SubsystemBase {
     private static final int QUADRATURE_AVG_DEPTH = 2;
 
     /**
-     * values for calculating the FF term in volts given the distance from the target
-     * FF = FF_COEFFICIENT*distance+FF_OFFSET
+     * values for calculating the FF term in volts given the target RPM
+     * FF = FF_COEFFICIENT*RPM+FF_OFFSET
      **/
-    private static final double FF_COEFFICIENT = 0.229;
-    private static final double FF_OFFSET = -0.276;
+    private static final double TOP_FF_COEFFICIENT = 4369.28571;
+    private static final double TOP_FF_OFFSET = -113.14286;
+    private static final double BOTTOM_FF_COEFFICIENT = 4346.78571;
+    private static final double BOTTOM_FF_OFFSET = -51.0;
 
     /**
      * values for calculating target RPM to control to with PID
@@ -83,7 +85,7 @@ public class Shooter extends SubsystemBase {
     private static final double CONVEYOR_SPEED = 1.0;
     
 
-    private double topKP = 0.001;
+    private double topKP = 0.0002;
     private double topKD = 0.0;
     // private double topKPIncrementFactor = 0.1; /* for tuning */
     
@@ -130,7 +132,7 @@ public class Shooter extends SubsystemBase {
 		   SparkMax conveyorMotor,
 		   Pose robotPose)
     {
-	SmartDashboard.putNumber("shooter: set target RPM", 0);
+	SmartDashboard.putNumber("shooter:set", 0);
 	this.robotPose = robotPose;
 
 	// setup configurations
@@ -197,9 +199,16 @@ public class Shooter extends SubsystemBase {
     }
 
 
-    private double calculateFFTerm(double distance)
+    private double calculateTopFFTerm(double targetRPM)
     {
-	return FF_COEFFICIENT * distance + FF_OFFSET;
+	return (targetRPM - TOP_FF_OFFSET) / TOP_FF_COEFFICIENT;
+	// return TOP_FF_COEFFICIENT * targetRPM + TOP_FF_OFFSET;
+    }
+    
+    private double calculateBottomFFTerm(double targetRPM)
+    {
+	return (targetRPM - BOTTOM_FF_OFFSET) / BOTTOM_FF_COEFFICIENT;
+	// return BOTTOM_FF_COEFFICIENT * targetRPM + BOTTOM_FF_OFFSET;
     }
 
     private double calculateTargetRPM(double distance)
@@ -289,6 +298,9 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic()
     {
+	topTargetRPM = 	SmartDashboard.getNumber("shooter:set", 0);
+	bottomTargetRPM = topTargetRPM;
+	
 	double topRPM;
 	double bottomRPM;
 	double targetDistance;
@@ -301,15 +313,15 @@ public class Shooter extends SubsystemBase {
 	SmartDashboard.putNumber("shooter: top RPM", topRPM);
         SmartDashboard.putNumber("shooter: bottom RPM", bottomRPM);
 	
-	if(topControlTargetRPM != topTargetRPM
-	   || bottomControlTargetRPM != bottomTargetRPM) {
-	    if(topControlTargetRPM > topTargetRPM) { // controlling to RPM higher than needed: ramping not needed
-		topControlTargetRPM = topTargetRPM;
-	    } else { // controlling to RPM lower than needed: ramping needed
-		topControlTargetRPM = Math.min(topControlTargetRPM + MAX_RPM_RAMP, topTargetRPM);
-		bottomControlTargetRPM = Math.min(bottomControlTargetRPM + MAX_RPM_RAMP, bottomTargetRPM);
-	    }
-	}
+	// if(topControlTargetRPM != topTargetRPM
+	//    || bottomControlTargetRPM != bottomTargetRPM) {
+	//     if(topControlTargetRPM > topTargetRPM) { // controlling to RPM higher than needed: ramping not needed
+	// 	topControlTargetRPM = topTargetRPM;
+	//     } else { // controlling to RPM lower than needed: ramping needed
+	// 	topControlTargetRPM = Math.min(topControlTargetRPM + MAX_RPM_RAMP, topTargetRPM);
+	// 	bottomControlTargetRPM = Math.min(bottomControlTargetRPM + MAX_RPM_RAMP, bottomTargetRPM);
+	//     }
+	// }
 	
 	
 	SmartDashboard.putString("shooter: mode", shooterMode.toString());
@@ -322,15 +334,15 @@ public class Shooter extends SubsystemBase {
 
 	targetDistance = getDistanceFromTarget();
 	SmartDashboard.putNumber("shooter: distance", targetDistance);
-	topTargetRPM = calculateTargetRPM(targetDistance);
-	bottomTargetRPM = topTargetRPM;
-	SmartDashboard.putNumber("shooter: targetRPM", topTargetRPM);
-	if((topTargetRPM - topRPM < SHOOTER_RAMP_MIN_ERROR)
-	    && (bottomTargetRPM - bottomRPM < SHOOTER_RAMP_MIN_ERROR)) {
-	    topControlTargetRPM = topTargetRPM;
-	    bottomControlTargetRPM = bottomTargetRPM;
+	// topTargetRPM = calculateTargetRPM(targetDistance);
+	// bottomTargetRPM = topTargetRPM;
+	// SmartDashboard.putNumber("shooter: targetRPM", topTargetRPM);
+	// if((topTargetRPM - topRPM < SHOOTER_RAMP_MIN_ERROR)
+	    // && (bottomTargetRPM - bottomRPM < SHOOTER_RAMP_MIN_ERROR)) {
+	    // topControlTargetRPM = topTargetRPM;
+	    // bottomControlTargetRPM = bottomTargetRPM;
 	    
-	}
+	// }
 	    
 
 
@@ -355,12 +367,16 @@ public class Shooter extends SubsystemBase {
 	       || topTargetRPM >= MAX_TARGET_RPM) {
 		conveyorMotor.set(CONVEYOR_SPEED);
 	    } //else {
-	    //conveyorMotor.set(0.0);
+	    // conveyorMotor.set(0.0);
 	    //	    }
-	    ffTerm = calculateFFTerm(targetDistance);
-	    SmartDashboard.putNumber("shooter: ff term", ffTerm);
-	    topSpeed = ffTerm + shooterPIDController.calculate(topRPM, topControlTargetRPM);
-	    bottomSpeed = ffTerm + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);
+	    topSpeed = calculateTopFFTerm(topTargetRPM) + shooterPIDController.calculate(topRPM, topTargetRPM);
+	    bottomSpeed = calculateBottomFFTerm(bottomTargetRPM) + shooterPIDController.calculate(bottomRPM, bottomTargetRPM);;
+	    conveyorMotor.set(CONVEYOR_SPEED);
+	    
+	    // ffTerm = calculateFFTerm(targetDistance);
+	    // SmartDashboard.putNumber("shooter: ff term", ffTerm);
+	    // topSpeed = ffTerm + shooterPIDController.calculate(topRPM, topControlTargetRPM);
+	    // bottomSpeed = ffTerm + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);
 	    break;
 	case STANDBY:
 	    conveyorMotor.set(0.0);
@@ -373,72 +389,5 @@ public class Shooter extends SubsystemBase {
 	topMotor.set(topSpeed);
 	bottomMotor.set(-bottomSpeed);
     }
-	
-
-    
-    // @Override
-    // public void periodic()
-    // {
-    // 	if(topControlTargetRPM != topTargetRPM) {
-    // 	    if(topControlTargetRPM > topTargetRPM) { // controlling to RPM higher than needed: ramping not needed
-    // 		topControlTargetRPM = topTargetRPM;
-    // 	    } else { // controlling to RPM lower than needed: ramping needed
-    // 		topControlTargetRPM = Math.min(topControlTargetRPM + MAX_RPM_RAMP, topTargetRPM);
-    // 		bottomControlTargetRPM = Math.min(bottomControlTargetRPM + MAX_RPM_RAMP, bottomTargetRPM);
-    // 	    }
-    // 	}
-
-	
-    // 	// topTargetRPM = SmartDashboard.getNumber("shooter: set target RPM", topTargetRPM);
-    // 	// bottomTargetRPM = topTargetRPM;
-	
-    // 	displayShooterMode();
-	
-    // 	if(shooterMode == ShooterMode.DEAD) {
-    // 	    topMotor.set(0.0);
-    // 	    bottomMotor.set(0.0);
-    // 	    conveyorMotor.set(0.0);
-    // 	    return;
-    // 	}
-    //     double topSpeed;
-    //     double bottomSpeed;
-
-    //     double topRPM;
-    // 	double bottomRPM;        
-
-    //     topRPM = Math.abs(topMotorEncoder.getVelocity());
-    //     bottomRPM = Math.abs(bottomMotorEncoder.getVelocity());
-        
-    //     topPIDController.setP(topKP);
-    // 	topSpeed = calculateTopFFTerm(topControlTargetRPM)
-    // 	    + topPIDController.calculate(topRPM, topControlTargetRPM);
-    // 	bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM)
-    // 	    + topPIDController.calculate(bottomRPM, bottomControlTargetRPM);
-
-    // 	System.out.println("SHOOTER: top=" + topSpeed + " bottom=" + bottomSpeed + "");   
-
-    // 	if(shooterMode == ShooterMode.FIRE
-    // 	   && (Math.abs(topControlTargetRPM - topRPM) < SHOOTER_RPM_MAX_ERROR)
-    // 	   && (Math.abs(bottomTargetRPM - bottomRPM) < SHOOTER_RPM_MAX_ERROR)) {
-    // 	    conveyorMotor.set(CONVEYOR_SPEED);
-    // 	} else {
-    // 	    conveyorMotor.set(0.0);
-    // 	}
-	
-    // 	topMotor.set(topSpeed);
-    // 	bottomMotor.set(-bottomSpeed);
-	
-        
-    //     // dashboard
-    //     SmartDashboard.putNumber("shooter: top RPM", topRPM);
-    //     SmartDashboard.putNumber("shooter: bottom RPM", bottomRPM);
-    // 	SmartDashboard.putNumber("shooter: top speed", topSpeed);
-    //     SmartDashboard.putNumber("shooter: top RPM target", topTargetRPM);
-    // 	SmartDashboard.putNumber("shooter: bottom RPM target", bottomTargetRPM);
-    // 	SmartDashboard.putNumber("shooter: top kP", topKP);
-    // 	SmartDashboard.putNumber("shooter: top p term", topPIDController.calculate(topRPM, topTargetRPM));
-    //     // logs
-    //     // this.topRPMLog.append(topRPM);
-    // }
 
 } 
