@@ -64,24 +64,26 @@ public class Shooter extends SubsystemBase {
     private static final double BOTTOM_FF_COEFFICIENT = 4346.78571;
     private static final double BOTTOM_FF_OFFSET = -51.0;
 
+
     /**
-     * values for calculating target RPM to control to with PID
-     * RPM = RPM_TARGET_COEFFICIENT*distance+RPM_TARGET_OFFSET
+     * ramping constants, ramp target RPM by MAX_RPM_RAMP every 50ms
+     * only if the final target has an error greater than SHOOTER_RAMP_MIN_ERROR
      **/
-    private static final double RPM_TARGET_COEFFICIENT = 848;
-    private static final double RPM_TARGET_OFFSET = -528;
-    
     private static final double MAX_RPM_RAMP = 450 / 50;
     private static final double SHOOTER_RAMP_MIN_ERROR = 1000;
 
     private static final double CENTER_TO_FRAME_OFFSET = 0.3302; // (m) distance from frame to center of robot
 
-    private static final double SHOOTER_RPM_MAX_ERROR = 400; // maximum shooter error before conveyor is turned off
+    /**
+     * conveyor condition constants
+     **/
+    private static final double SHOOTER_RPM_MAX_ERROR = 400; // shooter must be within SHOOTER_RPM_MAX_ERROR for the conveyor to run
     private static final double MAX_TARGET_RPM = 5800;	     // maximum shooter target RPM for conveyor to wait on, if target rpm > MAX_TARGET_RPM conveyor will run unconditionally
 
+    /**
+     * speed constants
+     **/
     private static final double STANDBY_SPEED = 0.4; // speed to spin shooter motors at while in STANDBY mode
-
-
     private static final double CONVEYOR_SPEED = 1.0;
     
 
@@ -199,23 +201,22 @@ public class Shooter extends SubsystemBase {
     }
 
 
+    /**
+     * calculate the top feedforward term for a given target RPM
+     **/
     private double calculateTopFFTerm(double targetRPM)
     {
 	return (targetRPM - TOP_FF_OFFSET) / TOP_FF_COEFFICIENT;
-	// return TOP_FF_COEFFICIENT * targetRPM + TOP_FF_OFFSET;
     }
-    
+
+    /**
+     * calculate the bottom feedforward term for a given target RPM
+     **/
     private double calculateBottomFFTerm(double targetRPM)
     {
 	return (targetRPM - BOTTOM_FF_OFFSET) / BOTTOM_FF_COEFFICIENT;
-	// return BOTTOM_FF_COEFFICIENT * targetRPM + BOTTOM_FF_OFFSET;
     }
 
-    private double calculateTargetRPM(double distance)
-    {
-	return RPM_TARGET_COEFFICIENT * distance + RPM_TARGET_OFFSET;
-    }
-    
     /**
      * get the current shooter mode 
      **/
