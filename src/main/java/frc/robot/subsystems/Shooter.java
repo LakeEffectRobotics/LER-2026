@@ -72,8 +72,6 @@ public class Shooter extends SubsystemBase {
     private static final double MAX_RPM_RAMP = 450 / 50;
     private static final double SHOOTER_RAMP_MIN_ERROR = 1000;
 
-    private static final double CENTER_TO_FRAME_OFFSET = 0.3302; // (m) distance from frame to center of robot
-
     /**
      * conveyor condition constants
      **/
@@ -197,7 +195,7 @@ public class Shooter extends SubsystemBase {
 	currentPos = robotPose.getRobotPose();
 	return Math.sqrt(
 		    Math.pow((currentPos.getX() - xTarget), 2)
-		    + Math.pow((currentPos.getY() -  yTarget), 2)) + CENTER_TO_FRAME_OFFSET;
+		    + Math.pow((currentPos.getY() -  yTarget), 2));
     }
 
 
