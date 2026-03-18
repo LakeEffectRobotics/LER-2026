@@ -91,7 +91,7 @@ public class RobotContainer {
       
       OI.driveControllerA.onTrue(new InstantCommand(() -> { gyro.reset(); }));
       
-      OI.driveControllerB.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.driveLeftStickXSupplier, OI.driveLeftStickXSupplier));
+      OI.driveControllerRightTrigger.whileTrue(new TurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, OI.driveLeftStickXSupplier, OI.driveLeftStickYSupplier));
       OI.driveControllerY.whileTrue(new SnakeDriveCommand(
 							  drivetrain,
 							  gyro,
@@ -119,7 +119,7 @@ public class RobotContainer {
 		  intake.retract();
       }));
       
-      OI.driveControllerRightTrigger.whileTrue(new ShooterCommand(shooter, pose,
+      OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter, pose,
 							   Constants.FieldPositionConstants.HUB_X,
 							   Constants.FieldPositionConstants.HUB_Y));
 
