@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -59,6 +61,8 @@ public class RobotContainer {
 
     public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
 
+    public AddressableLED led = new AddressableLED(RobotMap.ledStrip);
+    public AddressableLEDBuffer ledBuffer = RobotMap.ledBuffer;
 
   /**
    * The RobotContainer class is where the bulk of the robot should be declared.
@@ -71,6 +75,7 @@ public class RobotContainer {
    * for the drivetrain subsystem, and configures the button bindings.
    */
   public RobotContainer() {
+    led.setLength(ledBuffer.getLength());
     configureBindings();
 
     RobotMap.compressor.enableAnalog(70, 120);

@@ -3,6 +3,7 @@ package frc.robot;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;  
 import com.studica.frc.AHRS;
@@ -115,4 +116,7 @@ public class RobotMap {
 
 
     public static final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+
+    public static final int ledStrip = 9;
+    public static final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(30);
 }
