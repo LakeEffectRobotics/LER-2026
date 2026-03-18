@@ -52,8 +52,8 @@ public class Shooter extends SubsystemBase {
     /**
      * Sparkmax configuration constants
      **/
-    private static final int QUADRATURE_MEASUREMENT_PERIOD = 10; // (ms)
-    private static final int QUADRATURE_AVG_DEPTH = 2;
+    private static final int QUADRATURE_MEASUREMENT_PERIOD = 10; // (ms) period for shooter motor RPM sampling 
+    private static final int QUADRATURE_AVG_DEPTH = 2;		 // # of samples to average 
 
     /**
      * values for calculating the FF term in volts given the target RPM
