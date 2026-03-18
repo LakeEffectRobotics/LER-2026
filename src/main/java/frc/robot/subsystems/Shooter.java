@@ -49,6 +49,11 @@ public class Shooter extends SubsystemBase {
     
     private Pose robotPose;
 
+    /**
+     * Sparkmax configuration constants
+     **/
+    private static final int QUADRATURE_MEASUREMENT_PERIOD = 10; // (ms)
+    private static final int QUADRATURE_AVG_DEPTH = 2;
 
     /**
      * values for calculating the FF term in volts given the distance from the target
@@ -81,9 +86,6 @@ public class Shooter extends SubsystemBase {
     private double topKP = 0.001;
     private double topKD = 0.0;
     // private double topKPIncrementFactor = 0.1; /* for tuning */
-
-
-    
     
     private SparkMax topMotor;
     private SparkMax bottomMotor;
@@ -137,12 +139,22 @@ public class Shooter extends SubsystemBase {
 	SparkMaxConfig bottomLeaderConfig = new SparkMaxConfig();
 	SparkMaxConfig bottomFollowerConfig = new SparkMaxConfig();
 
+	/* top leader */
 	topLeaderConfig.idleMode(IdleMode.kCoast);
-	topFollowerConfig.idleMode(IdleMode.kCoast);
-	bottomLeaderConfig.idleMode(IdleMode.kCoast);
-	bottomFollowerConfig.idleMode(IdleMode.kCoast);
+	topLeaderConfig.encoder.quadratureMeasurementPeriod(QUADRATURE_MEASUREMENT_PERIOD);
+	topLeaderConfig.encoder.quadratureAverageDepth(QUADRATURE_AVG_DEPTH);
 
+	/* top follower */
+	topFollowerConfig.idleMode(IdleMode.kCoast);
 	topFollowerConfig.follow(topLeader); 
+
+	/* bottom leader */
+	bottomLeaderConfig.idleMode(IdleMode.kCoast);
+	bottomLeaderConfig.encoder.quadratureMeasurementPeriod(QUADRATURE_MEASUREMENT_PERIOD);
+	bottomLeaderConfig.encoder.quadratureAverageDepth(QUADRATURE_AVG_DEPTH);
+
+	/* bottom follower */
+	bottomFollowerConfig.idleMode(IdleMode.kCoast);
 	bottomFollowerConfig.follow(bottomLeader);
 
 	// write configurations
