@@ -273,27 +273,6 @@ public class Shooter extends SubsystemBase {
 	bottomOverrideTargetRPM += v;
     }
 
-    // public void incrementKP() 
-    // {
-        // topKP = Math.min(topKP + topKPIncrementFactor, 0.5); // temporary(?) limit of .5 
-    // }
-
-    // public void decrementKP()
-    // {
-        // topKP -= topKPIncrementFactor;
-    // }
-
-    // public void incrementKPIncrement()
-    // {
-        // topKPIncrementFactor = topKPIncrementFactor * 10;
-    // }
-
-    // public void decrementKPIncrement()
-    // {
-        // topKPIncrementFactor = topKPIncrementFactor / 10;
-    // }
-
-
     @Override
     public void periodic()
     {
