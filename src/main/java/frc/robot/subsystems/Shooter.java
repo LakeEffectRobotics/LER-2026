@@ -329,8 +329,6 @@ public class Shooter extends SubsystemBase {
 	    return;
 	case REVERSE:	       
 	    conveyorMotor.set(-CONVEYOR_SPEED);
-	    topMotor.set(0.0);
-	    bottomMotor.set(0.0);
 	    return;
 	case OVERRIDE:
 	    conveyorMotor.set(CONVEYOR_SPEED);
