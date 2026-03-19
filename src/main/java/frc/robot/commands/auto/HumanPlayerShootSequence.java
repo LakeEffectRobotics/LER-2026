@@ -33,31 +33,31 @@ public class HumanPlayerShootSequence extends SequentialCommandGroup
     public HumanPlayerShootSequence(double initialDelay, Drivetrain drivetrain,
     Pose pose, Shooter shooter, Intake intake, AutoPositionSuppliers autoPositionSuppliers)
     {
-	Pose2d intakePose;
-	Pose2d shootPose;
+		Pose2d intakePose;
+		Pose2d shootPose;
 
-	intakePose = new Pose2d(FieldPositionConstants.HUMAN_PLAYER_FEEDER_X, FieldPositionConstants. HUMAN_PLAYER_FEEDER_Y, new Rotation2d(Math.PI));
-	shootPose = new Pose2d(FieldPositionConstants.RIGHT_SHOOT_X, FieldPositionConstants.RIGHT_SHOOT_Y, new Rotation2d(Math.PI));
+		intakePose = new Pose2d(FieldPositionConstants.HUMAN_PLAYER_FEEDER_X, FieldPositionConstants. HUMAN_PLAYER_FEEDER_Y, new Rotation2d(Math.PI));
+		shootPose = new Pose2d(FieldPositionConstants.RIGHT_SHOOT_X, FieldPositionConstants.RIGHT_SHOOT_Y, new Rotation2d(Math.PI));
 
-	Pose2d[] startToIntake = {intakePose};
-	Pose2d[] intakeToShoot = {shootPose};
-	
-	addCommands(
-		    new InstantCommand(() -> {
-			    shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
-		    }),
-		    new WaitCommand(initialDelay / 1000)
-		    );
-	
-	addCommands(
-		    new GotoPose(startToIntake, 6, drivetrain, pose),
-		    new WaitCommand(INTAKE_WAIT_TIME / 1000),
-		    new GotoPose(intakeToShoot, 6, drivetrain, pose),
-		    new ParallelCommandGroup(
-					     new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME), // turn to face hub
-					     new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME) // shoot
-					     )
-		    );
+		Pose2d[] startToIntake = {intakePose};
+		Pose2d[] intakeToShoot = {shootPose};
+		
+		addCommands(
+				new InstantCommand(() -> {
+					shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
+				}),
+				new WaitCommand(initialDelay / 1000)
+				);
+		
+		addCommands(
+				new GotoPose(startToIntake, 6, drivetrain, pose),
+				new WaitCommand(INTAKE_WAIT_TIME / 1000),
+				new GotoPose(intakeToShoot, 6, drivetrain, pose),
+				new ParallelCommandGroup(
+							new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME), // turn to face hub
+							new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME) // shoot
+							)
+				);
     }
 
 
