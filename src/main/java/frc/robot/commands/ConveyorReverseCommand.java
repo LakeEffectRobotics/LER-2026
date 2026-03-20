@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 import java.util.function.DoubleSupplier;
 
-public class IntakeCommand extends Command{
+public class ConveyorReverseCommand extends Command{
     private Shooter shooter;
     private Shooter.ShooterMode initialMode; 
 
     
-    public IntakeCommand(Shooter shooter){
+    public ConveyorReverseCommand(Shooter shooter){
 	this.shooter = shooter;
     }
 
