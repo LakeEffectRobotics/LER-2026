@@ -88,7 +88,7 @@ public class Shooter extends SubsystemBase {
      * speed constants
      **/
     private static final double STANDBY_SPEED = 0.4; // speed to spin shooter motors at while in STANDBY mode
-    private static final double CONVEYOR_SPEED = 0.0;
+    private static final double CONVEYOR_SPEED = 1.0;
     
 
     private double topKP = 0.0002;
@@ -357,10 +357,11 @@ public class Shooter extends SubsystemBase {
 	       || topTargetRPM >= MAX_TARGET_RPM) {
 		conveyorMotor.set(CONVEYOR_SPEED);
 	    } else {
-	    conveyorMotor.set(0.0);
+		conveyorMotor.set(0.0);
 	    }
 	    topSpeed = calculateTopFFTerm(topControlTargetRPM) + shooterPIDController.calculate(topRPM, topControlTargetRPM);
 	    bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM) + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);;
+
 	    
 	    // ffTerm = calculateFFTerm(targetDistance);
 	    // SmartDashboard.putNumber("shooter: ff term", ffTerm);
