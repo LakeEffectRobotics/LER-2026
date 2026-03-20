@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.LEDDefaultCommand;
 import frc.robot.commands.auto.*;
 import frc.robot.AutoPositionSuppliers;
 import frc.robot.commands.auto.TurnCommand;
@@ -58,6 +59,8 @@ public class RobotContainer {
 
     public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
 
+    public LED led = new LED(RobotMap.ledPwmPort, RobotMap.ledLength);
+
 
   /**
    * The RobotContainer class is where the bulk of the robot should be declared.
@@ -71,6 +74,8 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureBindings();
+
+    led.setDefaultCommand(new LEDDefaultCommand(led, pose));
 
     RobotMap.compressor.enableAnalog(70, 120);
     DataLogManager.start();

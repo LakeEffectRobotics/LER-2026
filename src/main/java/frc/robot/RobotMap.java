@@ -60,6 +60,11 @@ public class RobotMap {
 
     }
 
+    // IMPORTANT: Make sure to update the PWM IDs to match the physical configuration of the robot
+    private class PWM {
+        private static final int LED_PWM_PORT = 9;
+    }
+
     // IMPORTANT: Make sure to update the Analog IDs to match the physical configuration of the robot
     private class Analog
     {
@@ -115,4 +120,9 @@ public class RobotMap {
 
 
     public static final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+
+    /** PWM port for the addressable LED strip. */
+    public static final int ledPwmPort = PWM.LED_PWM_PORT;
+    /** Number of LEDs on the strip – adjust to match your physical strip. */
+    public static final int ledLength = 30;
 }
