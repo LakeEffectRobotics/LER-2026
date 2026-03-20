@@ -108,7 +108,7 @@ public class Shooter extends SubsystemBase {
      * is ramped towards topTargetRPM periodically **/
     private double topControlTargetRPM = 0;
     /** top target RPM when shooter is in manual override mode **/
-    private double topOverrideTargetRPM = 0;
+    private double topOverrideTargetRPM = calculateTargetRPM(3.14); // distance from trench to hub
 
     /** desired RPM for the bottom shooter motor **/    
     private double bottomTargetRPM = 0;
@@ -116,7 +116,7 @@ public class Shooter extends SubsystemBase {
      * is ramped towards topTargetRPM periodically **/
     private double bottomControlTargetRPM = 0;
     /** bottom target RPM when shooter is in manual override mode **/
-    private double bottomOverrideTargetRPM = 0;
+    private double bottomOverrideTargetRPM = topOverrideTargetRPM;
     
     /**
      * field position targets
@@ -332,8 +332,6 @@ public class Shooter extends SubsystemBase {
 	    topControlTargetRPM = topTargetRPM;
 	    bottomControlTargetRPM = bottomTargetRPM;
 	}
-	    
-
 
 	switch(shooterMode) {
 	case DEAD:
@@ -343,11 +341,11 @@ public class Shooter extends SubsystemBase {
 	    return;
 	case OVERRIDE:
 	    conveyorMotor.set(CONVEYOR_SPEED);
-	    // topSpeed = calculateTopFFTerm(topOverrideTargetRPM)
-	    // 	+ shooterPIDController.calculate(topRPM, topOverrideTargetRPM);
-	    // bottomSpeed = calculateBottomFFTerm(bottomOverrideTargetRPM)
-	    // 	+ shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
-	    return;
+	    topSpeed = calculateTopFFTerm(topOverrideTargetRPM)
+		+ shooterPIDController.calculate(topRPM, topOverrideTargetRPM);
+	    bottomSpeed = calculateBottomFFTerm(bottomOverrideTargetRPM)
+		+ shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
+	    break;
 	case FIRE:
 	    if((isWithinMaxRPMError(topRPM, topTargetRPM)
 		&& isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
@@ -356,8 +354,10 @@ public class Shooter extends SubsystemBase {
 	    } else {
 		conveyorMotor.set(0.0);
 	    }
-	    topSpeed = calculateTopFFTerm(topControlTargetRPM) + shooterPIDController.calculate(topRPM, topControlTargetRPM);
-	    bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM) + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);;
+	    topSpeed = calculateTopFFTerm(topControlTargetRPM)
+		+ shooterPIDController.calculate(topRPM, topControlTargetRPM);
+	    bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM)
+		+ shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);;
 
 	    
 	    // ffTerm = calculateFFTerm(targetDistance);
