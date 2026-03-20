@@ -326,15 +326,12 @@ public class Shooter extends SubsystemBase {
 	topTargetRPM = calculateTargetRPM(targetDistance);
 	bottomTargetRPM = topTargetRPM;
 	SmartDashboard.putNumber("shooter: distance", targetDistance);
-	// topTargetRPM = calculateTargetRPM(targetDistance);
-	// bottomTargetRPM = topTargetRPM;
-	// SmartDashboard.putNumber("shooter: targetRPM", topTargetRPM);
-	// if((topTargetRPM - topRPM < SHOOTER_RAMP_MIN_ERROR)
-	    // && (bottomTargetRPM - bottomRPM < SHOOTER_RAMP_MIN_ERROR)) {
-	    // topControlTargetRPM = topTargetRPM;
-	    // bottomControlTargetRPM = bottomTargetRPM;
-	    
-	// }
+	SmartDashboard.putNumber("shooter: targetRPM", topTargetRPM);
+	if((topTargetRPM - topRPM < SHOOTER_RAMP_MIN_ERROR)
+	    && (bottomTargetRPM - bottomRPM < SHOOTER_RAMP_MIN_ERROR)) {
+	    topControlTargetRPM = topTargetRPM;
+	    bottomControlTargetRPM = bottomTargetRPM;
+	}
 	    
 
 
