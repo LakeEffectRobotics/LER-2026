@@ -107,10 +107,21 @@ public class RobotContainer {
       
       OI.operatorControllerB.onTrue(new InstantCommand(() -> {
 		  shooter.setConveyorOutput(0.0);
-		  // shooter.setShooterMode(Shooter.ShooterMode.DEAD);
       }));
       OI.operatorControllerRightClick.onTrue(new InstantCommand(() -> {
 		  shooter.setShooterMode(Shooter.ShooterMode.DEAD);
+      }));
+
+      OI.operatorControllerLeftClick.onTrue(new InstantCommand(() -> {
+		  shooter.setShooterMode(Shooter.ShooterMode.OVERRIDE);
+      }));
+      
+      OI.operatorControllerBack.onTrue(new InstantCommand(() -> {
+		  shooter.incrementOverrideTargetRPM(200);
+      }));
+
+      OI.operatorControllerStart.onTrue(new InstantCommand(() -> {
+		  shooter.incrementOverrideTargetRPM(-200);
       }));
 
       OI.operatorControllerA.onTrue(new IntakeRetractCommand(intake));
