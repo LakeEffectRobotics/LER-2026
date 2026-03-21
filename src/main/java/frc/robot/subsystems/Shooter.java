@@ -45,7 +45,16 @@ public class Shooter extends SubsystemBase {
 	REVERSE
     };
 
+    public enum ConveyorMode
+    {
+	/** don't enable unless shooter is in FIRE or OVERRIDE mode and within SHOOTER_RPM_MAX_ERROR **/
+	STRICT,
+	/** always run conveyor when in FIRE or OVERRIDE mode **/
+	FREE
+    };
+
     private ShooterMode shooterMode = ShooterMode.DEAD;
+    private ConveyorMode conveyorMode = ConveyorMode.STRICT;
     
     private Pose robotPose;
 
@@ -234,12 +243,22 @@ public class Shooter extends SubsystemBase {
 	return shooterMode;
     }
 
+    public ConveyorMode getConveyorMode()
+    {
+	return conveyorMode;
+    }
+
     /**
      * set the shooter mode
      **/
     public void setShooterMode(ShooterMode mode)
     {
 	shooterMode = mode;
+    }
+
+    public void setConveyorMode(ConveyorMode mode)
+    {
+	conveyorMode = mode;
     }
 
 
@@ -340,41 +359,43 @@ public class Shooter extends SubsystemBase {
 	    conveyorMotor.set(-CONVEYOR_SPEED);
 	    return;
 	case OVERRIDE:
-	    conveyorMotor.set(CONVEYOR_SPEED);
 	    topSpeed = calculateTopFFTerm(topOverrideTargetRPM)
 		+ shooterPIDController.calculate(topRPM, topOverrideTargetRPM);
 	    bottomSpeed = calculateBottomFFTerm(bottomOverrideTargetRPM)
 		+ shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
 	    break;
 	case FIRE:
-	    if((isWithinMaxRPMError(topRPM, topTargetRPM)
-		&& isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
-	       || topTargetRPM >= MAX_TARGET_RPM) {
-		conveyorMotor.set(CONVEYOR_SPEED);
-	    } else {
-		conveyorMotor.set(0.0);
-	    }
 	    topSpeed = calculateTopFFTerm(topControlTargetRPM)
 		+ shooterPIDController.calculate(topRPM, topControlTargetRPM);
 	    bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM)
 		+ shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);;
-
-	    
-	    // ffTerm = calculateFFTerm(targetDistance);
-	    // SmartDashboard.putNumber("shooter: ff term", ffTerm);
-	    // topSpeed = ffTerm + shooterPIDController.calculate(topRPM, topControlTargetRPM);
-	    // bottomSpeed = ffTerm + shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);
 	    break;
 	case STANDBY:
 	    conveyorMotor.set(0.0);
 	    topSpeed = STANDBY_SPEED;
 	    bottomSpeed = STANDBY_SPEED;
 	}
-	
-	SmartDashboard.putNumber("shooter: top speed", topSpeed);
-	SmartDashboard.putNumber("shooter: bottom speed", bottomSpeed);
-	topMotor.set(topSpeed);
-	bottomMotor.set(-bottomSpeed);
-    }
 
+	/* decide whether to run conveyor*/
+	if(shooterMode == ShooterMode.FIRE || shooterMode == ShooterMode.OVERRIDE) {
+	    if(conveyorMode == ConveyorMode.STRICT) {
+		if((isWithinMaxRPMError(topRPM, topTargetRPM)
+		    && isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
+		   || topTargetRPM >= MAX_TARGET_RPM) {
+		    conveyorMotor.set(CONVEYOR_SPEED); // conveyor in strict mode and is within error allowance
+		} else {
+		    conveyorMotor.set(0.0); // conveyor in strict mode and is not within error allowance
+		}
+	    } else {
+		conveyorMotor.set(CONVEYOR_SPEED); // conveyor is not in strict mode
+	    }
+	}
+	    
+
+	    SmartDashboard.putNumber("shooter: top speed", topSpeed);
+	    SmartDashboard.putNumber("shooter: bottom speed", bottomSpeed);
+	    topMotor.set(topSpeed);
+	    bottomMotor.set(-bottomSpeed);
+	}
+	
 } 
