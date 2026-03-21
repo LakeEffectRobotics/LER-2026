@@ -15,6 +15,8 @@ public class ShooterCommand extends Command
 {
     private Shooter shooter;
     private Pose pose;
+    private Shooter.ConveyorMode conveyorMode;
+    private Shooter.ConveyorMode initialMode;
 
     /** true if command was contructed with DoubleSuppliers for the target x and y **/
     private boolean isSupplier;
@@ -26,11 +28,12 @@ public class ShooterCommand extends Command
     /**
      * construct ShooterCommand with a target provided by DoubleSuppliers
      **/
-    public ShooterCommand(Shooter shooter, Pose pose, DoubleSupplier targetX, DoubleSupplier targetY)
+    public ShooterCommand(Shooter shooter, Pose pose, DoubleSupplier targetX, DoubleSupplier targetY, Shooter.ConveyorMode conveyorMode)
     {
 	addRequirements(shooter);
 	this.shooter = shooter;
 	this.pose = pose;
+	this.conveyorMode = conveyorMode;
 	this.isSupplier = true;
 	this.targetXSupplier = targetX;
 	this.targetYSupplier = targetY;
@@ -41,11 +44,13 @@ public class ShooterCommand extends Command
     /**
      * construct ShooterCommand with a constant target
      **/
-    public ShooterCommand(Shooter shooter, Pose pose, double targetX, double targetY)
+    public ShooterCommand(Shooter shooter, Pose pose, double targetX, double targetY, Shooter.ConveyorMode conveyorMode)
     {
 	addRequirements(shooter);
 	this.shooter = shooter;
 	this.pose = pose;
+	this.conveyorMode = conveyorMode;
+	this.conveyorMode = conveyorMode;
 	this.isSupplier = false;
 	this.targetX = targetX;
 	this.targetY = targetY;
@@ -54,12 +59,14 @@ public class ShooterCommand extends Command
     @Override
     public void initialize()
     {
+	initialMode = shooter.getConveyorMode();
 	if(isSupplier) {
 	    targetX = targetXSupplier.getAsDouble();
 	    targetY = targetYSupplier.getAsDouble();
 	}
 	shooter.setShooterTarget(targetX, targetY);
 	shooter.setShooterMode(Shooter.ShooterMode.FIRE);
+	shooter.setConveyorMode(conveyorMode);
 	pose.setNoCameraMode(true);
     }
 
@@ -79,6 +86,7 @@ public class ShooterCommand extends Command
     public void end(boolean isInterrupted)
     {
 	shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
+	shooter.setConveyorMode(initialMode);
 	pose.setNoCameraMode(false);
     }
 }
