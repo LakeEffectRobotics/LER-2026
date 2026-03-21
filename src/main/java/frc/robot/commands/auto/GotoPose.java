@@ -53,9 +53,9 @@ public class GotoPose extends Command
     /**
      * speeds
      **/
-    private static final double FAST_SPEED = 0.6;
-    private static final double MED_SPEED = 0.35;
-    private static final double SLOW_SPEED = 0.1;
+    private static final double FAST_SPEED = 0.85;
+    private static final double MED_SPEED = 0.45;
+    private static final double SLOW_SPEED = 0.15;
     // private static final double FAST_SPEED = 0.;
     // private static final double MED_SPEED = 0.15;
     // private static final double SLOW_SPEED = 0.1;
