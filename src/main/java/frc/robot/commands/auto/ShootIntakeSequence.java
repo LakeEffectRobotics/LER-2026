@@ -39,40 +39,43 @@ public class ShootIntakeSequence extends SequentialCommandGroup
 	Pose2d trenchStartPose;
 	Pose2d trenchEndPose;
 	Pose2d intakeStartPose;
+	Pose2d intakeMidPose;
 	Pose2d intakeEndPose;
 	Pose2d shootPose;
 
 	/** set positions **/
-	if(isLeft) {
-	    trenchStartPose = new Pose2d( // position on aliiance side of trench
-	    FieldPositionConstants.LEFT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
-	    trenchEndPose = new Pose2d( // position on neutral side of trench
-	    FieldPositionConstants.LEFT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
-	    intakeStartPose = new Pose2d( // position to go before starting intake
-					  FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y, new Rotation2d(Math.PI/2));
-	    intakeEndPose = new Pose2d( // position to drive to while intaking
-	    FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y - INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
-	    shootPose = new Pose2d( // position to drive to to shoot
-	    FieldPositionConstants.LEFT_TRENCH_CENTER_X - 1.5, FieldPositionConstants.LEFT_TRENCH_CENTER_Y - 1.0, new Rotation2d(Math.PI/2)); // TODO: find good spots for shooting, add to fieldpositionconstants
-	} else {
-	    trenchStartPose = new Pose2d( // position on aliiance side of trench
-	    FieldPositionConstants.RIGHT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
-	    trenchEndPose = new Pose2d( // position on neutral side of trench
-	    FieldPositionConstants.RIGHT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
-	    intakeStartPose = new Pose2d( // position to go before starting intake
-	    FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y, new Rotation2d(Math.PI/2));
-	    intakeEndPose = new Pose2d( // position to drive to while intaking
-					FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET - INTAKE_INWARD_PUSH, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y + INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
-	    shootPose = new Pose2d( // position to drive to to shoot
-	    FieldPositionConstants.RIGHT_SHOOT_X, FieldPositionConstants.RIGHT_SHOOT_Y, new Rotation2d(Math.PI/2)); // TODO: find good spots for shooting, add to fieldpositionconstants
-	}
+	// if(isLeft) {
+	//     trenchStartPose = new Pose2d( // position on aliiance side of trench
+	//     FieldPositionConstants.LEFT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
+	//     trenchEndPose = new Pose2d( // position on neutral side of trench
+	//     FieldPositionConstants.LEFT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
+	//     intakeStartPose = new Pose2d( // position to go before starting intake
+	// 				  FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y, new Rotation2d(Math.PI/2));
+	//     intakeEndPose = new Pose2d( // position to drive to while intaking
+	//     FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y - INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
+	//     shootPose = new Pose2d( // position to drive to to shoot
+	//     FieldPositionConstants.LEFT_TRENCH_CENTER_X - 1.5, FieldPositionConstants.LEFT_TRENCH_CENTER_Y - 1.0, new Rotation2d(Math.PI/2)); // TODO: find good spots for shooting, add to fieldpositionconstants
+	// } else {
+	trenchStartPose = new Pose2d( // position on aliiance side of trench
+				      FieldPositionConstants.RIGHT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
+	trenchEndPose = new Pose2d( // position on neutral side of trench
+				    FieldPositionConstants.RIGHT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
+	intakeStartPose = new Pose2d( // position to go before starting intake
+				      FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y, new Rotation2d(Math.PI/2));
+	intakeMidPose = new Pose2d( // position to drive to while intaking
+				    FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET - INTAKE_INWARD_PUSH, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y + INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
+	intakeEndPose = new Pose2d( // position on neutral side of trench
+				    FieldPositionConstants.RIGHT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d((Math.PI / 2) * 3));
+	shootPose = new Pose2d( // position to drive to to shoot
+				FieldPositionConstants.RIGHT_SHOOT_X, FieldPositionConstants.RIGHT_SHOOT_Y, new Rotation2d(Math.PI/2)); // TODO: find good spots for shooting, add to fieldpositionconstants
+	// }
 
 	/** position sequences (for GotoPose) **/
 	Pose2d[] startToIntakeStart = {
 	    trenchStartPose, trenchEndPose, intakeStartPose
 	};
 	Pose2d[] intakeStartToEnd = {
-	    intakeEndPose
+	    intakeMidPose, intakeEndPose
 	};
 	Pose2d[] intakeEndToShoot = {
 	    trenchEndPose, trenchStartPose, shootPose
@@ -93,9 +96,16 @@ public class ShootIntakeSequence extends SequentialCommandGroup
 	addCommands(
 		    new GotoPose(startToIntakeStart, 6, drivetrain, pose), // drive through trench then drive to intake start
 		    new AutoIntakeCommand(intake, true), // enable intake
+		    new WaitCommand(0.6),
 		    new GotoPose(intakeStartToEnd, 4, drivetrain, pose), // drive forward
 		    new AutoIntakeCommand(intake, false), // disable intake
+		    new InstantCommand(() -> {
+			    intake.retract();
+		    }),
 		    new GotoPose(intakeEndToShoot, 8, drivetrain, pose), 	// go to shooting position
+		    new InstantCommand(() -> {
+			    intake.extend();
+		    }),
 		    new ParallelCommandGroup(
 					     new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME), // turn to face hub
 					     new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME) // shoot
