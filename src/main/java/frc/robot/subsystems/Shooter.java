@@ -77,14 +77,15 @@ public class Shooter extends SubsystemBase {
      * values for calculating target RPM given distance from the target
      * RPM = distance*RPM_COEFFICIENT + RPM_OFFSET
      **/
-    private static final double RPM_COEFFICIENT = 395.43275;
-    private static final double RPM_OFFSET = 838.4746;
+    private static final double RPM_COEFFICIENT = 395.43275 * 1.16;
+    
+    private static final double RPM_OFFSET = 838.4746 + 116;
 
     /**
      * ramping constants, ramp target RPM by MAX_RPM_RAMP every 50ms
      * only if the final target has an error greater than SHOOTER_RAMP_MIN_ERROR
      **/
-    private static final double MAX_RPM_RAMP = 450 / 20;
+    private static final double MAX_RPM_RAMP = 600 / 20;
     private static final double SHOOTER_RAMP_MIN_ERROR = 1000;
 
     /**
@@ -100,7 +101,7 @@ public class Shooter extends SubsystemBase {
     private static final double CONVEYOR_SPEED = 1.0;
     
 
-    private double topKP = 0.0002;
+    private double topKP = 0.00023;
     private double topKD = 0.0;
     // private double topKPIncrementFactor = 0.1; /* for tuning */
     
