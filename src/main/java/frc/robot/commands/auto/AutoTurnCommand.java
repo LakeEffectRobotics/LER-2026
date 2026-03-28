@@ -8,33 +8,35 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Pose;
 import edu.wpi.first.math.controller.PIDController;
 
-public class TurnCommand extends Command
+/**
+* command that turns the robot to a target angle, ends when specified time (ms) has passed,
+* continues to the end of auto if duration is negative
+**/
+public class AutoTurnCommand extends Command
 {
     private Drivetrain drivetrain;
     private Pose pose;
-    private DoubleSupplier xSupplier;
-    private DoubleSupplier ySupplier;
     private DoubleSupplier angleSupplier;
     private PIDController pidController;
 
     private double angleDisplacement;
+    private double maxError;
 
-    private static final double P_TERM = 5.0;
+
+    private static final double P_TERM = 8.0;
     private static final double I_TERM = 5.0;
     private static final double D_TERM = 0.0;
 
 
-    public TurnCommand(Drivetrain drivetrain,
-    Pose pose, 
-    DoubleSupplier angleSupplier,
-    DoubleSupplier xSupplier,
-    DoubleSupplier ySupplier)
+    public AutoTurnCommand(Drivetrain drivetrain,
+			   Pose pose, 
+			   DoubleSupplier angleSupplier,
+			   double maxError)
     {
         this.drivetrain = drivetrain;
         this.pose = pose;
         this.angleSupplier = angleSupplier;
-        this.xSupplier = xSupplier;
-        this.ySupplier = ySupplier;
+	this.maxError = maxError;
         addRequirements(drivetrain);
     }
 
@@ -43,19 +45,23 @@ public class TurnCommand extends Command
     {
 	pidController = new PIDController(P_TERM, I_TERM, D_TERM);
 	pidController.enableContinuousInput(-Math.PI, Math.PI);
+	angleDisplacement = maxError + 1;
     }
 
     @Override
     public void execute()
     {
+	double currentAngle = pose.getRobotPose().getRotation().getRadians();
+	angleDisplacement = currentAngle - angleSupplier.getAsDouble();
         // angleDisplacement = pose.getRobotPose().getRotation().minus(new Rotation2d(angleSupplier.getAsDouble())).getRadians();
+	// if(Math.abs(angleDisplacement) > 180) {
+	    // currentAngle += (Math.PI * 2);
+	    // angleDisplacement = currentAngle - angleSupplier.getAsDouble();
+	// }
+	
         drivetrain.drive(
-			 ySupplier.getAsDouble(),
-			 xSupplier.getAsDouble(),
-			 pidController.calculate(
-						 pose.getRobotPose().getRotation().getRadians(),
-						 angleSupplier.getAsDouble()));
-			 // pidController.calculate(pose.getRobotPose().getRotation().getRadians(), Rotation2d(angleSupplier.getAsDouble())));
+	0, 0, pidController.calculate(pose.getRobotPose().getRotation().getRadians(),
+	angleSupplier.getAsDouble()));
     }
 
     @Override
@@ -67,8 +73,7 @@ public class TurnCommand extends Command
     @Override
     public boolean isFinished()
     {
-        return false;
-        // return Math.abs(angleDisplacement) < 0.08726; // ~ 5 degrees
+	return Math.abs(angleDisplacement) < maxError;
     }
 
 }

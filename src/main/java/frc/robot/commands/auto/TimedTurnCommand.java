@@ -45,6 +45,7 @@ public class TimedTurnCommand extends Command
     {
 	endTime = System.currentTimeMillis() + duration;
 	pidController = new PIDController(P_TERM, I_TERM, D_TERM);
+	pidController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override
