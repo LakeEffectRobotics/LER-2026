@@ -54,11 +54,8 @@ public class GotoPose extends Command
      * speeds
      **/
     private static final double FAST_SPEED = 0.85;
-    private static final double MED_SPEED = 0.45;
-    private static final double SLOW_SPEED = 0.15;
-    // private static final double FAST_SPEED = 0.;
-    // private static final double MED_SPEED = 0.15;
-    // private static final double SLOW_SPEED = 0.1;
+    private static final double MED_SPEED = 0.75;
+    private static final double SLOW_SPEED = 0.45;
 
     private static final double ROTATION_KP = 5.0;
 
@@ -66,8 +63,8 @@ public class GotoPose extends Command
     /**
      * speed thresholds
      **/
-    private static final int MED_THRESHOLD = 2; // 2 or less meters until next turn
-    private static final int SLOW_THRESHOLD = 1; // 1 meter
+    private static final double MED_THRESHOLD = 0.8; // 2 or less meters until next turn
+    private static final double SLOW_THRESHOLD = 0.2; // 1 meter
     
     /**
      * generate path from inputPath, with sliceCount slices in between each point
