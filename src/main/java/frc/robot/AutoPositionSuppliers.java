@@ -42,10 +42,25 @@ public class AutoPositionSuppliers
 	return robotPosition.getY() + 0.5;
     };
 
+    public DoubleSupplier feedAngleSupplier = () -> {
+	Pose2d robotPosition = pose.getRobotPose();
+	if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_Y) {
+	    return Math.atan2(
+			      robotPosition.getX() - Constants.FieldPositionConstants.RIGHT_FEED_Y,
+			      robotPosition.getY() - Constants.FieldPositionConstants.RIGHT_FEED_X
+			      );
+	} else {
+	    	    return Math.atan2(
+				      robotPosition.getX() - Constants.FieldPositionConstants.LEFT_FEED_Y,
+				      robotPosition.getY() - Constants.FieldPositionConstants.LEFT_FEED_X
+				      );
+	    
+	}
+    };
         
     public DoubleSupplier feedXSupplier = () -> {
 	Pose2d robotPosition = pose.getRobotPose();
-	if(robotPosition.getX() > Constants.FieldPositionConstants.HUB_X) {
+	if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_Y) {
 	    return Constants.FieldPositionConstants.LEFT_FEED_X;
 	} else {
 	    return Constants.FieldPositionConstants.RIGHT_FEED_X;
@@ -54,7 +69,7 @@ public class AutoPositionSuppliers
 
         public DoubleSupplier feedYSupplier = () -> {
 	Pose2d robotPosition = pose.getRobotPose();
-	if(robotPosition.getX() > Constants.FieldPositionConstants.HUB_X) {
+	if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_Y) {
 	    return Constants.FieldPositionConstants.LEFT_FEED_Y;
 	} else {
 	    return Constants.FieldPositionConstants.RIGHT_FEED_Y;
