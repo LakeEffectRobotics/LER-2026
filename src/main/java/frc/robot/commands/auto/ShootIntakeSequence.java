@@ -28,7 +28,8 @@ public class ShootIntakeSequence extends SequentialCommandGroup
     private double delayA;
     private double delayB;
 
-    private static final double TRENCH_END_OFFSET = 2.0; // (m) x distance from middle of trench to place start and end pose
+    private static final double TRENCH_END_OFFSET = 2.2
+	; // (m) x distance from middle of trench to place start and end pose
     private static final double INTAKE_IN_OFFSET = 1.3;	// (m) x distance from close end of ball pile to offset intake position by
     private static final double INTAKE_DISTANCE = 2.2; // (m) y distance to drive to intake balls
     private static final double INTAKE_INWARD_PUSH = 2.0; // (m) x distance to move toward driver while intaking
