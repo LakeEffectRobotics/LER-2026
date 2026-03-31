@@ -10,17 +10,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 @Logged
 public class Camera extends SubsystemBase {
 
+    private String tableName;
     private NetworkTable table;
 
     private FMS FMS;
     private double heartBeat;
-    private double tx;
-    private double ty;
     private double[] botpose = new double[32];
     
-        public Camera(FMS FMS) {
+    public Camera(FMS FMS, String tableName) {
         this.FMS = FMS;
-        table = NetworkTableInstance.getDefault().getTable("limelight");
+	this.tableName = tableName;
+        this.table = NetworkTableInstance.getDefault().getTable(tableName);
     }   
 
     @Override
@@ -28,35 +28,13 @@ public class Camera extends SubsystemBase {
         
 
         heartBeat = table.getEntry("hb").getDouble(-1);
-        SmartDashboard.putNumber("camera heartbeat", heartBeat);
-
-        tx = table.getEntry("tx").getDouble(0);
-        SmartDashboard.putNumber("camera tx", tx);
-        ty = table.getEntry("ty").getDouble(0);
-        SmartDashboard.putNumber("camera ty", ty);
+        SmartDashboard.putNumber(tableName + " camera heartbeat", heartBeat);
 
         if(FMS.getAllianceColor() == AllianceColor.RED) {
             botpose = table.getEntry("botpose_wpired").getDoubleArray(new double[32]);
         } else {
             botpose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[32]);            
         }
-
-        SmartDashboard.putNumber("camera botposex", botpose[0]);
-        SmartDashboard.putNumber("camera botposey", botpose[1]);
-        SmartDashboard.putNumber("camera botposez", botpose[2]);
-        //height = table.getEntry("height").getInteger(0);
-        //SmartDashboard.putNumber("camera height", height);
-        //lock = table.getEntry("lock").getBoolean(true);
-        //SmartDashboard.putBoolean("has lock", lock);
-
-    }
-
-    public double getTx() {
-        return tx; 
-    }
-
-    public double getTy() {
-        return ty;
     }
 
     public double[] getBotpose() {
@@ -67,11 +45,4 @@ public class Camera extends SubsystemBase {
         return heartBeat;
     }
 
-    //public long getHeight() {
-        //return height;
-    //}
-
-    //public boolean isLocked() {
-        //return lock;
-    //}
 }
