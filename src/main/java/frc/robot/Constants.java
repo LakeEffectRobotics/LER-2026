@@ -46,7 +46,6 @@ here	   |   |
 	public static final double BALLS_FAR_RIGHT_X = 9.1697;
 	public static final double BALLS_FAR_RIGHT_Y = 1.7112;
 
-
 	public static final double RIGHT_SHOOT_X = 3.52;
 	public static final double RIGHT_SHOOT_Y = 2.08;
 
@@ -63,7 +62,10 @@ here	   |   |
 	/** human player feeder position **/
 	public static final double HUMAN_PLAYER_FEEDER_X = 0.635;
 	public static final double HUMAN_PLAYER_FEEDER_Y = 0.4318;
-	    
+
+	/** depot positions **/
+	public static final double DEPOT_OUTER_CENTER_X = 0.6858;
+	public static final double DEPOT_OUTER_CENTER_Y = 5.9633;
     }
 
 }
