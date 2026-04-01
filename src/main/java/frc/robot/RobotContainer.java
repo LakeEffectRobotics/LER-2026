@@ -31,10 +31,6 @@ public class RobotContainer {
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
 
-  // Constants
-  private static final double BEVEL_IN_CORRECTION = 0.25;
-
-
     /* init subsystems */
     public SwerveModule leftFrontSwerve = new SwerveModule(RobotMap.leftFrontDrive, RobotMap.leftFrontRotate, RobotMap.leftFrontEncoder, 0.7758, 0.0, 0.0, false); 
     public SwerveModule rightFrontSwerve = new SwerveModule(RobotMap.rightFrontDrive, RobotMap.rightFrontRotate, RobotMap.rightFrontEncoder, 0.459717, 0.0, 0.0, true); 
