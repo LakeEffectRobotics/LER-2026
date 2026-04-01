@@ -64,6 +64,9 @@ here	   |   |
 	public static final double HUMAN_PLAYER_FEEDER_Y = 0.4318;
 
 	/** depot positions **/
+	public static final double DEPOT_WIDTH = 1.0668;
+	public static final double DEPOT_LENGTH = 0.6858;
+	
 	public static final double DEPOT_OUTER_CENTER_X = 0.6858;
 	public static final double DEPOT_OUTER_CENTER_Y = 5.9633;
     }
