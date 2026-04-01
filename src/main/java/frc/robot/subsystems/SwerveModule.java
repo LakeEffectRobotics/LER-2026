@@ -4,8 +4,8 @@ import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -161,7 +161,7 @@ public class SwerveModule extends SubsystemBase {
      */
     public void setOutput(double speed, double rotation) {
         driveController.set(speed);
-        rotationPID.setReference(rotation, ControlType.kPosition);
+        rotationPID.setSetpoint(rotation, ControlType.kPosition);
     }
 
     /**
