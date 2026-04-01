@@ -1,4 +1,4 @@
- package frc.robot.commands.auto;
+package frc.robot.commands.auto.groups;
 
 import frc.robot.Constants.FieldPositionConstants;
 
@@ -11,6 +11,8 @@ import frc.robot.subsystems.Pose;
 import frc.robot.commands.auto.GotoPose;
 import frc.robot.commands.auto.AutoIntakeCommand;
 import frc.robot.commands.auto.AutoShootCommand;
+import frc.robot.commands.auto.TimedTurnCommand;
+import frc.robot.commands.auto.AutoTurnCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,21 +23,24 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.epilogue.Logged;
 
 @Logged
-public class ShootIntakeSequence extends SequentialCommandGroup
+public class TrenchAutoGroup
+extends SequentialCommandGroup
+/**
+* trench autos 
+**/
 {
-    private Drivetrain drivetrain;
-    private Pose pose;
-    private double delayA;
-    private double delayB;
-
-    private static final double TRENCH_END_OFFSET = 2.2
-	; // (m) x distance from middle of trench to place start and end pose
-    private static final double INTAKE_IN_OFFSET = 1.3;	// (m) x distance from close end of ball pile to offset intake position by
-    private static final double INTAKE_DISTANCE = 2.2; // (m) y distance to drive to intake balls
-    private static final double INTAKE_INWARD_PUSH = 2.0; // (m) x distance to move toward driver while intaking
-    private static final long SHOOT_TIME = 5000;	  // (ms) time to spend shooting
-
-    public ShootIntakeSequence(boolean isLeft, double initialDelay, Drivetrain drivetrain,
+     private Drivetrain drivetrain;
+     private Pose pose;
+     private double delayA;
+     private double delayB;
+     
+     private static final double TRENCH_END_OFFSET = 2.2; // (m) x distance from middle of trench to place start and end pose
+     private static final double INTAKE_IN_OFFSET = 1.3; // (m) x distance from close end of ball pile to offset intake position by
+     private static final double INTAKE_DISTANCE = 2.2; // (m) y distance to drive to intake balls
+     private static final double INTAKE_INWARD_PUSH = 2.0; // (m) x distance to move toward driver while intaking
+     private static final long SHOOT_TIME = 5000; // (ms) time to spend shooting
+     
+     public TrenchAutoGroup(boolean isLeft, double initialDelay, Drivetrain drivetrain,
     Pose pose, Shooter shooter, Intake intake, AutoPositionSuppliers autoPositionSuppliers)
     {
 	Pose2d trenchStartPose;
