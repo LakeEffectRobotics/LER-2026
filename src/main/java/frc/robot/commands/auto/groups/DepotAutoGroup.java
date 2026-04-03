@@ -66,9 +66,9 @@ extends SequentialCommandGroup
 		    new WaitCommand(initialDelay / 1000)
 		    );
 	addCommands(
-		    new GotoPose(startToIntakeStart, 6, drivetrain, pose),
+		    new GotoPose(startToIntakeStart, GotoPose.Profile.FAST, 6, drivetrain, pose),
 		    new AutoIntakeCommand(intake, true),
-		    new GotoPose(intakeStartToShoot, 6, drivetrain, pose),
+		    new GotoPose(intakeStartToShoot, GotoPose.Profile.INTAKE, 6, drivetrain, pose),
 		    new AutoTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, 0.05),
 		    new ParallelCommandGroup(
 					     new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME),

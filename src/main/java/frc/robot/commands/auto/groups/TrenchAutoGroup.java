@@ -105,14 +105,14 @@ extends SequentialCommandGroup
 
 	addCommands(
 		    new AutoIntakeCommand(intake, true), // enable intake
-		    new GotoPose(startToIntakeStart, 6, drivetrain, pose), // drive through trench then drive to intake start
+		    new GotoPose(startToIntakeStart, GotoPose.Profile.FAST, 6, drivetrain, pose), // drive through trench then drive to intake start
 		    new WaitCommand(0.6),
-		    new GotoPose(intakeStartToEnd, 4, drivetrain, pose), // drive forward
+		    new GotoPose(intakeStartToEnd, GotoPose.Profile.INTAKE,  4, drivetrain, pose), // drive forward
 		    new AutoIntakeCommand(intake, false), // disable intake
 		    new InstantCommand(() -> {
 			    intake.retract();
 		    }),
-		    new GotoPose(intakeEndToShoot, 8, drivetrain, pose), 	// go to shooting position
+		    new GotoPose(intakeEndToShoot, GotoPose.Profile.FAST,  8, drivetrain, pose), 	// go to shooting position
 		    new InstantCommand(() -> {
 			    intake.extend();
 		    }),

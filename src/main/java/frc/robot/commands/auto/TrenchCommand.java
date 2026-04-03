@@ -42,12 +42,12 @@ public class TrenchCommand extends Command
 
         if (currentPos.getY() > FieldPositionConstants.HUB_Y){
             //Currently on alliance Side
-            GotoPose toTrenchCommand = new GotoPose(goToTrench, 6, drivetrain, pose);
+            GotoPose toTrenchCommand = new GotoPose(goToTrench, GotoPose.Profile.FAST, 6, drivetrain, pose);
             CommandScheduler.getInstance().schedule(toTrenchCommand);
 
         } else {
             //Currently on Neutral Side
-            GotoPose toAllianceCommand = new GotoPose(goToAlliance, 6, drivetrain, pose);
+            GotoPose toAllianceCommand = new GotoPose(goToAlliance, GotoPose.Profile.FAST, 6, drivetrain, pose);
             CommandScheduler.getInstance().schedule(toAllianceCommand);
         }
     }

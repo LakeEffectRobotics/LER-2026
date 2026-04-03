@@ -19,6 +19,33 @@ import frc.robot.subsystems.Pose;
 @Logged
 public class GotoPose extends Command
 {
+
+    public enum Profile
+    {
+	FAST,
+	PRECISE,
+	INTAKE
+    }
+
+    private static class SpeedParameters
+    {
+	public final double FAST;
+	public final double MED;
+	public final double SLOW;
+	
+	public final double MED_THRESHOLD;
+	public final double SLOW_THRESHOLD;
+
+	public final double ROT_KP;
+
+	public SpeedParameters(double fast, double med, double slow, double medThreshold, double slowThreshold, double rotKP)
+	{
+	    this.FAST = fast; this.MED=med; this.SLOW = slow;
+	    this.MED_THRESHOLD = medThreshold; this.SLOW_THRESHOLD = slowThreshold;
+	    this.ROT_KP = rotKP;
+	}
+    }                
+    
     private Drivetrain drivetrain;
     private Pose pose;
 
@@ -50,24 +77,31 @@ public class GotoPose extends Command
     private int xDirection;
     private int yDirection;
 
-    /**
-     * speeds
-     **/
-    private static final double FAST_SPEED = 0.85;
-    private static final double MED_SPEED = 0.75;
-    private static final double SLOW_SPEED = 0.45;
-
-    private static final double ROTATION_KP = 5.0;
-
-
-    /**
-     * speed thresholds
-     **/
-    private static final double MED_THRESHOLD = 0.8; // 2 or less meters until next turn
-    private static final double SLOW_THRESHOLD = 0.2; // 1 meter
+    private static final SpeedParameters FAST_SPEED_PARAMS = new SpeedParameters(0.90,
+										 0.85,
+										 0.45,
+										 0.4,
+										 0.4,
+										 5.0);
     
+    private static final SpeedParameters PRECISE_SPEED_PARAMS = new SpeedParameters(0.85,
+										    0.45,
+										    0.40,
+										    0.5,
+										    0.4,
+										    2.5);
+    
+    private static final SpeedParameters INTAKE_SPEED_PARAMS = new SpeedParameters(0.60,
+										   0.60,
+										   0.60,
+										   0.0,
+										   0.0,
+										   2.5);
+    
+    
+    private SpeedParameters speedParameters;
     /**
-     * generate path from inputPath, with sliceCount slices in between each point
+     * Generate path from inputPath, with sliceCount slices in between each point
      **/
     private Pose2d[] generatePath(Pose2d startPos)
     {
@@ -141,12 +175,25 @@ public class GotoPose extends Command
 	}
     }
 
-    public GotoPose(Pose2d[] inputPath, int sliceCount, Drivetrain drivetrain, Pose pose)
+    public GotoPose(Pose2d[] inputPath, Profile profile,  int sliceCount, Drivetrain drivetrain, Pose pose)
     {
 	this.inputPath = inputPath;
 	this.drivetrain = drivetrain;
 	this.pose = pose;
 	this.sliceCount = sliceCount;
+
+	switch(profile) {
+	case FAST:
+	    speedParameters = FAST_SPEED_PARAMS;
+	    break;
+	case PRECISE:
+	    speedParameters = PRECISE_SPEED_PARAMS;
+	    break;
+	case INTAKE:
+	    speedParameters = INTAKE_SPEED_PARAMS;
+	    break;
+	}
+	
 
 	addRequirements(drivetrain);
     }
@@ -212,21 +259,21 @@ public class GotoPose extends Command
 	driveAngle = Math.atan2(-yDisplacement, -xDisplacement);
 	
 	
-	speedFactor = FAST_SPEED;
+	speedFactor = speedParameters.FAST;
 	nextTurnDistance = Math.sqrt(
 				     Math.pow(path[nextTurn].getX() - path[pathIndex].getX(), 2)
 				     + Math.pow(path[nextTurn].getY() - path[pathIndex].getY(), 2));
 	
-	if(nextTurnDistance <= MED_THRESHOLD) {
-	    speedFactor = MED_SPEED;
+	if(nextTurnDistance <= speedParameters.MED_THRESHOLD) {
+	    speedFactor = speedParameters.MED;
 	}
-	if(nextTurnDistance <= SLOW_THRESHOLD) {
-	    speedFactor = SLOW_SPEED;
+	if(nextTurnDistance <= speedParameters.SLOW_THRESHOLD) {
+	    speedFactor = speedParameters.SLOW;
 	}
 	
 	xSpeed = speedFactor * Math.cos(driveAngle);
 	ySpeed = speedFactor * Math.sin(driveAngle);
-	rotSpeed = -rotDisplacement * ROTATION_KP;
+	rotSpeed = -rotDisplacement * speedParameters.ROT_KP;
 
 	drivetrain.drive(xSpeed, ySpeed, rotSpeed);
     }

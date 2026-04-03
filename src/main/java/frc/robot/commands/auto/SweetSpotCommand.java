@@ -35,7 +35,7 @@ public class SweetSpotCommand extends SequentialCommandGroup {
 					 new Rotation2d(autoPositionSuppliers.hubAngleSupplier.getAsDouble()))};
 
 	addCommands(
-		    new GotoPose(shootPose, 4, drivetrain, pose)
+		    new GotoPose(shootPose, GotoPose.Profile.FAST, 4, drivetrain, pose)
 		    );
 	    
 
