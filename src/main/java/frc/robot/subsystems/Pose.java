@@ -107,13 +107,14 @@ public class Pose extends SubsystemBase {
 	camera2Pose = camera2.getBotpose();
 	camera2Info.hb = camera2.getHb();
 
-	camera1Info.lastHb = camera1Info.hb;
-	camera2Info.lastHb = camera2Info.hb;
-
 	camera1Valid = cameraHasValidPose(camera1Pose, camera1Info);
 	camera2Valid = cameraHasValidPose(camera2Pose, camera2Info);
 	SmartDashboard.putBoolean("pose: cam1?", camera1Valid);
 	SmartDashboard.putBoolean("pose: cam2?", camera2Valid);
+
+	camera1Info.lastHb = camera1Info.hb;
+	camera2Info.lastHb = camera2Info.hb;
+
 	
 	if(camera1Valid) {
 	    setPoseFromCamera(camera1Pose);
