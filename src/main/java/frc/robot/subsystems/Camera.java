@@ -16,6 +16,12 @@ public class Camera extends SubsystemBase {
     private FMS FMS;
     private double heartBeat;
     private double[] botpose = new double[32];
+
+    // botpose indexes
+    public static final int BOTPOSE_X_INDEX = 0;
+    public static final int BOTPOSE_Y_INDEX = 1;
+    public static final int BOTPOSE_YAW_INDEX = 5;
+    public static final int BOTPOSE_TAG_COUNT_INDEX = 7;
     
     public Camera(FMS FMS, String tableName) {
         this.FMS = FMS;

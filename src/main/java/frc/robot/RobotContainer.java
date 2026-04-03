@@ -41,9 +41,10 @@ public class RobotContainer {
     public Drivetrain drivetrain = new Drivetrain(leftBackSwerve, rightBackSwerve, leftFrontSwerve, rightFrontSwerve, gyro);
     public Intake intake = new Intake(RobotMap.intakeMotor, RobotMap.intakeSolenoid);
     public FMS FMS = new FMS();
-    public Camera camera = new Camera(FMS, "limelight");
+    public Camera camera1 = new Camera(FMS, "limelight");
+    public Camera camera2 = new Camera(FMS, "limelight-two");
 
-    public Pose pose = new Pose(drivetrain, camera, gyro);
+    public Pose pose = new Pose(drivetrain, camera1, camera2,  gyro);
 
     public Shooter shooter = new Shooter(RobotMap.shooterTopLeader,
     RobotMap.shooterTopFollower,
