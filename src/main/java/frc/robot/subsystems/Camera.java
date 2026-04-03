@@ -16,6 +16,7 @@ public class Camera extends SubsystemBase {
     private FMS FMS;
     private double heartBeat;
     private double[] botpose = new double[32];
+    private static final double[] botposeDefault = new double[32];
 
     // botpose indexes
     public static final int BOTPOSE_X_INDEX = 0;
@@ -37,9 +38,9 @@ public class Camera extends SubsystemBase {
         SmartDashboard.putNumber(tableName + " camera heartbeat", heartBeat);
 
         if(FMS.getAllianceColor() == AllianceColor.RED) {
-            botpose = table.getEntry("botpose_wpired").getDoubleArray(new double[32]);
+            botpose = table.getEntry("botpose_wpired").getDoubleArray(botposeDefault);
         } else {
-            botpose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[32]);            
+            botpose = table.getEntry("botpose_wpiblue").getDoubleArray(botposeDefault);            
         }
     }
 
