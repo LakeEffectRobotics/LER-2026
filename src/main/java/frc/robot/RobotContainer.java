@@ -100,8 +100,27 @@ public class RobotContainer {
       OI.driveControllerX.whileTrue(new SweetSpotCommand(drivetrain, pose, autoPositionSuppliers));
 
       /** operator binds **/
-      OI.operatorControllerY.whileTrue(new ShooterCommand(shooter, pose, autoPositionSuppliers.robotFrontXSupplier, autoPositionSuppliers.robotFrontYSupplier, Shooter.ConveyorMode.FREE));
-      OI.operatorControllerX.whileTrue(new ShooterCommand(shooter, pose, autoPositionSuppliers.feedXSupplier, autoPositionSuppliers.feedYSupplier, Shooter.ConveyorMode.FREE));
+      OI.operatorRightTrigger.onTrue(new ShooterCommand(shooter,
+							   pose,
+							   Constants.FieldPositionConstants.HUB_X,
+							   Constants.FieldPositionConstants.HUB_Y,
+							   Shooter.ConveyorMode.STRICT,
+							   OI.operatorRightTriggerSupplier));
+
+
+      
+      OI.operatorControllerY.whileTrue(new ShooterCommand(shooter,
+							  pose,
+							  autoPositionSuppliers.robotFrontXSupplier,
+							  autoPositionSuppliers.robotFrontYSupplier,
+							  Shooter.ConveyorMode.FREE,
+							  null));
+      OI.operatorControllerX.whileTrue(new ShooterCommand(shooter,
+							  pose,
+							  autoPositionSuppliers.feedXSupplier,
+							  autoPositionSuppliers.feedYSupplier,
+							  Shooter.ConveyorMode.FREE,
+							  null));
       
       OI.operatorControllerB.onTrue(new InstantCommand(() -> {
 		  shooter.setConveyorOutput(0.0);
@@ -129,10 +148,6 @@ public class RobotContainer {
       OI.operatorControllerA.onTrue(new IntakeRetractCommand(intake));
      
       
-      OI.operatorRightTrigger.whileTrue(new ShooterCommand(shooter, pose,
-							   Constants.FieldPositionConstants.HUB_X,
-							   Constants.FieldPositionConstants.HUB_Y,
-							   Shooter.ConveyorMode.STRICT));
 
       OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
       

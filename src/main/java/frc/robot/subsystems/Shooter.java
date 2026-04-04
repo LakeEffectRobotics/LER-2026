@@ -35,8 +35,10 @@ public class Shooter extends SubsystemBase {
     {
 	/** conveyor: off, shooter: off **/
 	DEAD,
-	/** conveyor: off, shooter: on, shooter will run at STANDBY_SPEED **/
+	/** conveyor: off, shooter: on, shooter will run at speed needed to hit target**/
 	STANDBY,
+	/** conveyor: off, shooter: on, shooter will run at IDLE_SPEED **/
+	IDLE,
 	/**conveyor: on if shooter is at target, shooter: on, shooter will fire if it's reached target speed **/
 	FIRE,
 	/** conveyor: on, shooter: on, target is overrideTargetRPM**/
@@ -97,7 +99,7 @@ public class Shooter extends SubsystemBase {
     /**
      * speed constants
      **/
-    private static final double STANDBY_SPEED = 0.4; // speed to spin shooter motors at while in STANDBY mode
+    private static final double IDLE_SPEED =  0.4; // speed to spin shooter motors at while in STANDBY mode
     private static final double CONVEYOR_SPEED = 1.0;
     
 
@@ -365,16 +367,17 @@ public class Shooter extends SubsystemBase {
 	    bottomSpeed = calculateBottomFFTerm(bottomOverrideTargetRPM)
 		+ shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
 	    break;
+	case STANDBY:
 	case FIRE:
 	    topSpeed = calculateTopFFTerm(topControlTargetRPM)
 		+ shooterPIDController.calculate(topRPM, topControlTargetRPM);
 	    bottomSpeed = calculateBottomFFTerm(bottomControlTargetRPM)
 		+ shooterPIDController.calculate(bottomRPM, bottomControlTargetRPM);;
 	    break;
-	case STANDBY:
+	case IDLE:
 	    conveyorMotor.set(0.0);
-	    topSpeed = STANDBY_SPEED;
-	    bottomSpeed = STANDBY_SPEED;
+	    topSpeed = IDLE_SPEED;
+	    bottomSpeed = IDLE_SPEED;
 	}
 
 	/* decide whether to run conveyor*/
