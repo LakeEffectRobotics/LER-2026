@@ -88,7 +88,7 @@ public class Shooter extends SubsystemBase
      * conveyor condition constants
      **/
     private static final double SHOOTER_RPM_MAX_ERROR = 400; // shooter must be within SHOOTER_RPM_MAX_ERROR for the conveyor to run
-    private static final double MAX_TARGET_RPM = 5800;	     // maximum shooter target RPM for conveyor to wait on, if target rpm > MAX_TARGET_RPM conveyor will run unconditionally
+    private static final double MAX_TARGET_RPM = 4500;	     // maximum shooter target RPM for conveyor to wait on, if target rpm > MAX_TARGET_RPM conveyor will run unconditionally
 
     /**
      * speed constants
