@@ -80,15 +80,24 @@ extends SequentialCommandGroup
 	// }
 
 	/** position sequences (for GotoPose) **/
-	Pose2d[] startToIntakeStart = {
-	    trenchStartPose, trenchEndPose, intakeStartPose
+	Pose2d[] startToTrenchEnd = {
+	    trenchEndPose
 	};
+
+	Pose2d[] trenchEndToIntakeStart = {
+	    intakeStartPose
+	};
+	
 	Pose2d[] intakeStartToEnd = {
 	    intakeMidPose, intakeEndPose
 	};
-	Pose2d[] intakeEndToShoot = {
-	    trenchEndPose, trenchStartPose, shootPose
+	Pose2d[] intakeEndToTrenchEnd = {
+	    trenchEndPose
 	};
+	Pose2d[] trenchEndToShoot = {
+	    trenchStartPose, shootPose
+	};
+
 
 	// Pose2d[] testPoses = {new Pose2d(3.7, 8.0, new Rotation2d(0))};
 	// addCommands(
@@ -105,24 +114,33 @@ extends SequentialCommandGroup
 
 	addCommands(
 		    new AutoIntakeCommand(intake, true), // enable intake
-		    new GotoPose(startToIntakeStart, GotoPose.Profile.FAST, 6, drivetrain, pose), // drive through trench then drive to intake start
+		    new InstantCommand(() -> {
+			    pose.setNoCameraMode(true);
+		    }),
+		    new GotoPose(startToTrenchEnd, GotoPose.Profile.PRECISE, 6, drivetrain, pose), // drive through trench
+		    new InstantCommand(() -> {
+			    pose.setNoCameraMode(false);
+		    }),
+		    new GotoPose(trenchEndToIntakeStart, GotoPose.Profile.FAST, 6, drivetrain, pose), // drive from trench end to intake position
 		    new WaitCommand(0.6),
 		    new GotoPose(intakeStartToEnd, GotoPose.Profile.INTAKE,  4, drivetrain, pose), // drive forward
 		    new AutoIntakeCommand(intake, false), // disable intake
 		    new InstantCommand(() -> {
 			    intake.retract();
 		    }),
-		    new GotoPose(intakeEndToShoot, GotoPose.Profile.FAST,  8, drivetrain, pose), 	// go to shooting position
+		    new GotoPose(intakeEndToTrenchEnd, GotoPose.Profile.FAST,  8, drivetrain, pose), 	// go to shooting position
 		    new InstantCommand(() -> {
 			    intake.extend();
+			    pose.setNoCameraMode(false);
 		    }),
+		    new GotoPose(trenchEndToShoot, GotoPose.Profile.PRECISE,  8, drivetrain, pose), 	// go to shooting position
 		    new AutoTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, 0.05), // turn to face hub
 		    new ParallelCommandGroup(
 					     new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME), // turn to face hub
 					     new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME) // shoot
-	)
-	);
+					     )
+		    );
     }
-
-
+		    
+    
 }
