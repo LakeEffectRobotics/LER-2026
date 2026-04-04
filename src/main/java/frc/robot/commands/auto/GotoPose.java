@@ -26,11 +26,11 @@ public class GotoPose extends Command
      * and rotation speed **/
     public enum Profile
     {
-	/** high speeds, subtle ramp down **/
+        /** high speeds, subtle ramp down **/
         FAST,
-	/** lower speeds, large ramp down **/
+        /** lower speeds, large ramp down **/
         PRECISE,
-	/** constant speed, no ramp **/
+        /** constant speed, no ramp **/
         INTAKE
     }
 
