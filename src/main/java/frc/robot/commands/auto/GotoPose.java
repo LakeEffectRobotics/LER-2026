@@ -20,32 +20,45 @@ import frc.robot.subsystems.Pose;
 public class GotoPose extends Command
 {
 
+    /**
+     * determines the fast, medium, and slow speeds,
+     * speed distance thresholds,
+     * and rotation speed **/
     public enum Profile
     {
-	FAST,
-	PRECISE,
-	INTAKE
+	/** high speeds, subtle ramp down **/
+        FAST,
+	/** lower speeds, large ramp down **/
+        PRECISE,
+	/** constant speed, no ramp **/
+        INTAKE
     }
 
+    /**
+     * class for storing speed parameter values,
+     * 1 instance is constructed for each speed profile **/
     private static class SpeedParameters
     {
-	public final double FAST;
-	public final double MED;
-	public final double SLOW;
-	
-	public final double MED_THRESHOLD;
-	public final double SLOW_THRESHOLD;
+        public final double FAST;
+        public final double MED;
+        public final double SLOW;
 
-	public final double ROT_KP;
+        public final double MED_THRESHOLD;
+        public final double SLOW_THRESHOLD;
 
-	public SpeedParameters(double fast, double med, double slow, double medThreshold, double slowThreshold, double rotKP)
-	{
-	    this.FAST = fast; this.MED=med; this.SLOW = slow;
-	    this.MED_THRESHOLD = medThreshold; this.SLOW_THRESHOLD = slowThreshold;
-	    this.ROT_KP = rotKP;
-	}
-    }                
-    
+        public final double ROT_KP;
+
+        public SpeedParameters(double fast, double med, double slow, double medThreshold, double slowThreshold, double rotKP)
+        {
+            this.FAST = fast;
+            this.MED=med;
+            this.SLOW = slow;
+            this.MED_THRESHOLD = medThreshold;
+            this.SLOW_THRESHOLD = slowThreshold;
+            this.ROT_KP = rotKP;
+        }
+    }
+
     private Drivetrain drivetrain;
     private Pose pose;
 
@@ -78,87 +91,95 @@ public class GotoPose extends Command
     private int yDirection;
 
     private static final SpeedParameters FAST_SPEED_PARAMS = new SpeedParameters(0.90,
-										 0.85,
-										 0.45,
-										 0.4,
-										 0.4,
-										 5.0);
-    
+        0.85,
+        0.45,
+        0.4,
+        0.4,
+        5.0);
+
     private static final SpeedParameters PRECISE_SPEED_PARAMS = new SpeedParameters(0.85,
-										    0.45,
-										    0.40,
-										    0.5,
-										    0.4,
-										    2.5);
-    
+        0.45,
+        0.40,
+        0.5,
+        0.4,
+        2.5);
+
     private static final SpeedParameters INTAKE_SPEED_PARAMS = new SpeedParameters(0.60,
-										   0.60,
-										   0.60,
-										   0.0,
-										   0.0,
-										   2.5);
-    
-    
+        0.60,
+        0.60,
+        0.0,
+        0.0,
+        2.5);
+
+
     private SpeedParameters speedParameters;
     /**
      * Generate path from inputPath, with sliceCount slices in between each point
      **/
     private Pose2d[] generatePath(Pose2d startPos)
     {
-	ArrayList<Pose2d> result;
-	Pose2d d0;
-	Pose2d sliceIncrement;
-	int cur;
-	Pose2d[] t = {null};
-	
+        ArrayList<Pose2d> result;
+        Pose2d d0;
+        Pose2d sliceIncrement;
+        int cur;
+        Pose2d[] t = {null};
 
-	cur = 0;
-	d0 = startPos;
-	
-	result = new ArrayList(inputPath.length * sliceCount + 1);
 
-	for(int i=0; i<inputPath.length; i++) {
-	    if(i != 0) {
-		d0 = inputPath[i - 1];
-	    }
+        cur = 0;
+        d0 = startPos;
 
-	    sliceIncrement = new Pose2d(
-					(d0.getX() - inputPath[i].getX()) / sliceCount,
-					(d0.getY() - inputPath[i].getY()) / sliceCount,
-					new Rotation2d(0));
+        result = new ArrayList(inputPath.length * sliceCount + 1);
 
-	    for(int j=0; j<sliceCount; j++) {
-		result.add(cur,
-			   new Pose2d(
-				      (d0.getX() - (sliceIncrement.getX() * j)),
-				      (d0.getY() - (sliceIncrement.getY() * j)),
-				      inputPath[i].getRotation()));
-		
-		cur++;
-	    }
-	}
-	result.add(cur,
-		   new Pose2d(
-			      inputPath[inputPath.length - 1].getX(),
-			      inputPath[inputPath.length - 1].getY(),
-			      inputPath[inputPath.length - 1].getRotation()));
+        for(int i=0; i<inputPath.length; i++)
+        {
+            if(i != 0)
+            {
+                d0 = inputPath[i - 1];
+            }
 
-	return result.toArray(t);
+            sliceIncrement = new Pose2d(
+                (d0.getX() - inputPath[i].getX()) / sliceCount,
+                (d0.getY() - inputPath[i].getY()) / sliceCount,
+                new Rotation2d(0));
+
+            for(int j=0; j<sliceCount; j++)
+            {
+                result.add(cur,
+                           new Pose2d(
+                               (d0.getX() - (sliceIncrement.getX() * j)),
+                               (d0.getY() - (sliceIncrement.getY() * j)),
+                               inputPath[i].getRotation()));
+
+                cur++;
+            }
+        }
+        result.add(cur,
+                   new Pose2d(
+                       inputPath[inputPath.length - 1].getX(),
+                       inputPath[inputPath.length - 1].getY(),
+                       inputPath[inputPath.length - 1].getRotation()));
+
+        return result.toArray(t);
     }
 
-    
+
     /**
      * get x direction from point start to point end
      **/
     private int getPathXDirection(Pose2d start, Pose2d end)
     {
-	if(start.getX() == end.getX()) {
-	    return 0;
-	} else if(start.getX() > end.getX()) {
-	    return -1;
-	} else {
-	    return 1;
-	}
+        if(start.getX() == end.getX())
+        {
+            return 0;
+        }
+        else if(start.getX() > end.getX())
+        {
+            return -1;
+        }
+        else
+        {
+            return 1;
+        }
     }
 
     /**
@@ -166,133 +187,174 @@ public class GotoPose extends Command
      **/
     private int getPathYDirection(Pose2d start, Pose2d end)
     {
-	if(start.getY() == end.getY()) {
-	    return 0;
-	} else if(start.getY() > end.getY()) {
-	    return -1;
-	} else {
-	    return 1;
-	}
+        if(start.getY() == end.getY())
+        {
+            return 0;
+        }
+        else if(start.getY() > end.getY())
+        {
+            return -1;
+        }
+        else
+        {
+            return 1;
+        }
     }
+
+    public GotoPose(Pose2d inputPose, Profile profile, int sliceCount, Drivetrain drivetrain, Pose pose)
+    {
+        Pose2d[] inPath = {inputPose};
+        this.inputPath = inPath;
+        this.drivetrain = drivetrain;
+        this.pose = pose;
+        this.sliceCount = sliceCount;
+
+        switch(profile)
+        {
+        case FAST:
+            speedParameters = FAST_SPEED_PARAMS;
+            break;
+        case PRECISE:
+            speedParameters = PRECISE_SPEED_PARAMS;
+            break;
+        case INTAKE:
+            speedParameters = INTAKE_SPEED_PARAMS;
+            break;
+        }
+
+        addRequirements(drivetrain);
+
+
+    }
+
+
 
     public GotoPose(Pose2d[] inputPath, Profile profile,  int sliceCount, Drivetrain drivetrain, Pose pose)
     {
-	this.inputPath = inputPath;
-	this.drivetrain = drivetrain;
-	this.pose = pose;
-	this.sliceCount = sliceCount;
+        this.inputPath = inputPath;
+        this.drivetrain = drivetrain;
+        this.pose = pose;
+        this.sliceCount = sliceCount;
 
-	switch(profile) {
-	case FAST:
-	    speedParameters = FAST_SPEED_PARAMS;
-	    break;
-	case PRECISE:
-	    speedParameters = PRECISE_SPEED_PARAMS;
-	    break;
-	case INTAKE:
-	    speedParameters = INTAKE_SPEED_PARAMS;
-	    break;
-	}
-	
+        switch(profile)
+        {
+        case FAST:
+            speedParameters = FAST_SPEED_PARAMS;
+            break;
+        case PRECISE:
+            speedParameters = PRECISE_SPEED_PARAMS;
+            break;
+        case INTAKE:
+            speedParameters = INTAKE_SPEED_PARAMS;
+            break;
+        }
 
-	addRequirements(drivetrain);
+
+        addRequirements(drivetrain);
     }
 
-    
+
 
     @Override
     public void initialize()
     {
-	System.out.println("GotoPose: initialize");
-	path = generatePath(pose.getRobotPose());
-	pathIndex = 1;
-	nextTurn = 0;
-	xDirection = getPathXDirection(path[0], path[1]);
-	yDirection = getPathYDirection(path[0], path[1]);
+        System.out.println("GotoPose: initialize");
+        path = generatePath(pose.getRobotPose());
+        pathIndex = 1;
+        nextTurn = 0;
+        xDirection = getPathXDirection(path[0], path[1]);
+        yDirection = getPathYDirection(path[0], path[1]);
     }
-    
+
     @Override
     public void execute()
     {
-	System.out.println("GotoPose: execute");
-	Pose2d currentPosition;
-	double xDisplacement;
-	double yDisplacement;
-	double rotDisplacement;
-	double driveAngle;
-	double nextTurnDistance;
-	double speedFactor, xSpeed, ySpeed, rotSpeed;
+        System.out.println("GotoPose: execute");
+        Pose2d currentPosition;
+        double xDisplacement;
+        double yDisplacement;
+        double rotDisplacement;
+        double driveAngle;
+        double nextTurnDistance;
+        double speedFactor, xSpeed, ySpeed, rotSpeed;
 
-	currentPosition = pose.getRobotPose();
-	xDisplacement = (currentPosition.getX() - path[pathIndex].getX());
-	yDisplacement = (currentPosition.getY() - path[pathIndex].getY());
-	
-	// robot is at end of path : stop robot and do nothing
-	if(pathIndex >= path.length - 1) {
-	    drivetrain.drive(0.0, 0.0, 0.0);
-	    return;
-	}
+        currentPosition = pose.getRobotPose();
+        xDisplacement = (currentPosition.getX() - path[pathIndex].getX());
+        yDisplacement = (currentPosition.getY() - path[pathIndex].getY());
 
-	
-	// robot has reached or passed the target point
-	if((Math.abs(xDisplacement) <= 0.1 && Math.abs(yDisplacement) <= 0.1) || (-xDisplacement * xDirection < 0) || (-yDisplacement * yDirection < 0)) {
-		// robot has reached or passed the turning point
-		if(pathIndex >= nextTurn) {
-		    nextTurn = path.length - 1;
-		    for(int i=pathIndex + 1; i<path.length - 1; i++) {
-			if((getPathXDirection(path[i - 1], path[i]) != xDirection) || (getPathYDirection(path[i], path[i + 1]) != yDirection)) {
-			    nextTurn = i;
-			}
-		    }
-		    
-		}
-		
-		pathIndex++;
-		// x/y direction should only change if robot is on a turning point, so this probably isn't needed here
-		xDirection = getPathXDirection(path[pathIndex - 1], path[pathIndex]);
-		yDirection = getPathYDirection(path[pathIndex - 1], path[pathIndex]);
-		execute();
-		return;
-	    }
-	rotDisplacement = currentPosition.getRotation().minus(path[pathIndex].getRotation()).getRadians();
-	
-	driveAngle = Math.atan2(-yDisplacement, -xDisplacement);
-	
-	
-	speedFactor = speedParameters.FAST;
-	nextTurnDistance = Math.sqrt(
-				     Math.pow(path[nextTurn].getX() - path[pathIndex].getX(), 2)
-				     + Math.pow(path[nextTurn].getY() - path[pathIndex].getY(), 2));
-	
-	if(nextTurnDistance <= speedParameters.MED_THRESHOLD) {
-	    speedFactor = speedParameters.MED;
-	}
-	if(nextTurnDistance <= speedParameters.SLOW_THRESHOLD) {
-	    speedFactor = speedParameters.SLOW;
-	}
-	
-	xSpeed = speedFactor * Math.cos(driveAngle);
-	ySpeed = speedFactor * Math.sin(driveAngle);
-	rotSpeed = -rotDisplacement * speedParameters.ROT_KP;
+        // robot is at end of path : stop robot and do nothing
+        if(pathIndex >= path.length - 1)
+        {
+            drivetrain.drive(0.0, 0.0, 0.0);
+            return;
+        }
 
-	drivetrain.drive(xSpeed, ySpeed, rotSpeed);
+
+        // robot has reached or passed the target point
+        if((Math.abs(xDisplacement) <= 0.1 && Math.abs(yDisplacement) <= 0.1) || (-xDisplacement * xDirection < 0) || (-yDisplacement * yDirection < 0))
+        {
+            // robot has reached or passed the turning point
+            if(pathIndex >= nextTurn)
+            {
+                nextTurn = path.length - 1;
+                for(int i=pathIndex + 1; i<path.length - 1; i++)
+                {
+                    if((getPathXDirection(path[i - 1], path[i]) != xDirection) || (getPathYDirection(path[i], path[i + 1]) != yDirection))
+                    {
+                        nextTurn = i;
+                    }
+                }
+
+            }
+
+            pathIndex++;
+            // x/y direction should only change if robot is on a turning point, so this probably isn't needed here
+            xDirection = getPathXDirection(path[pathIndex - 1], path[pathIndex]);
+            yDirection = getPathYDirection(path[pathIndex - 1], path[pathIndex]);
+            execute();
+            return;
+        }
+        rotDisplacement = currentPosition.getRotation().minus(path[pathIndex].getRotation()).getRadians();
+
+        driveAngle = Math.atan2(-yDisplacement, -xDisplacement);
+
+
+        speedFactor = speedParameters.FAST;
+        nextTurnDistance = Math.sqrt(
+                               Math.pow(path[nextTurn].getX() - path[pathIndex].getX(), 2)
+                               + Math.pow(path[nextTurn].getY() - path[pathIndex].getY(), 2));
+
+        if(nextTurnDistance <= speedParameters.MED_THRESHOLD)
+        {
+            speedFactor = speedParameters.MED;
+        }
+        if(nextTurnDistance <= speedParameters.SLOW_THRESHOLD)
+        {
+            speedFactor = speedParameters.SLOW;
+        }
+
+        xSpeed = speedFactor * Math.cos(driveAngle);
+        ySpeed = speedFactor * Math.sin(driveAngle);
+        rotSpeed = -rotDisplacement * speedParameters.ROT_KP;
+
+        drivetrain.drive(xSpeed, ySpeed, rotSpeed);
     }
 
     @Override
     public boolean isFinished()
     {
-	
-	return pathIndex >= (path.length - 1);
+
+        return pathIndex >= (path.length - 1);
     }
 
     @Override
     public void end(boolean isInterrupted)
     {
-	System.out.println("GotoPose: end");
-	drivetrain.drive(0.0, 0.0, 0.0);
-	return;
+        System.out.println("GotoPose: end");
+        drivetrain.drive(0.0, 0.0, 0.0);
+        return;
     }
 
-       
-    
+
+
 }
