@@ -101,7 +101,7 @@ public class Shooter extends SubsystemBase {
     private static final double CONVEYOR_SPEED = 1.0;
     
 
-    private double topKP = 0.00023;
+    private double topKP = 0.00018;
     private double topKD = 0.0;
     // private double topKPIncrementFactor = 0.1; /* for tuning */
     
