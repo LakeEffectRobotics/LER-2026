@@ -21,6 +21,14 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.RobotBase;
+
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.numbers.N1;
+import com.revrobotics.sim.SparkMaxSim;
 
 /**
  * subsystem for controlling the shooter
@@ -126,9 +134,18 @@ public class Shooter extends SubsystemBase
 
     private PIDController shooterPIDController;
 
+    /**
+    * simulation stuff
+    **/
+    private SparkMaxSim simTopMotor;
+    private SparkMaxSim simBottomMotor;
+    private FlywheelSim simTopFlywheel;
+    private FlywheelSim simBottomFlywheel;
 
-    private DataLog log;
-    private DoubleLogEntry topRPMLog;
+    private static final double SIM_SHOOTER_KP = 0.01;
+    private PIDController simShooterPIDController;
+
+
 
     public Shooter(SparkMax topLeader,
                    SparkMax topFollower,
@@ -179,6 +196,32 @@ public class Shooter extends SubsystemBase
         this.bottomMotorEncoder = bottomMotor.getEncoder();
 
         shooterPIDController = new PIDController(SHOOTER_KP, 0, 0);
+
+        if(RobotBase.isSimulation())
+        {
+            simTopMotor = new SparkMaxSim(topMotor, DCMotor.getNEO(2));
+            simBottomMotor = new SparkMaxSim(bottomMotor, DCMotor.getNEO(2));
+            LinearSystem<N1, N1, N1>topPlant = LinearSystemId.identifyVelocitySystem(
+                                                   0.002,
+                                                   0.03);
+            LinearSystem<N1, N1, N1>bottomPlant = LinearSystemId.identifyVelocitySystem(
+                    0.002,
+                    0.03);
+            // LinearSystem<N1, N1, N1>topPlant = LinearSystemId.createFlywheelSystem(
+            //                                        DCMotor.getNEO(2),
+            //                                        0.1,
+            //                                        4.0/5.0);
+            // LinearSystem<N1, N1, N1>bottomPlant = LinearSystemId.createFlywheelSystem(
+            //         DCMotor.getNEO(2),
+            //         0.00001,
+            //         4.0/5.0);
+
+
+            simTopFlywheel = new FlywheelSim(topPlant, DCMotor.getNEO(2));
+            simBottomFlywheel = new FlywheelSim(bottomPlant, DCMotor.getNEO(2));
+            simShooterPIDController = new PIDController(SIM_SHOOTER_KP, 0.0, 0.0);
+
+        }
     }
 
 
@@ -293,96 +336,136 @@ public class Shooter extends SubsystemBase
         bottomOverrideTargetRPM += v;
     }
 
+    // @Override
+    // public void periodic()
+    // {
+    //     // topTargetRPM = SmartDashboard.getNumber("shooter:set", 0);
+    //     // bottomTargetRPM = topTargetRPM;
+
+    //     double topRPM;
+    //     double bottomRPM;
+    //     double targetDistance;
+    //     double ffTerm;
+    //     double topSpeed = 0;
+    //     double bottomSpeed = 0;
+
+    //     // get top and bottom motor velocity
+    //     topRPM = Math.abs(topMotorEncoder.getVelocity());
+    //     bottomRPM = Math.abs(bottomMotorEncoder.getVelocity());
+    //     SmartDashboard.putNumber("shooter: top RPM", topRPM);
+    //     SmartDashboard.putNumber("shooter: bottom RPM", bottomRPM);
+
+    //     SmartDashboard.putString("shooter: mode", shooterMode.toString());
+    //     if(shooterMode == ShooterMode.DEAD)
+    //     {
+    //         topMotor.set(0.0);
+    //         bottomMotor.set(0.0);
+    //         conveyorMotor.set(0.0);
+    //         return;
+    //     }
+
+    //     // get distance from target, update target RPM
+    //     targetDistance = getDistanceFromTarget();
+    //     topTargetRPM = calculateTargetRPM(targetDistance);
+    //     bottomTargetRPM = topTargetRPM;
+    //     SmartDashboard.putNumber("shooter: distance", targetDistance);
+    //     SmartDashboard.putNumber("shooter: targetRPM", topTargetRPM);
+
+    //     switch(shooterMode)
+    //     {
+    //     case DEAD:
+    //         return;
+    //     case REVERSE:
+    //         conveyorMotor.set(-CONVEYOR_SPEED);
+    //     case OVERRIDE:
+    //         topSpeed = calculateTopFFTerm(topOverrideTargetRPM)
+    //                    + shooterPIDController.calculate(topRPM, topOverrideTargetRPM);
+    //         bottomSpeed = calculateBottomFFTerm(bottomOverrideTargetRPM)
+    //                       + shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
+    //         break;
+    //     case STANDBY:
+    //         conveyorMotor.set(0.0);
+    //     case FIRE:
+    //         topSpeed = calculateTopFFTerm(topTargetRPM)
+    //                    + shooterPIDController.calculate(topRPM, topTargetRPM);
+    //         bottomSpeed = calculateBottomFFTerm(bottomTargetRPM)
+    //                       + shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
+    //         break;
+    //     case IDLE:
+    //         conveyorMotor.set(0.0);
+    //         topSpeed = IDLE_SPEED;
+    //         bottomSpeed = IDLE_SPEED;
+    //         break;
+    //     }
+
+
+    //     /* decide whether to run conveyor*/
+    //     if(shooterMode == ShooterMode.FIRE || shooterMode == ShooterMode.OVERRIDE)
+    //     {
+    //         if(conveyorMode == ConveyorMode.STRICT)
+    //         {
+    //             if((isWithinMaxRPMError(topRPM, topTargetRPM)
+    //                     && isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
+    //                     || topTargetRPM >= MAX_TARGET_RPM)
+    //             {
+    //                 conveyorMotor.set(CONVEYOR_SPEED); // conveyor in strict mode and is within error allowance
+    //             }
+    //             else
+    //             {
+    //                 conveyorMotor.set(0.0); // conveyor in strict mode and is not within error allowance
+    //             }
+    //         }
+    //         else
+    //         {
+    //             conveyorMotor.set(CONVEYOR_SPEED); // conveyor is not in strict mode
+    //         }
+    //     }
+
+
+    //     SmartDashboard.putNumber("shooter: top speed", topSpeed);
+    //     SmartDashboard.putNumber("shooter: bottom speed", bottomSpeed);
+    //     topMotor.set(topSpeed);
+    //     bottomMotor.set(-bottomSpeed);
+    // }
+
     @Override
-    public void periodic()
+    public void simulationPeriodic()
     {
-        // topTargetRPM = SmartDashboard.getNumber("shooter:set", 0);
-        // bottomTargetRPM = topTargetRPM;
+        double topRPM, bottomRPM;
+        double topInputVoltage, bottomInputVoltage;
 
-        double topRPM;
-        double bottomRPM;
-        double targetDistance;
-        double ffTerm;
-        double topSpeed = 0;
-        double bottomSpeed = 0;
+        topRPM = simTopMotor.getVelocity();
+        bottomRPM = simBottomMotor.getVelocity();
+        SmartDashboard.putNumber("shootersim: topRPM", topRPM);
+        SmartDashboard.putNumber("shootersim: bottomRPM", bottomRPM);
 
-        // get top and bottom motor velocity
-        topRPM = Math.abs(topMotorEncoder.getVelocity());
-        bottomRPM = Math.abs(bottomMotorEncoder.getVelocity());
-        SmartDashboard.putNumber("shooter: top RPM", topRPM);
-        SmartDashboard.putNumber("shooter: bottom RPM", bottomRPM);
-
-        SmartDashboard.putString("shooter: mode", shooterMode.toString());
-        if(shooterMode == ShooterMode.DEAD)
-        {
-            topMotor.set(0.0);
-            bottomMotor.set(0.0);
-            conveyorMotor.set(0.0);
-            return;
-        }
-
-	// get distance from target, update target RPM
-        targetDistance = getDistanceFromTarget();
-        topTargetRPM = calculateTargetRPM(targetDistance);
+        topTargetRPM = calculateTargetRPM(1.14);
         bottomTargetRPM = topTargetRPM;
-        SmartDashboard.putNumber("shooter: distance", targetDistance);
-        SmartDashboard.putNumber("shooter: targetRPM", topTargetRPM);
+        topInputVoltage = calculateTopFFTerm(topTargetRPM);
+        bottomInputVoltage = calculateBottomFFTerm(bottomTargetRPM);
+        SmartDashboard.putNumber("shootersim: toptargetrpm", topTargetRPM);
+        SmartDashboard.putNumber("shootersim: bottomtargetrpm", bottomTargetRPM);
+        SmartDashboard.putNumber("shootersim: topFF", topInputVoltage);
+        SmartDashboard.putNumber("shootersim: bottomFF", bottomInputVoltage);
 
-        switch(shooterMode)
-        {
-        case DEAD:
-            return;
-        case REVERSE:		
-            conveyorMotor.set(-CONVEYOR_SPEED);
-        case OVERRIDE:
-            topSpeed = calculateTopFFTerm(topOverrideTargetRPM)
-                       + shooterPIDController.calculate(topRPM, topOverrideTargetRPM);
-            bottomSpeed = calculateBottomFFTerm(bottomOverrideTargetRPM)
-                          + shooterPIDController.calculate(bottomRPM, bottomOverrideTargetRPM);
-            break;
-        case STANDBY:
-            conveyorMotor.set(0.0);
-        case FIRE:
-            topSpeed = calculateTopFFTerm(topTargetRPM)
-                       + shooterPIDController.calculate(topRPM, topTargetRPM);
-            bottomSpeed = calculateBottomFFTerm(bottomTargetRPM)
-                          + shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
-            break;
-        case IDLE:
-            conveyorMotor.set(0.0);
-            topSpeed = IDLE_SPEED;
-            bottomSpeed = IDLE_SPEED;
-	    break;
-        }
+        topInputVoltage = topInputVoltage + simShooterPIDController.calculate(topRPM, topTargetRPM);
+        SmartDashboard.putNumber("shootersim: top input", topInputVoltage);
+        SmartDashboard.putNumber("shootersim: bottom input", bottomInputVoltage);
 
 
-        /* decide whether to run conveyor*/
-        if(shooterMode == ShooterMode.FIRE || shooterMode == ShooterMode.OVERRIDE)
-        {
-            if(conveyorMode == ConveyorMode.STRICT)
-            {
-                if((isWithinMaxRPMError(topRPM, topTargetRPM)
-                        && isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
-                        || topTargetRPM >= MAX_TARGET_RPM)
-                {
-                    conveyorMotor.set(CONVEYOR_SPEED); // conveyor in strict mode and is within error allowance
-                }
-                else
-                {
-                    conveyorMotor.set(0.0); // conveyor in strict mode and is not within error allowance
-                }
-            }
-            else
-            {
-                conveyorMotor.set(CONVEYOR_SPEED); // conveyor is not in strict mode
-            }
-        }
+        simTopFlywheel.setInputVoltage(topInputVoltage);
+        simBottomFlywheel.setInputVoltage(bottomInputVoltage);
 
+        simTopFlywheel.update(0.02);
+        simBottomFlywheel.update(0.02);
 
-        SmartDashboard.putNumber("shooter: top speed", topSpeed);
-        SmartDashboard.putNumber("shooter: bottom speed", bottomSpeed);
-        topMotor.set(topSpeed);
-        bottomMotor.set(-bottomSpeed);
+        simTopMotor.iterate(simTopFlywheel.getAngularVelocityRPM(),
+                            12.0,
+                            0.02);
+        simBottomMotor.iterate(simBottomFlywheel.getAngularVelocityRPM(),
+                               12.0,
+                               0.02);
+
     }
 
 }
