@@ -22,6 +22,8 @@ import frc.robot.AutoPositionSuppliers;
 import frc.robot.commands.auto.TurnCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 
 @Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer {
@@ -55,6 +57,9 @@ public class RobotContainer {
 
     public AutoPositionSuppliers autoPositionSuppliers = new AutoPositionSuppliers(pose);
 
+    public EyesSubsystem eyes = new EyesSubsystem();
+
+
 
   /**
    * The RobotContainer class is where the bulk of the robot should be declared.
@@ -78,6 +83,7 @@ public class RobotContainer {
     }
     SmartDashboard.putData("Auto Selector", autoSelector);
     SmartDashboard.putNumber("Set auto initial delay", 0);
+    SmartDashboard.putNumber("Impact Threshold", 2.0);
   }
 
 
@@ -85,6 +91,15 @@ public class RobotContainer {
       /** driver binds **/
       
       drivetrain.setDefaultCommand(new DriveCommand(drivetrain, OI.driveLeftStickXSupplier, OI.driveLeftStickYSupplier, OI.driveRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
+      
+      eyes.setDefaultCommand(Commands.run(() -> eyes.setLEDState(EyesSubsystem.LEDState.RESTING_PURPLE), eyes));
+
+      // Set eyes to DEFENCE (Red) while intake is retracted
+      new Trigger(() -> !intake.getIsExtended())
+        .whileTrue(Commands.run(() -> eyes.setLEDState(EyesSubsystem.LEDState.DEFENCE), eyes));
+
+      new Trigger(() -> gyro.getAccelerationMagnitude() > SmartDashboard.getNumber("Impact Threshold", 2.0))
+        .onTrue(Commands.run(() -> eyes.setLEDState(EyesSubsystem.LEDState.SCRAMBLED), eyes).withTimeout(2.0));
       
       OI.driveControllerA.onTrue(new InstantCommand(() -> { gyro.reset(); }));
       
@@ -98,6 +113,11 @@ public class RobotContainer {
 							  OI.driveControllerRightTriggerSupplier));
       
       OI.driveControllerX.whileTrue(new SweetSpotCommand(drivetrain, pose, autoPositionSuppliers));
+
+      // Test harness for eyes: cycle through modes with B button when in test mode
+      RobotModeTriggers.test()
+          .and(OI.driveControllerB)
+          .onTrue(Commands.runOnce(eyes::nextLEDState, eyes));
 
       /** operator binds **/
       OI.operatorRightTrigger.onTrue(new ShooterCommand(shooter,
