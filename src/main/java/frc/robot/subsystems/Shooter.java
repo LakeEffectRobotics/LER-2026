@@ -79,10 +79,10 @@ public class Shooter extends SubsystemBase
      * values for calculating the FF term in volts given the target RPM
      * FF = (RPM - FF_OFFSET) / FF_COEFFICIENT
      **/
-    private static final double TOP_FF_COEFFICIENT = 4369.28571;
-    private static final double TOP_FF_OFFSET = -113.14286;
-    private static final double BOTTOM_FF_COEFFICIENT = 4346.78571;
-    private static final double BOTTOM_FF_OFFSET = -51.0;
+    private static final double TOP_FF_COEFFICIENT = 0.0021;
+    private static final double TOP_FF_OFFSET = 0.4897;
+    private static final double BOTTOM_FF_COEFFICIENT = 0.0021;
+    private static final double BOTTOM_FF_OFFSET = 0.3499;
 
     /**
      * values for calculating target RPM given distance from the target
@@ -105,7 +105,7 @@ public class Shooter extends SubsystemBase
     private static final double CONVEYOR_SPEED = 1.0;
 
 
-    private static final double SHOOTER_KP = 0.00015;
+    private static final double SHOOTER_KP = 0.00375; // tuned 2026/04/06
 
 
     private SparkMax topMotor;
@@ -155,6 +155,7 @@ public class Shooter extends SubsystemBase
                    Pose robotPose)
     {
         SmartDashboard.putNumber("shooter:set", 0);
+	SmartDashboard.putNumber("shooter:setkp", 0);
         this.robotPose = robotPose;
 
         // setup configurations
@@ -252,7 +253,7 @@ public class Shooter extends SubsystemBase
      **/
     private double calculateTopFFTerm(double targetRPM)
     {
-        return (targetRPM - TOP_FF_OFFSET) / TOP_FF_COEFFICIENT;
+	return targetRPM * TOP_FF_COEFFICIENT + TOP_FF_OFFSET;
     }
 
     /**
@@ -260,7 +261,7 @@ public class Shooter extends SubsystemBase
      **/
     private double calculateBottomFFTerm(double targetRPM)
     {
-        return (targetRPM - BOTTOM_FF_OFFSET) / BOTTOM_FF_COEFFICIENT;
+	return targetRPM * BOTTOM_FF_COEFFICIENT + BOTTOM_FF_OFFSET;
     }
 
     private double calculateTargetRPM(double distance)

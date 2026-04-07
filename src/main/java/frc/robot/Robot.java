@@ -88,6 +88,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    m_robotContainer.pose.setNoCameraMode(false); // enable camera in case it was disabled at the end of auto
   }
 
   /** This function is called periodically during operator control. */
@@ -96,7 +98,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-      RobotMap.compressor.enableAnalog(120, 120);
+      RobotMap.compressor.enableAnalog(119, 120);
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
