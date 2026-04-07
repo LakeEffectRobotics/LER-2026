@@ -21,7 +21,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.math.system.LinearSystem;
@@ -29,6 +29,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.numbers.N1;
 import com.revrobotics.sim.SparkMaxSim;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * subsystem for controlling the shooter
@@ -145,6 +146,8 @@ public class Shooter extends SubsystemBase
     private static final double SIM_SHOOTER_KP = 0.00375;
     private PIDController simShooterPIDController;
 
+    private Pose2d simPose;
+
 
 
     public Shooter(SparkMax topLeader,
@@ -210,18 +213,18 @@ public class Shooter extends SubsystemBase
             //         0.03);
             LinearSystem<N1, N1, N1>topPlant = LinearSystemId.createFlywheelSystem(
                                                    DCMotor.getNEO(2),
-                                                   0.0003,
-                                                   5.0/4.0);
+                                                   0.0001,
+                                                   1);
             LinearSystem<N1, N1, N1>bottomPlant = LinearSystemId.createFlywheelSystem(
                     DCMotor.getNEO(2),
-                    0.0003,
-                    5.0/4.0);
+                    0.0001,
+                    1);
 
 
             simTopFlywheel = new FlywheelSim(topPlant, DCMotor.getNEO(2));
             simBottomFlywheel = new FlywheelSim(bottomPlant, DCMotor.getNEO(2));
             simShooterPIDController = new PIDController(SIM_SHOOTER_KP, 0.0, 0.0);
-
+	    simPose = new Pose2d(Constants.FieldPositionConstants.HUB_X, Constants.FieldPositionConstants.HUB_Y, new Rotation2d(0));
         }
     }
 
@@ -237,11 +240,8 @@ public class Shooter extends SubsystemBase
     /**
      * get the distance from the current target position
      **/
-    private double getDistanceFromTarget()
+    private double getDistanceFromTarget(Pose2d currentPos)
     {
-        Pose2d currentPos;
-
-        currentPos = robotPose.getRobotPose();
         return Math.sqrt(
                    Math.pow((currentPos.getX() - xTarget), 2)
                    + Math.pow((currentPos.getY() -  yTarget), 2));
@@ -434,13 +434,20 @@ public class Shooter extends SubsystemBase
     {
         double topRPM, bottomRPM;
         double topInputVoltage, bottomInputVoltage;
+	double targetDistance;
 
+	// simPose = new Pose2d(simPose.getX() - 0.02, 0.0, new Rotation2d(0.0));
+
+	// get encoder velocities
         topRPM = simTopMotor.getVelocity();
         bottomRPM = simBottomMotor.getVelocity();
         SmartDashboard.putNumber("shootersim: topRPM", topRPM);
         SmartDashboard.putNumber("shootersim: bottomRPM", bottomRPM);
 
-        topTargetRPM = calculateTargetRPM(1.14);
+	targetDistance = getDistanceFromTarget(simPose);
+	SmartDashboard.putNumber("shootersim: distance", targetDistance);
+	
+        topTargetRPM = calculateTargetRPM(targetDistance);
         bottomTargetRPM = topTargetRPM;
         topInputVoltage = calculateTopFFTerm(topTargetRPM);
         bottomInputVoltage = calculateBottomFFTerm(bottomTargetRPM);
