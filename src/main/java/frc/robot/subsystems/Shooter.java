@@ -142,7 +142,7 @@ public class Shooter extends SubsystemBase
     private FlywheelSim simTopFlywheel;
     private FlywheelSim simBottomFlywheel;
 
-    private static final double SIM_SHOOTER_KP = 0.01;
+    private static final double SIM_SHOOTER_KP = 0.00375;
     private PIDController simShooterPIDController;
 
 
@@ -155,7 +155,7 @@ public class Shooter extends SubsystemBase
                    Pose robotPose)
     {
         SmartDashboard.putNumber("shooter:set", 0);
-	SmartDashboard.putNumber("shooter:setkp", 0);
+        SmartDashboard.putNumber("shooter:setkp", 0);
         this.robotPose = robotPose;
 
         // setup configurations
@@ -202,20 +202,20 @@ public class Shooter extends SubsystemBase
         {
             simTopMotor = new SparkMaxSim(topMotor, DCMotor.getNEO(2));
             simBottomMotor = new SparkMaxSim(bottomMotor, DCMotor.getNEO(2));
-            LinearSystem<N1, N1, N1>topPlant = LinearSystemId.identifyVelocitySystem(
-                                                   0.002,
-                                                   0.03);
-            LinearSystem<N1, N1, N1>bottomPlant = LinearSystemId.identifyVelocitySystem(
-                    0.002,
-                    0.03);
-            // LinearSystem<N1, N1, N1>topPlant = LinearSystemId.createFlywheelSystem(
-            //                                        DCMotor.getNEO(2),
-            //                                        0.1,
-            //                                        4.0/5.0);
-            // LinearSystem<N1, N1, N1>bottomPlant = LinearSystemId.createFlywheelSystem(
-            //         DCMotor.getNEO(2),
-            //         0.00001,
-            //         4.0/5.0);
+            // LinearSystem<N1, N1, N1>topPlant = LinearSystemId.identifyVelocitySystem(
+            //                                        0.002,
+            //                                        0.03);
+            // LinearSystem<N1, N1, N1>bottomPlant = LinearSystemId.identifyVelocitySystem(
+            //         0.002,
+            //         0.03);
+            LinearSystem<N1, N1, N1>topPlant = LinearSystemId.createFlywheelSystem(
+                                                   DCMotor.getNEO(2),
+                                                   0.0003,
+                                                   5.0/4.0);
+            LinearSystem<N1, N1, N1>bottomPlant = LinearSystemId.createFlywheelSystem(
+                    DCMotor.getNEO(2),
+                    0.0003,
+                    5.0/4.0);
 
 
             simTopFlywheel = new FlywheelSim(topPlant, DCMotor.getNEO(2));
@@ -253,7 +253,7 @@ public class Shooter extends SubsystemBase
      **/
     private double calculateTopFFTerm(double targetRPM)
     {
-	return targetRPM * TOP_FF_COEFFICIENT + TOP_FF_OFFSET;
+        return targetRPM * TOP_FF_COEFFICIENT + TOP_FF_OFFSET;
     }
 
     /**
@@ -261,7 +261,7 @@ public class Shooter extends SubsystemBase
      **/
     private double calculateBottomFFTerm(double targetRPM)
     {
-	return targetRPM * BOTTOM_FF_COEFFICIENT + BOTTOM_FF_OFFSET;
+        return targetRPM * BOTTOM_FF_COEFFICIENT + BOTTOM_FF_OFFSET;
     }
 
     private double calculateTargetRPM(double distance)
@@ -450,6 +450,7 @@ public class Shooter extends SubsystemBase
         SmartDashboard.putNumber("shootersim: bottomFF", bottomInputVoltage);
 
         topInputVoltage = topInputVoltage + simShooterPIDController.calculate(topRPM, topTargetRPM);
+        bottomInputVoltage = bottomInputVoltage + simShooterPIDController.calculate(bottomRPM, bottomTargetRPM);
         SmartDashboard.putNumber("shootersim: top input", topInputVoltage);
         SmartDashboard.putNumber("shootersim: bottom input", bottomInputVoltage);
 
