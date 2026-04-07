@@ -2,11 +2,14 @@ package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
+
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+@Logged
 public class Intake extends SubsystemBase {
 
     private SparkMax intakeMotor;
