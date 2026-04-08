@@ -5,6 +5,10 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Pose;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
@@ -69,6 +73,7 @@ public class Shooter extends SubsystemBase
     private ConveyorMode conveyorMode = ConveyorMode.STRICT;
 
     private Pose robotPose;
+    private Drivetrain drivetrain;
 
     /**
      * Sparkmax configuration constants
@@ -90,8 +95,15 @@ public class Shooter extends SubsystemBase
      * RPM = distance*RPM_COEFFICIENT + RPM_OFFSET
      **/
     private static final double RPM_COEFFICIENT = 395.43275 * 1.16;
-
     private static final double RPM_OFFSET = 838.4746 + 116;
+
+    /**
+     * values for calculating the time-of-flight in seconds given the distance in meters
+     * time-of-flight(d) = TOF_COEFFICIENT_A * d^2 + TOF_COEFFICIENT_B * d + TOF_OFFSET
+     **/
+    private static final double TOF_COEFFICIENT_A = -0.0172;
+    private static final double TOF_COEFFICIENT_B = 0.3597;
+    private static final double TOF_OFFSET = 0.2844;
 
     /**
      * conveyor condition constants
@@ -155,11 +167,13 @@ public class Shooter extends SubsystemBase
                    SparkMax bottomLeader,
                    SparkMax bottomFollower,
                    SparkMax conveyorMotor,
-                   Pose robotPose)
+                   Pose robotPose,
+		   Drivetrain drivetrain)
     {
         SmartDashboard.putNumber("shooter:set", 0);
         SmartDashboard.putNumber("shooter:setkp", 0);
         this.robotPose = robotPose;
+	this.drivetrain = drivetrain;
 
         // setup configurations
         SparkMaxConfig topLeaderConfig = new SparkMaxConfig();
@@ -224,7 +238,7 @@ public class Shooter extends SubsystemBase
             simTopFlywheel = new FlywheelSim(topPlant, DCMotor.getNEO(2));
             simBottomFlywheel = new FlywheelSim(bottomPlant, DCMotor.getNEO(2));
             simShooterPIDController = new PIDController(SIM_SHOOTER_KP, 0.0, 0.0);
-	    simPose = new Pose2d(Constants.FieldPositionConstants.HUB_X, Constants.FieldPositionConstants.HUB_Y, new Rotation2d(0));
+            simPose = new Pose2d(Constants.FieldPositionConstants.HUB_X, Constants.FieldPositionConstants.HUB_Y, new Rotation2d(0));
         }
     }
 
@@ -267,6 +281,11 @@ public class Shooter extends SubsystemBase
     private double calculateTargetRPM(double distance)
     {
         return distance * RPM_COEFFICIENT + RPM_OFFSET;
+    }
+
+    private double calculateTimeOfFlight(double distance)
+    {
+        return ((TOF_COEFFICIENT_A * Math.pow(distance, 2)) + (TOF_COEFFICIENT_B * distance) + (TOF_OFFSET));
     }
 
     /**
@@ -434,19 +453,46 @@ public class Shooter extends SubsystemBase
     {
         double topRPM, bottomRPM;
         double topInputVoltage, bottomInputVoltage;
-	double targetDistance;
+        double targetDistance;
+        double tof;
+	ChassisSpeeds robotChassisSpeeds;
+	Transform2d robotVelocity;
+	Pose2d sotmPose;
+	
+	robotChassisSpeeds = drivetrain.getChassisSpeeds();
+	// robotVelocity = new Transform2d(robotChassisSpeeds.vxMetersPerSecond,
+	// 				robotChassisSpeeds.vyMetersPerSecond,
+	// 				new Rotation2d(0.0));
+	robotVelocity = new Transform2d(2.0, 2.0, Rotation2d.kZero);
+	    
 
-	// simPose = new Pose2d(simPose.getX() - 0.02, 0.0, new Rotation2d(0.0));
+	simPose = new Pose2d(simPose.getX() + (robotVelocity.getX() * 0.02),
+			     simPose.getY() + (robotVelocity.getY() * 0.02),
+			     Rotation2d.kZero);
+	
+        // simPose = new Pose2d(simPose.getX() - 0.02, 0.0, new Rotation2d(0.0));
 
-	// get encoder velocities
+        // get encoder velocities
         topRPM = simTopMotor.getVelocity();
         bottomRPM = simBottomMotor.getVelocity();
         SmartDashboard.putNumber("shootersim: topRPM", topRPM);
         SmartDashboard.putNumber("shootersim: bottomRPM", bottomRPM);
 
-	targetDistance = getDistanceFromTarget(simPose);
+        targetDistance = getDistanceFromTarget(simPose);
 	SmartDashboard.putNumber("shootersim: distance", targetDistance);
+        if(targetDistance > 7)
+        {
+	    simPose = new Pose2d(0, 0, Rotation2d.kZero);
+        }
+        tof = calculateTimeOfFlight(targetDistance);
+	sotmPose = new Pose2d(simPose.getX() + robotVelocity.getX() * tof,
+			      simPose.getX() + robotVelocity.getY() * tof,
+			      Rotation2d.kZero);
+	targetDistance = getDistanceFromTarget(sotmPose);
+
+        SmartDashboard.putNumber("shootersim: time-of-flight", tof);
 	
+
         topTargetRPM = calculateTargetRPM(targetDistance);
         bottomTargetRPM = topTargetRPM;
         topInputVoltage = calculateTopFFTerm(topTargetRPM);
