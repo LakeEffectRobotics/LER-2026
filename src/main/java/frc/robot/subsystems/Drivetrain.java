@@ -136,6 +136,17 @@ public class Drivetrain extends SubsystemBase {
         return odometry.getPoseMeters();
     }
 
+    public ChassisSpeeds getChassisSpeeds()
+    {
+	SwerveModuleState[] states = {
+	    leftFrontSwerve.getState(),
+	    rightFrontSwerve.getState(),
+	    leftBackSwerve.getState(),
+	    rightBackSwerve.getState()
+	};
+	return kinematics.toChassisSpeeds(states);
+    }
+
     public void setOdometryXY(double x, double y)
     /**
         set the swerve odometry's x and y values to specified values in meters
