@@ -85,8 +85,8 @@ public class Shooter extends SubsystemBase
      * values for calculating target RPM given distance from the target
      * RPM = distance*RPM_COEFFICIENT + RPM_OFFSET
      **/
-    private static final double RPM_COEFFICIENT = 395.43275 * 1.16;
-    private static final double RPM_OFFSET = 838.4746 + 116;
+    private static final double RPM_COEFFICIENT = 584.40277;
+    private static final double RPM_OFFSET = 759.58116;
 
     /** **/
     private static final double TOF_COEFFICIENT_A = -0.0172;
@@ -354,6 +354,7 @@ public class Shooter extends SubsystemBase
 
 	// update target RPM
 	topTargetRPM = calculateTargetRPM(targetDistance);
+	// topTargetRPM = SmartDashboard.getNumber("shooter:set", 0);
         bottomTargetRPM = topTargetRPM;
         SmartDashboard.putNumber("shooter: distance", targetDistance);
         SmartDashboard.putNumber("shooter: targetRPM", topTargetRPM);
@@ -373,10 +374,10 @@ public class Shooter extends SubsystemBase
         case STANDBY:
             conveyorMotor.set(0.0);
         case FIRE:
-            topSpeed = calculateTopFFTerm(topTargetRPM)
-                       + shooterPIDController.calculate(topRPM, topTargetRPM);
-            bottomSpeed = calculateBottomFFTerm(bottomTargetRPM)
-                          + shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
+            topSpeed = calculateTopFFTerm(topTargetRPM);
+	    // + shooterPIDController.calculate(topRPM, topTargetRPM);
+            bottomSpeed = calculateBottomFFTerm(bottomTargetRPM);
+                          // + shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
             break;
         case IDLE:
             conveyorMotor.set(0.0);
@@ -396,6 +397,8 @@ public class Shooter extends SubsystemBase
                         || topTargetRPM >= MAX_TARGET_RPM)
                 {
                     conveyorMotor.set(CONVEYOR_SPEED); // conveyor in strict mode and is within error allowance
+		    topSpeed += shooterPIDController.calculate(topRPM, topTargetRPM);
+		    bottomSpeed += shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
                 }
                 else
                 {
@@ -411,8 +414,8 @@ public class Shooter extends SubsystemBase
 
         SmartDashboard.putNumber("shooter: top speed", topSpeed);
         SmartDashboard.putNumber("shooter: bottom speed", bottomSpeed);
-        topMotor.set(topSpeed);
-        bottomMotor.set(-bottomSpeed);
+        topMotor.setVoltage(topSpeed);
+        bottomMotor.setVoltage(-bottomSpeed);
     }
 
 }
