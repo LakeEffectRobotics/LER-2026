@@ -46,13 +46,13 @@ public class AutoPositionSuppliers
 	Pose2d robotPosition = pose.getRobotPose();
 	if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_Y) {
 	    return Math.atan2(
-			      robotPosition.getX() - Constants.FieldPositionConstants.RIGHT_FEED_Y,
-			      robotPosition.getY() - Constants.FieldPositionConstants.RIGHT_FEED_X
+			      robotPosition.getY() - Constants.FieldPositionConstants.RIGHT_FEED_Y,
+			      robotPosition.getX() - Constants.FieldPositionConstants.RIGHT_FEED_X
 			      );
 	} else {
 	    	    return Math.atan2(
-				      robotPosition.getX() - Constants.FieldPositionConstants.LEFT_FEED_Y,
-				      robotPosition.getY() - Constants.FieldPositionConstants.LEFT_FEED_X
+				      robotPosition.getY() - Constants.FieldPositionConstants.LEFT_FEED_Y,
+				      robotPosition.getX() - Constants.FieldPositionConstants.LEFT_FEED_X
 				      );
 	    
 	}
