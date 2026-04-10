@@ -29,11 +29,11 @@ public class FaceHubCommand extends Command
 
     public FaceHubCommand(DoubleSupplier xSupplier, DoubleSupplier ySupplier, Drivetrain drivetrain, Pose pose, Shooter shooter)
     {
-	this.xSupplier = xSupplier;
-	this.ySupplier = ySupplier;
+        this.xSupplier = xSupplier;
+        this.ySupplier = ySupplier;
         this.drivetrain = drivetrain;
         this.pose = pose;
-	this.shooter = shooter;
+        this.shooter = shooter;
         pidController = new PIDController(P_TERM, I_TERM, D_TERM);
         pidController.enableContinuousInput(-Math.PI, Math.PI);
         addRequirements(drivetrain);
@@ -47,21 +47,31 @@ public class FaceHubCommand extends Command
     @Override
     public void execute()
     {
-	Pose2d sotmPose;
-	double targetAngle;
+        Pose2d sotmPose;
+        double targetAngle;
 
-	sotmPose = shooter.getSotmPose();
-	targetAngle = Math.atan2(sotmPose.getY() - Constants.FieldPositionConstants.HUB_Y,
-				 sotmPose.getY() - Constants.FieldPositionConstants.HUB_X);
-	drivetrain.drive(ySupplier.getAsDouble(),
-			 xSupplier.getAsDouble(),
-			 pidController.calculate(pose.getRobotPose().getRotation().getRadians(), targetAngle));
+        sotmPose = shooter.getSotmPose();
+        targetAngle = Math.atan2(sotmPose.getY() - Constants.FieldPositionConstants.HUB_Y,
+                                 sotmPose.getY() - Constants.FieldPositionConstants.HUB_X);
+        if(Math.abs(sotmPose.getRotation().getRadians() - targetAngle) <= 0.2)
+        {
+            SmartDashboard.putBoolean("Sweetspot", true);
+        }
+        else
+        {
+            SmartDashboard.putBoolean("Sweetspot", false);
+        }
+
+        drivetrain.drive(ySupplier.getAsDouble(),
+               xSupplier.getAsDouble(),
+               pidController.calculate(pose.getRobotPose().getRotation().getRadians(), targetAngle));
     }
 
     @Override
     public void end(boolean interrupted)
     {
         drivetrain.drive(0.0, 0.0, 0.0);
+	SmartDashboard.putBoolean("Sweetspot", false);
     }
 
     @Override
