@@ -113,6 +113,10 @@ public class RobotContainer {
 							  OI.driveControllerRightTriggerSupplier));
       
       OI.driveControllerX.whileTrue(new SweetSpotCommand(drivetrain, pose, autoPositionSuppliers));
+      
+      // Autonomous eyes: display rainbows
+      RobotModeTriggers.autonomous()
+          .whileTrue(Commands.run(() -> eyes.setLEDState(EyesSubsystem.LEDState.AUTONOMOUS), eyes));
 
       // Test harness for eyes: cycle through modes with B button when in test mode
       RobotModeTriggers.test()

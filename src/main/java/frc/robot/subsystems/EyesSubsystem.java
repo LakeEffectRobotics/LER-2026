@@ -12,7 +12,8 @@ public class EyesSubsystem extends SubsystemBase {
         RESTING_PURPLE(0),
         DEFENCE(1),
         SCRAMBLED(2),
-        RANDOM_MODE(3);
+        RANDOM_MODE(3),
+        AUTONOMOUS(4);
 
         public final int value;
 
