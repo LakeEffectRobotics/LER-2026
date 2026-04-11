@@ -27,7 +27,6 @@ public class FMS extends SubsystemBase{
     public void periodic()
     {
         boolean isRed;
-
         
         isRed = FMSTable.getEntry("IsRedAlliance").getBoolean(false);
         
