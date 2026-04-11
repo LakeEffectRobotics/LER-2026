@@ -52,6 +52,13 @@ here	   |   |
 	public static final double CENTER_SHOOT_X = HUB_X - SHOOTING_DISTANCE;
 	public static final double CENTER_SHOOT_Y = HUB_Y;
 
+	/** Bump positions (left/right from driver pov) **/
+	public static final double RIGHT_BUMP_CENTER_X = 4.633;
+	public static final double RIGHT_BUMP_CENTER_Y = 2.444;
+
+	public static final double LEFT_BUMP_CENTER_X = 4.633;
+	public static final double LEFT_BUMP_CENTER_Y = 5.497;
+
 	/** team feeding positions **/
 	public static final double RIGHT_FEED_X = 2.3128;
 	public static final double RIGHT_FEED_Y = 2.0173;
