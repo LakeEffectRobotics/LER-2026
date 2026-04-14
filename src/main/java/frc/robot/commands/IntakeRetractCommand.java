@@ -26,7 +26,7 @@ public class IntakeRetractCommand extends Command
         if(intake.getIsExtended())
         {
             System.out.println("IntakeRetractCommand:retracting");
-	    intake.startReverse();
+	    intake.start();
             intake.retract();
 	    endTime = endTime + RETRACT_REVERSE_TIME;
         }

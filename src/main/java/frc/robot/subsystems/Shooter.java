@@ -64,7 +64,7 @@ public class Shooter extends SubsystemBase
     private ConveyorMode conveyorMode = ConveyorMode.STRICT;
 
     private double timeOfFlight;
-    private Pose2d sotmPose;
+    private Pose2d sotmPose = new Pose2d(0.0, 0.0, Rotation2d.kZero);
 
     private Pose robotPose;
     private Drivetrain drivetrain;
@@ -99,7 +99,7 @@ public class Shooter extends SubsystemBase
     /**
      * conveyor condition constants
      **/
-    private static final double SHOOTER_RPM_MAX_ERROR = 400; // shooter must be within SHOOTER_RPM_MAX_ERROR for the conveyor to run
+    private static final double SHOOTER_RPM_MAX_ERROR = 200; // shooter must be within SHOOTER_RPM_MAX_ERROR for the conveyor to run
     private static final double MAX_TARGET_RPM = 4500;	     // maximum shooter target RPM for conveyor to wait on, if target rpm > MAX_TARGET_RPM conveyor will run unconditionally
 
     /**
@@ -257,7 +257,7 @@ public class Shooter extends SubsystemBase
 
     public Pose2d getSotmPose()
     {
-	return sotmPose;
+        return sotmPose;
     }
 
     /**
@@ -338,13 +338,6 @@ public class Shooter extends SubsystemBase
         SmartDashboard.putNumber("shooter: bottom RPM", bottomRPM);
 
         SmartDashboard.putString("shooter: mode", shooterMode.toString());
-        if(shooterMode == ShooterMode.DEAD)
-        {
-            topMotor.set(0.0);
-            bottomMotor.set(0.0);
-            conveyorMotor.set(0.0);
-            return;
-        }
 
         // get distance from target
         currentPose = robotPose.getRobotPose();
@@ -357,6 +350,14 @@ public class Shooter extends SubsystemBase
                                     robotVelocity.vyMetersPerSecond * timeOfFlight,
                                     Rotation2d.kZero));
         targetDistance = getDistanceFromTarget(sotmPose);
+
+        if(shooterMode == ShooterMode.DEAD)
+        {
+            topMotor.set(0.0);
+            bottomMotor.set(0.0);
+            conveyorMotor.set(0.0);
+            return;
+        }
 
         // update target RPM
         topTargetRPM = calculateTargetRPM(targetDistance);

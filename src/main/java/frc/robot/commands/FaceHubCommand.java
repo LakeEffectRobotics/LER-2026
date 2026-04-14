@@ -65,7 +65,7 @@ public class FaceHubCommand extends Command
 
         sotmPose = shooter.getSotmPose();
         targetAngle = Math.atan2(sotmPose.getY() - Constants.FieldPositionConstants.HUB_Y,
-                                 sotmPose.getY() - Constants.FieldPositionConstants.HUB_X);
+                                 sotmPose.getX() - Constants.FieldPositionConstants.HUB_X);
         if(Math.abs(sotmPose.getRotation().getRadians() - targetAngle) <= 0.2)
         {
             SmartDashboard.putBoolean("Sweetspot", true);
