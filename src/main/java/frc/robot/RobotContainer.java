@@ -112,6 +112,8 @@ public class RobotContainer
                                        Shooter.ConveyorMode.STRICT,
                                        OI.operatorRightTriggerSupplier));
 
+        OI.operatorControllerRightBumper.whileTrue(new IntakeReverseCommand(intake,
+                shooter));
 
 
         OI.operatorControllerY.whileTrue(new ShooterCommand(shooter,
@@ -141,22 +143,23 @@ public class RobotContainer
             shooter.setShooterMode(Shooter.ShooterMode.OVERRIDE);
         }));
 
-        OI.operatorControllerRightBumper.onTrue(new InstantCommand(() ->
-        {
-            shooter.incrementOverrideTargetRPM(50);
-        }));
+        // OI.operatorControllerRightBumper.onTrue(new InstantCommand(() ->
+        // {
+        //     shooter.incrementOverrideTargetRPM(50);
+        // }));
 
-        OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() ->
-        {
-            shooter.incrementOverrideTargetRPM(-50);
-        }));
+        // OI.operatorControllerLeftBumper.onTrue(new InstantCommand(() ->
+        // {
+        //     shooter.incrementOverrideTargetRPM(-50);
+        // }));
 
         OI.operatorControllerStart.onTrue(new InstantCommand(() ->
         {
-            intake.setOutput(0.8);
+            intake.startReverse();
         }));
 
         OI.operatorControllerA.onTrue(new IntakeRetractCommand(intake));
+
 
 
 

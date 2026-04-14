@@ -11,7 +11,7 @@ public class IntakeRetractCommand extends Command
 
     private Intake intake;
 
-    private double endTime;
+    private double endTime = -1;
 
     public IntakeRetractCommand(Intake intake)
     {
