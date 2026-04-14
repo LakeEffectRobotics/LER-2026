@@ -21,16 +21,23 @@ public class FaceHubCommand extends Command
 
     private DoubleSupplier xSupplier;
     private DoubleSupplier ySupplier;
+    private DoubleSupplier triggerSupplier;
 
     private static final double P_TERM = 5.0;
     private static final double I_TERM = 5.0;
     private static final double D_TERM = 0.0;
 
+    private static final double SOTM_SPEED_LIMIT = 0.25;
 
-    public FaceHubCommand(DoubleSupplier xSupplier, DoubleSupplier ySupplier, Drivetrain drivetrain, Pose pose, Shooter shooter)
+    public FaceHubCommand(DoubleSupplier xSupplier,
+                          DoubleSupplier ySupplier,
+                          DoubleSupplier triggerSupplier,
+                          Drivetrain drivetrain,
+                          Pose pose, Shooter shooter)
     {
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
+        this.triggerSupplier = triggerSupplier;
         this.drivetrain = drivetrain;
         this.pose = pose;
         this.shooter = shooter;
@@ -49,6 +56,12 @@ public class FaceHubCommand extends Command
     {
         Pose2d sotmPose;
         double targetAngle;
+        double scale = 1.0;
+
+        if(triggerSupplier.getAsDouble() > 0.5)
+        {
+            scale = SOTM_SPEED_LIMIT;
+        }
 
         sotmPose = shooter.getSotmPose();
         targetAngle = Math.atan2(sotmPose.getY() - Constants.FieldPositionConstants.HUB_Y,
@@ -62,16 +75,16 @@ public class FaceHubCommand extends Command
             SmartDashboard.putBoolean("Sweetspot", false);
         }
 
-        drivetrain.drive(ySupplier.getAsDouble(),
-               xSupplier.getAsDouble(),
-               pidController.calculate(pose.getRobotPose().getRotation().getRadians(), targetAngle));
+        drivetrain.drive(ySupplier.getAsDouble() * scale,
+                         xSupplier.getAsDouble() * scale,
+                         pidController.calculate(pose.getRobotPose().getRotation().getRadians(), targetAngle));
     }
 
     @Override
     public void end(boolean interrupted)
     {
         drivetrain.drive(0.0, 0.0, 0.0);
-	SmartDashboard.putBoolean("Sweetspot", false);
+        SmartDashboard.putBoolean("Sweetspot", false);
     }
 
     @Override
