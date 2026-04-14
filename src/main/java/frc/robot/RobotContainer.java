@@ -89,7 +89,7 @@ public class RobotContainer
     {
         /** driver binds **/
 
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, OI.driveLeftStickXSupplier, OI.driveLeftStickYSupplier, OI.driveRightStickXSupplier, OI.driveControllerRightTriggerSupplier, OI.operatorLeftStickButtonSupplier));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, OI.driveLeftStickXSupplier, OI.driveLeftStickYSupplier, OI.driveRightStickXSupplier, OI.operatorRightTriggerSupplier));
 
         OI.driveControllerA.onTrue(new InstantCommand(() -> { gyro.reset(); }));
 
