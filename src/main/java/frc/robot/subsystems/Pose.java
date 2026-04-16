@@ -80,6 +80,13 @@ public class Pose extends SubsystemBase {
 	
     }
 
+    public void manualSetPose(Pose2d pose)
+    {
+	drivetrain.setOdometryXY(pose.getX(), pose.getY());
+	gyro.setGyro(pose.getRotation().getRadians());
+	rPose = pose;
+    }
+    
     public void setPoseFromCamera(double botpose[])
     {
 	drivetrain.setOdometryXY(botpose[Camera.BOTPOSE_X_INDEX], botpose[Camera.BOTPOSE_Y_INDEX]);
