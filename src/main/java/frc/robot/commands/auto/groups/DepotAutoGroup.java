@@ -24,57 +24,80 @@ import edu.wpi.first.epilogue.Logged;
 
 @Logged
 public class DepotAutoGroup
-extends SequentialCommandGroup
+    extends SequentialCommandGroup
 /**
  * depot auto
 **/
 {
-     private Drivetrain drivetrain;
-     private Pose pose;
+    private Drivetrain drivetrain;
+    private Pose pose;
 
-    private static final long SHOOT_TIME = 7000;
-     
-     public DepotAutoGroup(double initialDelay, Drivetrain drivetrain,
-    Pose pose, Shooter shooter, Intake intake, AutoPositionSuppliers autoPositionSuppliers)
+    private static final long SHOOT_TIME = 10000;
+
+    public DepotAutoGroup(double initialDelay, Drivetrain drivetrain,
+                          Pose pose, Shooter shooter, Intake intake, AutoPositionSuppliers autoPositionSuppliers)
     {
-	Pose2d middlePose;
-	Pose2d depotStartPose;
-	Pose2d depotEndPose;
+        Pose2d middlePose;
+        Pose2d depotStartPose;
+        Pose2d depotEndPose;
+        Pose2d shootPose;
 
 
-	middlePose = new Pose2d
-	    (FieldPositionConstants.HUB_X * 0.5, FieldPositionConstants.HUB_Y, new Rotation2d(0));
-	depotStartPose = new Pose2d((FieldPositionConstants.DEPOT_OUTER_CENTER_X * 0.60),
-				    (FieldPositionConstants.DEPOT_OUTER_CENTER_Y - (FieldPositionConstants.DEPOT_WIDTH * 0.5)),
-				    new Rotation2d(Math.PI * 1.5));
-	depotEndPose = new Pose2d((FieldPositionConstants.DEPOT_OUTER_CENTER_X * 0.60),
-				    (FieldPositionConstants.DEPOT_OUTER_CENTER_Y + (FieldPositionConstants.DEPOT_WIDTH * 0.5)),
-				    new Rotation2d(Math.PI * 1.5));
+        middlePose = new Pose2d
+        (FieldPositionConstants.HUB_X * 0.8,
+         (FieldPositionConstants.DEPOT_OUTER_CENTER_Y - 1.35),
+         new Rotation2d(Math.PI * 0.25));
 
-	Pose2d[] startToIntakeStart = { middlePose,
-					depotStartPose };
-	Pose2d[] intakeStartToShoot = { depotEndPose,
-					depotStartPose,
-					middlePose };
-	
-	/** initialization commands **/
-	addCommands(
-		    new InstantCommand(() -> {
-			    shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
-			    intake.extend();
-		    }),
-		    new WaitCommand(initialDelay / 1000)
-		    );
-	addCommands(
-		    new GotoPose(startToIntakeStart, GotoPose.Profile.FAST, 6, drivetrain, pose),
-		    new AutoIntakeCommand(intake, true),
-		    new GotoPose(intakeStartToShoot, GotoPose.Profile.INTAKE, 6, drivetrain, pose),
-		    new AutoTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, 0.05),
-		    new ParallelCommandGroup(
-					     new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME),
-					     new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME))
-		    );
-	
+        depotStartPose = new Pose2d((FieldPositionConstants.DEPOT_OUTER_CENTER_X + 0.15),
+                                    (FieldPositionConstants.DEPOT_OUTER_CENTER_Y - 1.35),
+                                    new Rotation2d(Math.PI * 0.5));
+        depotEndPose = new Pose2d((FieldPositionConstants.DEPOT_OUTER_CENTER_X + 0.15),
+                                  (FieldPositionConstants.DEPOT_OUTER_CENTER_Y + 1.25),
+                                  new Rotation2d(Math.PI * 0.5));
+        shootPose = new Pose2d(FieldPositionConstants.DEPOT_OUTER_CENTER_X + 0.8,
+                               (FieldPositionConstants.DEPOT_OUTER_CENTER_Y + 1.0),
+                               new Rotation2d(Math.PI * 0.5));
+
+        Pose2d[] startToIntakeStart = { middlePose,
+                                        depotStartPose
+                                      };
+        Pose2d[] intakeStartToShoot = { depotEndPose,
+                                        shootPose
+                                      };
+
+        /** initialization commands **/
+        addCommands(
+            new InstantCommand(() ->
+        {
+            pose.manualSetPose(new Pose2d(FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, new Rotation2d(Math.PI)));
+            shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
+            intake.extend();
+        }),
+        new WaitCommand(initialDelay / 1000)
+        );
+        addCommands(
+            new GotoPose(startToIntakeStart, GotoPose.Profile.PRECISE, 6, drivetrain, pose),
+            new InstantCommand(() ->
+        {
+            intake.start();
+        }),
+        new GotoPose(depotEndPose, GotoPose.Profile.INTAKE, 6, drivetrain, pose),
+        new GotoPose(shootPose, GotoPose.Profile.PRECISE, 6, drivetrain, pose),
+
+        new AutoIntakeCommand(intake, false),
+        // new GotoPose(intakeStartToShoot, GotoPose.Profile.INTAKE, 6, drivetrain, pose),
+        new AutoTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, 0.05),
+	    new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, 1000),
+            new InstantCommand(() ->
+        {
+	    intake.retract();
+        }),
+        new ParallelCommandGroup(
+            new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME),
+            new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME))
+        // );
+        );
+
 
     }
 

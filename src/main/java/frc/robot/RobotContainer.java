@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 public class RobotContainer
 {
 
-    public final String[] AUTOS = {"none", "left trench (none)", "right trench", "depot"};
+    public final String[] AUTOS = {"none", "left trench (maybe)", "right trench", "human player", "depot"};
     public final String AUTO_DEFAULT = AUTOS[0];
     public static String autoSelected;
     public static SendableChooser<String> autoSelector = new SendableChooser<>();
@@ -126,7 +126,7 @@ public class RobotContainer
                                          pose,
                                          autoPositionSuppliers.feedXSupplier,
                                          autoPositionSuppliers.feedYSupplier,
-                                         Shooter.ConveyorMode.FREE,
+                                         Shooter.ConveyorMode.LENIENT,
                                          null));
 
         OI.operatorControllerB.onTrue(new InstantCommand(() ->
@@ -158,12 +158,12 @@ public class RobotContainer
             intake.startReverse();
         }));
 
-        OI.operatorControllerA.onTrue(new IntakeRetractCommand(intake));
+        OI.operatorControllerA.whileTrue(new IntakeRetractCommand(intake));
 
 
 
 
-        OI.operatorLeftTrigger.onTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
+        OI.operatorLeftTrigger.whileTrue(new IntakeCommand(intake, OI.operatorLeftTriggerSupplier));
 
 
         // Manual control with right stick for testing in simulation
@@ -185,7 +185,7 @@ public class RobotContainer
         else if(auto.equals(AUTOS[1]))
         {
             /* left trench */
-            return null;
+            return new TrenchAutoGroup(true, delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
         }
         else if(auto.equals(AUTOS[2]))
         {
@@ -195,6 +195,10 @@ public class RobotContainer
         else if(auto.equals(AUTOS[3]))
         {
             /* depot */
+            return new HumanPlayerAutoGroup(delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
+        }
+        else if(auto.equals(AUTOS[4]))
+        {
             return new DepotAutoGroup(delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
         }
         else
