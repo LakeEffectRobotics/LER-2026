@@ -135,6 +135,13 @@ public class RobotContainer {
                 Constants.FieldPositionConstants.HUB_Y,
                 Shooter.ConveyorMode.STRICT,
                 OI.operatorRightTriggerSupplier));
+        /** operator binds **/
+        OI.operatorRightTrigger.onTrue(new ShooterCommand(shooter,
+                pose,
+                Constants.FieldPositionConstants.HUB_X,
+                Constants.FieldPositionConstants.HUB_Y,
+                Shooter.ConveyorMode.STRICT,
+                OI.operatorRightTriggerSupplier));
 
         OI.operatorControllerRightBumper.whileTrue(new IntakeReverseCommand(intake,
                 shooter));
