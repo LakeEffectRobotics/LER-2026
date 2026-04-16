@@ -97,16 +97,16 @@ public class GotoPose extends Command
         0.4,
         5.0);
 
-    private static final SpeedParameters PRECISE_SPEED_PARAMS = new SpeedParameters(0.85,
+    private static final SpeedParameters PRECISE_SPEED_PARAMS = new SpeedParameters(0.45,
         0.45,
         0.40,
         0.5,
         0.4,
         2.5);
 
-    private static final SpeedParameters INTAKE_SPEED_PARAMS = new SpeedParameters(0.60,
-        0.60,
-        0.60,
+    private static final SpeedParameters INTAKE_SPEED_PARAMS = new SpeedParameters(0.85,
+        0.85,
+        0.85,
         0.0,
         0.0,
         2.5);
