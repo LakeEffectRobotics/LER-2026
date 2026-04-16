@@ -95,7 +95,7 @@ public class RobotMap {
     public static final AnalogInput rightFrontEncoder = new AnalogInput(Analog.RIGHT_FRONT_ENCODER);
 
 
-    public static final SparkMax intakeMotor = new SparkMax(CAN.INTAKE_CAN, MotorType.kBrushless);
+    public static final TalonFX intakeMotor = new TalonFX(CAN.INTAKE_CAN);
     
     public static PneumaticHub pneumaticHub = new PneumaticHub(CAN.PCM_CAN_ID);
     public static Compressor compressor = new Compressor(CAN.PCM_CAN_ID, PneumaticsModuleType.REVPH);
