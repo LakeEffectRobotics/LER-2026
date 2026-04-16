@@ -51,33 +51,34 @@ extends SequentialCommandGroup
 	Pose2d intakeEndPose;
 	Pose2d shootPose;
 
-	/** set positions **/
-	// if(isLeft) {
-	//     trenchStartPose = new Pose2d( // position on aliiance side of trench
-	//     FieldPositionConstants.LEFT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
-	//     trenchEndPose = new Pose2d( // position on neutral side of trench
-	//     FieldPositionConstants.LEFT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
-	//     intakeStartPose = new Pose2d( // position to go before starting intake
-	// 				  FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y, new Rotation2d(Math.PI/2));
-	//     intakeEndPose = new Pose2d( // position to drive to while intaking
-	//     FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y - INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
-	//     shootPose = new Pose2d( // position to drive to to shoot
-	//     FieldPositionConstants.LEFT_TRENCH_CENTER_X - 1.5, FieldPositionConstants.LEFT_TRENCH_CENTER_Y - 1.0, new Rotation2d(Math.PI/2)); // TODO: find good spots for shooting, add to fieldpositionconstants
-	// } else {
-	trenchStartPose = new Pose2d( // position on aliiance side of trench
-				      FieldPositionConstants.RIGHT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d(0));
-	trenchEndPose = new Pose2d( // position on neutral side of trench
-				    FieldPositionConstants.RIGHT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d(0));
-	intakeStartPose = new Pose2d( // position to go before starting intake
-				      FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y, new Rotation2d(Math.PI/2));
-	intakeMidPose = new Pose2d( // position to drive to while intaking
-				    FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET - INTAKE_INWARD_PUSH, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y + INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
-	intakeEndPose = new Pose2d( // position on neutral side of trench
-				    FieldPositionConstants.RIGHT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d((Math.PI / 2) * 3));
-
-	shootPose  = new Pose2d( // position to shoot from
-				 FieldPositionConstants.RIGHT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y + 0.5, new Rotation2d(0));
-	// }
+	/** set positions based on whether it is on the right or left side of the field **/
+	if(isLeft) {
+		trenchStartPose = new Pose2d( // position on aliance side of trench
+	    				FieldPositionConstants.LEFT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
+	    trenchEndPose = new Pose2d( // position on neutral side of trench
+	    				FieldPositionConstants.LEFT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
+	    intakeStartPose = new Pose2d( // position to go before starting intake
+	 					FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y, new Rotation2d(Math.PI/2));
+		intakeMidPose = new Pose2d( // position to drive to while intaking
+						FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET - INTAKE_INWARD_PUSH, FieldPositionConstants.BALLS_CLOSE_LEFT_Y + INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
+	    intakeEndPose = new Pose2d( // position to drive to while intaking
+	    				FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y - INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
+	    shootPose = new Pose2d( // position to drive to to shoot
+	   					FieldPositionConstants.LEFT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y + 0.5, new Rotation2d(Math.PI/2)); // TODO: find good spots for shooting, add to fieldpositionconstants
+	} else {
+		trenchStartPose = new Pose2d( // position on aliiance side of trench
+						FieldPositionConstants.RIGHT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d(0));
+		trenchEndPose = new Pose2d( // position on neutral side of trench
+						FieldPositionConstants.RIGHT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d(0));
+		intakeStartPose = new Pose2d( // position to go before starting intake
+						FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y, new Rotation2d(Math.PI/2));
+		intakeMidPose = new Pose2d( // position to drive to while intaking
+						FieldPositionConstants.BALLS_CLOSE_RIGHT_X + INTAKE_IN_OFFSET - INTAKE_INWARD_PUSH, FieldPositionConstants.BALLS_CLOSE_RIGHT_Y + INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
+		intakeEndPose = new Pose2d( // position on neutral side of trench
+						FieldPositionConstants.RIGHT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y, new Rotation2d((Math.PI / 2) * 3));
+		shootPose  = new Pose2d( // position to shoot from
+					FieldPositionConstants.RIGHT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.RIGHT_TRENCH_CENTER_Y + 0.5, new Rotation2d(0));
+	}
 
 	/** position sequences (for GotoPose) **/
 	Pose2d[] startToTrenchEnd = {

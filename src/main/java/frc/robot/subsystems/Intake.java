@@ -16,17 +16,22 @@ public class Intake extends SubsystemBase {
     private DoubleSolenoid solenoid;
     private boolean isExtended = false;
 
-    private static final double intakeConstantSpeed = -0.8;
+    private static final double INTAKE_SPEED = -0.8;
 
     public Intake(SparkMax intakeMotor, DoubleSolenoid intakeSolenoid){
         this.intakeMotor = intakeMotor;
 	this.solenoid = intakeSolenoid;
     }
 
-    public void start(){
-        intakeMotor.set(intakeConstantSpeed);
+    public void start() {
+        intakeMotor.set(INTAKE_SPEED);
     }
 
+    public void startReverse() {
+        intakeMotor.set(-INTAKE_SPEED);
+    }
+
+    
     public void setOutput(double output)
     {
 	intakeMotor.set(output);

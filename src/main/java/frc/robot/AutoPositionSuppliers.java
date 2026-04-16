@@ -14,73 +14,89 @@ public class AutoPositionSuppliers
         this.pose = pose;
     }
 
-    public DoubleSupplier hubAngleSupplier = () -> {
+    public DoubleSupplier hubAngleSupplier = () ->
+    {
         Pose2d robotPosition = pose.getRobotPose();
         return Math.atan2(
-			  robotPosition.getY() - Constants.FieldPositionConstants.HUB_Y,
-			  robotPosition.getX() - Constants.FieldPositionConstants.HUB_X);
+            robotPosition.getY() - Constants.FieldPositionConstants.HUB_Y,
+            robotPosition.getX() - Constants.FieldPositionConstants.HUB_X);
     };
 
-    public DoubleSupplier hubAlignmentXSupplier = () -> {
-	double angle = hubAngleSupplier.getAsDouble();
-	return Constants.FieldPositionConstants.HUB_X - Constants.FieldPositionConstants.SHOOTING_DISTANCE*Math.cos(angle);
-	
+    public DoubleSupplier hubAlignmentXSupplier = () ->
+    {
+        double angle = hubAngleSupplier.getAsDouble();
+        return Constants.FieldPositionConstants.HUB_X - Constants.FieldPositionConstants.SHOOTING_DISTANCE*Math.cos(angle);
+
     };
 
-    public DoubleSupplier hubAlignmentYSupplier = () -> {
-	double angle = hubAngleSupplier.getAsDouble();
-	return Constants.FieldPositionConstants.HUB_Y - Constants.FieldPositionConstants.SHOOTING_DISTANCE*Math.sin(angle);
+    public DoubleSupplier hubAlignmentYSupplier = () ->
+    {
+        double angle = hubAngleSupplier.getAsDouble();
+        return Constants.FieldPositionConstants.HUB_Y - Constants.FieldPositionConstants.SHOOTING_DISTANCE*Math.sin(angle);
     };
 
-    public DoubleSupplier robotFrontXSupplier = () -> {
-	Pose2d robotPosition = pose.getRobotPose();
-	return robotPosition.getX() + 0.5;
-    };
-    
-    public DoubleSupplier robotFrontYSupplier = () -> {
-	Pose2d robotPosition = pose.getRobotPose();
-	return robotPosition.getY() + 0.5;
+    public DoubleSupplier robotFrontXSupplier = () ->
+    {
+        Pose2d robotPosition = pose.getRobotPose();
+        return robotPosition.getX() + 0.5;
     };
 
-    public DoubleSupplier feedAngleSupplier = () -> {
-	Pose2d robotPosition = pose.getRobotPose();
-	if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_Y) {
-	    return Math.atan2(
-			      robotPosition.getX() - Constants.FieldPositionConstants.RIGHT_FEED_Y,
-			      robotPosition.getY() - Constants.FieldPositionConstants.RIGHT_FEED_X
-			      );
-	} else {
-	    	    return Math.atan2(
-				      robotPosition.getX() - Constants.FieldPositionConstants.LEFT_FEED_Y,
-				      robotPosition.getY() - Constants.FieldPositionConstants.LEFT_FEED_X
-				      );
-	    
-	}
-    };
-        
-    public DoubleSupplier feedXSupplier = () -> {
-	Pose2d robotPosition = pose.getRobotPose();
-	if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_Y) {
-	    return Constants.FieldPositionConstants.LEFT_FEED_X;
-	} else {
-	    return Constants.FieldPositionConstants.RIGHT_FEED_X;
-	}
+    public DoubleSupplier robotFrontYSupplier = () ->
+    {
+        Pose2d robotPosition = pose.getRobotPose();
+        return robotPosition.getY() + 0.5;
     };
 
-        public DoubleSupplier feedYSupplier = () -> {
-	Pose2d robotPosition = pose.getRobotPose();
-	if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_Y) {
-	    return Constants.FieldPositionConstants.LEFT_FEED_Y;
-	} else {
-	    return Constants.FieldPositionConstants.RIGHT_FEED_Y;
-	}
+    public DoubleSupplier feedAngleSupplier = () ->
+    {
+        Pose2d robotPosition = pose.getRobotPose();
+        if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_Y)
+        {
+            return Math.atan2(
+                robotPosition.getY() - Constants.FieldPositionConstants.RIGHT_FEED_Y,
+                robotPosition.getX() - Constants.FieldPositionConstants.RIGHT_FEED_X);
+        }
+        else
+        {
+            return Math.atan2(
+                robotPosition.getY() - Constants.FieldPositionConstants.LEFT_FEED_Y,
+                robotPosition.getX() - Constants.FieldPositionConstants.LEFT_FEED_X
+            );
+
+        }
     };
 
-    
+    public DoubleSupplier feedXSupplier = () ->
+    {
+        Pose2d robotPosition = pose.getRobotPose();
+        if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_Y)
+        {
+            return Constants.FieldPositionConstants.LEFT_FEED_X;
+        }
+        else
+        {
+            return Constants.FieldPositionConstants.RIGHT_FEED_X;
+        }
+    };
 
-    
-    
-    
-    
-    
+    public DoubleSupplier feedYSupplier = () ->
+    {
+        Pose2d robotPosition = pose.getRobotPose();
+        if(robotPosition.getY() > Constants.FieldPositionConstants.HUB_Y)
+        {
+            return Constants.FieldPositionConstants.LEFT_FEED_Y;
+        }
+        else
+        {
+            return Constants.FieldPositionConstants.RIGHT_FEED_Y;
+        }
+    };
+
+
+
+
+
+
+
+
 }

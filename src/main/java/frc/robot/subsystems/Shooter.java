@@ -21,6 +21,10 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 
 /**
  * subsystem for controlling the shooter
@@ -59,7 +63,11 @@ public class Shooter extends SubsystemBase
     private ShooterMode shooterMode = ShooterMode.DEAD;
     private ConveyorMode conveyorMode = ConveyorMode.STRICT;
 
+    private double timeOfFlight;
+    private Pose2d sotmPose = new Pose2d(0.0, 0.0, Rotation2d.kZero);
+
     private Pose robotPose;
+    private Drivetrain drivetrain;
 
     /**
      * Sparkmax configuration constants
@@ -71,23 +79,27 @@ public class Shooter extends SubsystemBase
      * values for calculating the FF term in volts given the target RPM
      * FF = (RPM - FF_OFFSET) / FF_COEFFICIENT
      **/
-    private static final double TOP_FF_COEFFICIENT = 4369.28571;
-    private static final double TOP_FF_OFFSET = -113.14286;
-    private static final double BOTTOM_FF_COEFFICIENT = 4346.78571;
-    private static final double BOTTOM_FF_OFFSET = -51.0;
+    private static final double TOP_FF_COEFFICIENT = 0.0021;
+    private static final double TOP_FF_OFFSET = 0.4897;
+    private static final double BOTTOM_FF_COEFFICIENT = 0.0021;
+    private static final double BOTTOM_FF_OFFSET = 0.3499;
 
     /**
      * values for calculating target RPM given distance from the target
      * RPM = distance*RPM_COEFFICIENT + RPM_OFFSET
      **/
-    private static final double RPM_COEFFICIENT = 395.43275 * 1.16;
+    private static final double RPM_COEFFICIENT = 584.40277;
+    private static final double RPM_OFFSET = 759.58116;
 
-    private static final double RPM_OFFSET = 838.4746 + 116;
+    /** **/
+    private static final double TOF_COEFFICIENT_A = -0.0172;
+    private static final double TOF_COEFFICIENT_B = 0.3597;
+    private static final double TOF_OFFSET = 0.2844;
 
     /**
      * conveyor condition constants
      **/
-    private static final double SHOOTER_RPM_MAX_ERROR = 400; // shooter must be within SHOOTER_RPM_MAX_ERROR for the conveyor to run
+    private static final double SHOOTER_RPM_MAX_ERROR = 200; // shooter must be within SHOOTER_RPM_MAX_ERROR for the conveyor to run
     private static final double MAX_TARGET_RPM = 4500;	     // maximum shooter target RPM for conveyor to wait on, if target rpm > MAX_TARGET_RPM conveyor will run unconditionally
 
     /**
@@ -97,7 +109,7 @@ public class Shooter extends SubsystemBase
     private static final double CONVEYOR_SPEED = 1.0;
 
 
-    private static final double SHOOTER_KP = 0.00015;
+    private static final double SHOOTER_KP = 0.00375; // tuned 2026/04/06
 
 
     private SparkMax topMotor;
@@ -135,10 +147,13 @@ public class Shooter extends SubsystemBase
                    SparkMax bottomLeader,
                    SparkMax bottomFollower,
                    SparkMax conveyorMotor,
-                   Pose robotPose)
+                   Pose robotPose,
+                   Drivetrain drivetrain)
     {
         SmartDashboard.putNumber("shooter:set", 0);
+        SmartDashboard.putNumber("shooter:setkp", 0);
         this.robotPose = robotPose;
+        this.drivetrain = drivetrain;
 
         // setup configurations
         SparkMaxConfig topLeaderConfig = new SparkMaxConfig();
@@ -193,14 +208,11 @@ public class Shooter extends SubsystemBase
     /**
      * get the distance from the current target position
      **/
-    private double getDistanceFromTarget()
+    private double getDistanceFromTarget(Pose2d pose)
     {
-        Pose2d currentPos;
-
-        currentPos = robotPose.getRobotPose();
         return Math.sqrt(
-                   Math.pow((currentPos.getX() - xTarget), 2)
-                   + Math.pow((currentPos.getY() -  yTarget), 2));
+                   Math.pow((pose.getX() - xTarget), 2)
+                   + Math.pow((pose.getY() -  yTarget), 2));
     }
 
 
@@ -209,7 +221,7 @@ public class Shooter extends SubsystemBase
      **/
     private double calculateTopFFTerm(double targetRPM)
     {
-        return (targetRPM - TOP_FF_OFFSET) / TOP_FF_COEFFICIENT;
+        return targetRPM * TOP_FF_COEFFICIENT + TOP_FF_OFFSET;
     }
 
     /**
@@ -217,12 +229,17 @@ public class Shooter extends SubsystemBase
      **/
     private double calculateBottomFFTerm(double targetRPM)
     {
-        return (targetRPM - BOTTOM_FF_OFFSET) / BOTTOM_FF_COEFFICIENT;
+        return targetRPM * BOTTOM_FF_COEFFICIENT + BOTTOM_FF_OFFSET;
     }
 
     private double calculateTargetRPM(double distance)
     {
         return distance * RPM_COEFFICIENT + RPM_OFFSET;
+    }
+
+    public double calculateTimeOfFlight(double distance)
+    {
+        return ((distance * Math.pow(TOF_COEFFICIENT_A, 2)) + (distance * TOF_COEFFICIENT_B) + (TOF_OFFSET));
     }
 
     /**
@@ -236,6 +253,11 @@ public class Shooter extends SubsystemBase
     public ConveyorMode getConveyorMode()
     {
         return conveyorMode;
+    }
+
+    public Pose2d getSotmPose()
+    {
+        return sotmPose;
     }
 
     /**
@@ -306,6 +328,9 @@ public class Shooter extends SubsystemBase
         double topSpeed = 0;
         double bottomSpeed = 0;
 
+        Pose2d currentPose;
+        ChassisSpeeds robotVelocity;
+
         // get top and bottom motor velocity
         topRPM = Math.abs(topMotorEncoder.getVelocity());
         bottomRPM = Math.abs(bottomMotorEncoder.getVelocity());
@@ -313,6 +338,19 @@ public class Shooter extends SubsystemBase
         SmartDashboard.putNumber("shooter: bottom RPM", bottomRPM);
 
         SmartDashboard.putString("shooter: mode", shooterMode.toString());
+
+        // get distance from target
+        currentPose = robotPose.getRobotPose();
+        targetDistance = getDistanceFromTarget(currentPose);
+
+        // adjust for velocity
+        timeOfFlight = calculateTimeOfFlight(targetDistance);
+        robotVelocity = drivetrain.getChassisSpeeds();
+        sotmPose = currentPose.plus(new Transform2d(robotVelocity.vxMetersPerSecond * timeOfFlight,
+                                    robotVelocity.vyMetersPerSecond * timeOfFlight,
+                                    Rotation2d.kZero));
+        targetDistance = getDistanceFromTarget(sotmPose);
+
         if(shooterMode == ShooterMode.DEAD)
         {
             topMotor.set(0.0);
@@ -321,9 +359,9 @@ public class Shooter extends SubsystemBase
             return;
         }
 
-	// get distance from target, update target RPM
-        targetDistance = getDistanceFromTarget();
+        // update target RPM
         topTargetRPM = calculateTargetRPM(targetDistance);
+        // topTargetRPM = SmartDashboard.getNumber("shooter:set", 0);
         bottomTargetRPM = topTargetRPM;
         SmartDashboard.putNumber("shooter: distance", targetDistance);
         SmartDashboard.putNumber("shooter: targetRPM", topTargetRPM);
@@ -332,7 +370,7 @@ public class Shooter extends SubsystemBase
         {
         case DEAD:
             return;
-        case REVERSE:		
+        case REVERSE:
             conveyorMotor.set(-CONVEYOR_SPEED);
         case OVERRIDE:
             topSpeed = calculateTopFFTerm(topOverrideTargetRPM)
@@ -343,16 +381,16 @@ public class Shooter extends SubsystemBase
         case STANDBY:
             conveyorMotor.set(0.0);
         case FIRE:
-            topSpeed = calculateTopFFTerm(topTargetRPM)
-                       + shooterPIDController.calculate(topRPM, topTargetRPM);
-            bottomSpeed = calculateBottomFFTerm(bottomTargetRPM)
-                          + shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
+            topSpeed = calculateTopFFTerm(topTargetRPM);
+            // + shooterPIDController.calculate(topRPM, topTargetRPM);
+            bottomSpeed = calculateBottomFFTerm(bottomTargetRPM);
+            // + shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
             break;
         case IDLE:
             conveyorMotor.set(0.0);
             topSpeed = IDLE_SPEED;
             bottomSpeed = IDLE_SPEED;
-	    break;
+            break;
         }
 
 
@@ -366,6 +404,8 @@ public class Shooter extends SubsystemBase
                         || topTargetRPM >= MAX_TARGET_RPM)
                 {
                     conveyorMotor.set(CONVEYOR_SPEED); // conveyor in strict mode and is within error allowance
+                    topSpeed += shooterPIDController.calculate(topRPM, topTargetRPM);
+                    bottomSpeed += shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
                 }
                 else
                 {
@@ -381,8 +421,8 @@ public class Shooter extends SubsystemBase
 
         SmartDashboard.putNumber("shooter: top speed", topSpeed);
         SmartDashboard.putNumber("shooter: bottom speed", bottomSpeed);
-        topMotor.set(topSpeed);
-        bottomMotor.set(-bottomSpeed);
+        topMotor.setVoltage(topSpeed);
+        bottomMotor.setVoltage(-bottomSpeed);
     }
 
 }
