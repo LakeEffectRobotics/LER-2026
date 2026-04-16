@@ -34,9 +34,19 @@ public class Gyro extends SubsystemBase {
 	offset = new Rotation2d(desiredAngle * (Math.PI / 180));
     }
 
-    // public void setAngle(Rotation2d r) {
-    //     gyro.setAngleAdjustment(r.getDegrees());
-    // }
+    /**
+     * Returns the magnitude of the acceleration vector (in units of G).
+     * This uses world linear acceleration which excludes gravity.
+     * Useful for detecting impacts.
+     * 
+     * @return resultant acceleration magnitude.
+     */
+    public double getAccelerationMagnitude() {
+        double x = gyro.getWorldLinearAccelX();
+        double y = gyro.getWorldLinearAccelY();
+        double z = gyro.getWorldLinearAccelZ();
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+    }
 
     @Override
     public void periodic() {
