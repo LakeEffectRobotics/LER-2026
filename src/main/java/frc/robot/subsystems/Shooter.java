@@ -56,6 +56,8 @@ public class Shooter extends SubsystemBase
     {
         /** don't enable unless shooter is in FIRE or OVERRIDE mode and within SHOOTER_RPM_MAX_ERROR **/
         STRICT,
+        /** STRICT but with LENIENT_SHOOTER_RPM_MAX_ERROR**/
+        LENIENT,
         /** always run conveyor when in FIRE or OVERRIDE mode **/
         FREE
     };
@@ -100,12 +102,13 @@ public class Shooter extends SubsystemBase
      * conveyor condition constants
      **/
     private static final double SHOOTER_RPM_MAX_ERROR = 200; // shooter must be within SHOOTER_RPM_MAX_ERROR for the conveyor to run
+    private static final double LENIENT_SHOOTER_RPM_MAX_ERROR = 1100; // shooter must be within SHOOTER_RPM_MAX_ERROR for the conveyor to run
     private static final double MAX_TARGET_RPM = 4500;	     // maximum shooter target RPM for conveyor to wait on, if target rpm > MAX_TARGET_RPM conveyor will run unconditionally
 
     /**
      * speed constants
      **/
-    private static final double IDLE_SPEED =  0.4; // speed to spin shooter motors at while in STANDBY mode
+    private static final double IDLE_SPEED =  4.8; // speed to spin shooter motors at while in STANDBY mode
     private static final double CONVEYOR_SPEED = 1.0;
 
 
@@ -198,11 +201,20 @@ public class Shooter extends SubsystemBase
 
 
     /**
-     * return whether 'RPM' differs from 'target' by an amount greater than SHOOTER_RPM_MAX_ERROR
+     * return true if 'RPM' differs from 'target' by an amount acceptable for the current ConveyorMode
      **/
     private boolean isWithinMaxRPMError(double RPM, double target)
     {
-        return (Math.abs(target - RPM) < SHOOTER_RPM_MAX_ERROR);
+        switch(conveyorMode)
+        {
+        case STRICT:
+            return (Math.abs(target - RPM) < SHOOTER_RPM_MAX_ERROR);
+        case LENIENT:
+            return (Math.abs(target - RPM) < LENIENT_SHOOTER_RPM_MAX_ERROR);
+        case FREE:
+        default:
+            return true;
+        }
     }
 
     /**
@@ -346,6 +358,8 @@ public class Shooter extends SubsystemBase
         // adjust for velocity
         timeOfFlight = calculateTimeOfFlight(targetDistance);
         robotVelocity = drivetrain.getChassisSpeeds();
+        SmartDashboard.putNumber("shooter: drive velocity x", robotVelocity.vxMetersPerSecond);
+        SmartDashboard.putNumber("shooter: drive velocity y", robotVelocity.vyMetersPerSecond);
         sotmPose = currentPose.plus(new Transform2d(robotVelocity.vxMetersPerSecond * timeOfFlight,
                                     robotVelocity.vyMetersPerSecond * timeOfFlight,
                                     Rotation2d.kZero));
@@ -364,7 +378,8 @@ public class Shooter extends SubsystemBase
         // topTargetRPM = SmartDashboard.getNumber("shooter:set", 0);
         bottomTargetRPM = topTargetRPM;
         SmartDashboard.putNumber("shooter: distance", targetDistance);
-        SmartDashboard.putNumber("shooter: targetRPM", topTargetRPM);
+        SmartDashboard.putNumber("shooter: top targetRPM", topTargetRPM);
+	SmartDashboard.putNumber("shooter: top targetRPM", bottomTargetRPM);
 
         switch(shooterMode)
         {
@@ -394,29 +409,53 @@ public class Shooter extends SubsystemBase
         }
 
 
+
+
+
         /* decide whether to run conveyor*/
-        if(shooterMode == ShooterMode.FIRE || shooterMode == ShooterMode.OVERRIDE)
+        if(shooterMode == ShooterMode.FIRE || shooterMode == shooterMode.OVERRIDE)
         {
-            if(conveyorMode == ConveyorMode.STRICT)
+            if((isWithinMaxRPMError(topRPM, topTargetRPM)
+                    && isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
+                    || topTargetRPM > MAX_TARGET_RPM)
             {
-                if((isWithinMaxRPMError(topRPM, topTargetRPM)
-                        && isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
-                        || topTargetRPM >= MAX_TARGET_RPM)
-                {
-                    conveyorMotor.set(CONVEYOR_SPEED); // conveyor in strict mode and is within error allowance
-                    topSpeed += shooterPIDController.calculate(topRPM, topTargetRPM);
-                    bottomSpeed += shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
-                }
-                else
-                {
-                    conveyorMotor.set(0.0); // conveyor in strict mode and is not within error allowance
-                }
+                conveyorMotor.set(CONVEYOR_SPEED);
+                topSpeed += shooterPIDController.calculate(topRPM, topTargetRPM);
+                bottomSpeed += shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
+		System.out.println("CONVEYOR ENABLE");
             }
             else
             {
-                conveyorMotor.set(CONVEYOR_SPEED); // conveyor is not in strict mode
+                conveyorMotor.set(0.0);
             }
         }
+        else
+        {
+            conveyorMotor.set(0.0);
+        }
+
+        // if(shooterMode == ShooterMode.FIRE || shooterMode == ShooterMode.OVERRIDE)
+        // {
+        //     if(conveyorMode == ConveyorMode.STRICT)
+        //     {
+        //         if((isWithinMaxRPMError(topRPM, topTargetRPM)
+        //                 && isWithinMaxRPMError(bottomRPM, bottomTargetRPM))
+        //                 || topTargetRPM >= MAX_TARGET_RPM)
+        //         {
+        //             conveyorMotor.set(CONVEYOR_SPEED); // conveyor in strict mode and is within error allowance
+        //             topSpeed += shooterPIDController.calculate(topRPM, topTargetRPM);
+        //             bottomSpeed += shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
+        //         }
+        //         else
+        //         {
+        //             conveyorMotor.set(0.0); // conveyor in strict mode and is not within error allowance
+        //         }
+        //     }
+        //     else
+        //     {
+        //         conveyorMotor.set(CONVEYOR_SPEED); // conveyor is not in strict mode
+        //     }
+        // }
 
 
         SmartDashboard.putNumber("shooter: top speed", topSpeed);
