@@ -220,12 +220,7 @@ public class RobotContainer
         else if (auto.equals(AUTOS[1]))
         {
             /* left trench */
-
             return new TrenchAutoGroup(true, delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
-        }
-        else if(auto.equals(AUTOS[2]))
-        {
-            return null;
         }
         else if (auto.equals(AUTOS[2]))
         {
@@ -234,11 +229,12 @@ public class RobotContainer
         }
         else if (auto.equals(AUTOS[3]))
         {
-            /* depot */
+            /* human player */
             return new HumanPlayerAutoGroup(delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
         }
         else if(auto.equals(AUTOS[4]))
         {
+	    /* depot */
             return new DepotAutoGroup(delay, drivetrain, pose, shooter, intake, autoPositionSuppliers);
         }
         else
