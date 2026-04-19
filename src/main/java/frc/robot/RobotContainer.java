@@ -22,11 +22,15 @@ import frc.robot.AutoPositionSuppliers;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import edu.wpi.first.wpilibj.Compressor;
+import com.revrobotics.spark.SparkMax;
 @Logged(strategy = Strategy.OPT_OUT)
 public class RobotContainer
 {
-
+    public Compressor compressor;
+    public SparkMax topFollower;
+    public SparkMax bottomFollower;
+    
 
     public final String[] AUTOS = {"none", "left trench (maybe)", "right trench", "human player", "depot"};
     public final String AUTO_DEFAULT = AUTOS[0];
@@ -79,6 +83,9 @@ public class RobotContainer
     {
         configureBindings();
 
+	compressor = RobotMap.compressor;
+	topFollower = RobotMap.shooterTopFollower;
+	bottomFollower = RobotMap.shooterBottomFollower;
         RobotMap.compressor.enableAnalog(70, 120);
         DataLogManager.start();
 
@@ -169,7 +176,7 @@ public class RobotContainer
 
         OI.operatorControllerB.onTrue(new InstantCommand(() ->
         {
-            shooter.setConveyorOutput(0.0);
+	    shooter.setConveyorMode(Shooter.ConveyorMode.FREE);
         }));
         OI.operatorControllerRightClick.onTrue(new InstantCommand(() ->
         {
