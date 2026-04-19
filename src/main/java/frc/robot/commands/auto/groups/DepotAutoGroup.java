@@ -32,6 +32,7 @@ public class DepotAutoGroup
     private Drivetrain drivetrain;
     private Pose pose;
 
+    private static final double TRENCH_END_OFFSET = 2.2; // (m) x distance from middle of trench to place start and end pose
     private static final long SHOOT_TIME = 10000;
 
     public DepotAutoGroup(double initialDelay, Drivetrain drivetrain,
@@ -41,6 +42,8 @@ public class DepotAutoGroup
         Pose2d depotStartPose;
         Pose2d depotEndPose;
         Pose2d shootPose;
+        Pose2d trenchStartPose;
+        Pose2d trenchEndPose;
 
 
         middlePose = new Pose2d
@@ -48,15 +51,19 @@ public class DepotAutoGroup
          (FieldPositionConstants.DEPOT_OUTER_CENTER_Y - 1.35),
          new Rotation2d(Math.PI * 0.25));
 
-        depotStartPose = new Pose2d((FieldPositionConstants.DEPOT_OUTER_CENTER_X + 0.15),
+        depotStartPose = new Pose2d((FieldPositionConstants.DEPOT_OUTER_CENTER_X - 0.15),
                                     (FieldPositionConstants.DEPOT_OUTER_CENTER_Y - 1.35),
                                     new Rotation2d(Math.PI * 0.5));
-        depotEndPose = new Pose2d((FieldPositionConstants.DEPOT_OUTER_CENTER_X + 0.15),
+        depotEndPose = new Pose2d((FieldPositionConstants.DEPOT_OUTER_CENTER_X - 0.15),
                                   (FieldPositionConstants.DEPOT_OUTER_CENTER_Y + 1.25),
                                   new Rotation2d(Math.PI * 0.5));
         shootPose = new Pose2d(FieldPositionConstants.DEPOT_OUTER_CENTER_X + 0.8,
                                (FieldPositionConstants.DEPOT_OUTER_CENTER_Y + 1.0),
                                new Rotation2d(Math.PI * 0.5));
+        trenchStartPose = new Pose2d( // position on aliance side of trench
+            FieldPositionConstants.LEFT_TRENCH_CENTER_X - TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
+        trenchEndPose = new Pose2d( // position on neutral side of trench
+            FieldPositionConstants.LEFT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
 
         Pose2d[] startToIntakeStart = { middlePose,
                                         depotStartPose
@@ -87,15 +94,18 @@ public class DepotAutoGroup
         new AutoIntakeCommand(intake, false),
         // new GotoPose(intakeStartToShoot, GotoPose.Profile.INTAKE, 6, drivetrain, pose),
         new AutoTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, 0.05),
-	    new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, 1000),
-            new InstantCommand(() ->
+        new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, 1000),
+        new InstantCommand(() ->
         {
-	    intake.retract();
+            intake.retract();
         }),
         new ParallelCommandGroup(
             new TimedTurnCommand(drivetrain, pose, autoPositionSuppliers.hubAngleSupplier, SHOOT_TIME),
-            new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME))
-        // );
+            new AutoShootCommand(shooter, FieldPositionConstants.HUB_X, FieldPositionConstants.HUB_Y, SHOOT_TIME)
+				 ),
+	    new WaitCommand(1),
+	    new GotoPose(trenchStartPose, GotoPose.Profile.PRECISE, 6, drivetrain, pose),
+	    new GotoPose(trenchEndPose, GotoPose.Profile.PRECISE, 6, drivetrain, pose)
         );
 
 
