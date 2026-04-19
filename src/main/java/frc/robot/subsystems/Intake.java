@@ -31,7 +31,7 @@ public class Intake extends SubsystemBase
         TalonFXConfigurator intakeMotorConfig = intakeMotor.getConfigurator();
         CurrentLimitsConfigs intakeMotorCurrentLimit = new CurrentLimitsConfigs();
 
-        intakeMotorCurrentLimit.StatorCurrentLimit = 120;
+        intakeMotorCurrentLimit.StatorCurrentLimit = 55;
         intakeMotorCurrentLimit.StatorCurrentLimitEnable = true;
 
         intakeMotorConfig.apply(intakeMotorCurrentLimit);
