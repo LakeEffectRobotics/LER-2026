@@ -80,7 +80,7 @@ public class ShooterCommand extends Command
     public void execute()
     {
         if(triggerSupplier == null
-                || triggerSupplier.getAsDouble() > 0.5)
+                || triggerSupplier.getAsDouble() > 0.0)
         {
             if(isSupplier)	// update target if target is a doublesupplier
             {
