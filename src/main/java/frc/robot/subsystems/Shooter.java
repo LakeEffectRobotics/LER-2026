@@ -109,10 +109,14 @@ public class Shooter extends SubsystemBase
      * speed constants
      **/
     private static final double IDLE_SPEED =  4.8; // speed to spin shooter motors at while in STANDBY mode
-    private static final double CONVEYOR_SPEED = 1.0;
+    private static final double CONVEYOR_SPEED = 0.5;
 
 
+    /**
+     * shooter PID constants
+     **/
     private static final double SHOOTER_KP = 0.00375; // tuned 2026/04/06
+    private static final double SHOOTER_PID_ENABLE_ERROR = 700;
 
 
     private SparkMax topMotor;
@@ -379,7 +383,7 @@ public class Shooter extends SubsystemBase
         bottomTargetRPM = topTargetRPM;
         SmartDashboard.putNumber("shooter: distance", targetDistance);
         SmartDashboard.putNumber("shooter: top targetRPM", topTargetRPM);
-	SmartDashboard.putNumber("shooter: top targetRPM", bottomTargetRPM);
+        SmartDashboard.putNumber("shooter: bottom targetRPM", bottomTargetRPM);
 
         switch(shooterMode)
         {
@@ -397,10 +401,16 @@ public class Shooter extends SubsystemBase
             conveyorMotor.set(0.0);
         case FIRE:
             topSpeed = calculateTopFFTerm(topTargetRPM);
-            // + shooterPIDController.calculate(topRPM, topTargetRPM);
+            if((Math.abs(topTargetRPM - topRPM) < SHOOTER_PID_ENABLE_ERROR))
+            {
+                topSpeed += shooterPIDController.calculate(topRPM, topTargetRPM);
+            }
             bottomSpeed = calculateBottomFFTerm(bottomTargetRPM);
-            // + shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
-            break;
+            if((Math.abs(bottomTargetRPM - bottomRPM) < SHOOTER_PID_ENABLE_ERROR))
+            {
+                bottomSpeed += shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
+            }
+                break;
         case IDLE:
             conveyorMotor.set(0.0);
             topSpeed = IDLE_SPEED;
@@ -420,18 +430,14 @@ public class Shooter extends SubsystemBase
                     || topTargetRPM > MAX_TARGET_RPM)
             {
                 conveyorMotor.set(CONVEYOR_SPEED);
-                topSpeed += shooterPIDController.calculate(topRPM, topTargetRPM);
-                bottomSpeed += shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
-		System.out.println("CONVEYOR ENABLE");
+                // topSpeed += shooterPIDController.calculate(topRPM, topTargetRPM);
+                // bottomSpeed += shooterPIDController.calculate(bottomRPM, bottomTargetRPM);
+                System.out.println("CONVEYOR ENABLE");
             }
             else
             {
                 conveyorMotor.set(0.0);
             }
-        }
-        else
-        {
-            conveyorMotor.set(0.0);
         }
 
         // if(shooterMode == ShooterMode.FIRE || shooterMode == ShooterMode.OVERRIDE)
