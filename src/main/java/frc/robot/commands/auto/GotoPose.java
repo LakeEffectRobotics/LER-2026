@@ -1,5 +1,6 @@
 package frc.robot.commands.auto;
 
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.epilogue.Logged;
 import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -39,6 +40,8 @@ public class GotoPose extends Command
      * 1 instance is constructed for each speed profile **/
     private static class SpeedParameters
     {
+
+
         public final double FAST;
         public final double MED;
         public final double SLOW;
@@ -58,6 +61,9 @@ public class GotoPose extends Command
             this.ROT_KP = rotKP;
         }
     }
+
+    private static Field2d nextTargetPose = new Field2d();
+    private static Field2d finalTargetPose = new Field2d();
 
     private Drivetrain drivetrain;
     private Pose pose;
@@ -224,7 +230,8 @@ public class GotoPose extends Command
 
         addRequirements(drivetrain);
 
-
+	SmartDashboard.putData("gotopose: current target", nextTargetPose);
+	SmartDashboard.putData("gotopose: final target", finalTargetPose);
     }
 
 
@@ -288,10 +295,13 @@ public class GotoPose extends Command
             drivetrain.drive(0.0, 0.0, 0.0);
             return;
         }
+        nextTargetPose.setRobotPose(path[pathIndex].getX(), path[pathIndex].getY(), path[pathIndex].getRotation());
+        finalTargetPose.setRobotPose(path[path.length - 1].getX(), path[path.length - 1].getY(), path[path.length - 1].getRotation());
+	SmartDashboard.putData("gotopose: current target", nextTargetPose);
+	SmartDashboard.putData("gotopose: final target", finalTargetPose);
 
-
-        // robot has reached or passed the target point
-        if((Math.abs(xDisplacement) <= 0.1 && Math.abs(yDisplacement) <= 0.1) || (-xDisplacement * xDirection < 0) || (-yDisplacement * yDirection < 0))
+                      // robot has reached or passed the target point
+                      if((Math.abs(xDisplacement) <= 0.1 && Math.abs(yDisplacement) <= 0.1) || (-xDisplacement * xDirection < 0) || (-yDisplacement * yDirection < 0))
         {
             // robot has reached or passed the turning point
             if(pathIndex >= nextTurn)
