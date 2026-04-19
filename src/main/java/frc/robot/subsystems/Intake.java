@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase
     private DoubleSolenoid solenoid;
     private boolean isExtended = false;
 
-    private static final double INTAKE_SPEED = 0.8;
+    public static final double INTAKE_SPEED = 0.8;
 
     public Intake(TalonFX intakeMotor, DoubleSolenoid intakeSolenoid)
     {

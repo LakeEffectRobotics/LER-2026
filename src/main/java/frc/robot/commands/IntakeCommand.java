@@ -10,7 +10,7 @@ public class IntakeCommand extends Command
 
     private Intake intake;
     private DoubleSupplier triggerSupplier;
-    private static final double INTAKE_MAX_SPEED = 0.8;
+    private static final double INTAKE_MAX_SPEED = Intake.INTAKE_SPEED;
 
     private int clock = 0;
 
