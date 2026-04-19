@@ -11,29 +11,42 @@ public class IntakeRetractCommand extends Command
 
     private Intake intake;
 
+    private long endTime = -1;
+
     public IntakeRetractCommand(Intake intake)
     {
         this.intake = intake;
-	addRequirements(intake);
+        addRequirements(intake);
     }
 
     @Override
     public void initialize()
     {
-	intake.start();
-	intake.retract();
+        intake.setOutput(0.4);
+        intake.retract();
+        endTime = System.currentTimeMillis() + 2000;
+    }
+
+    @Override
+    public void execute()
+    {
+	if(endTime > 0 && endTime < System.currentTimeMillis())
+	    {
+		intake.stop();
+	    }
     }
 
     @Override
     public boolean isFinished()
     {
-	return false;
+        return false;
     }
 
     @Override
-    public void end(boolean isInterrupted) {
-	intake.stop();
-	intake.extend();
+    public void end(boolean isInterrupted)
+    {
+        intake.stop();
+        intake.extend();
     }
 
 }
