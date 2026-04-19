@@ -59,7 +59,7 @@ extends SequentialCommandGroup
 	    				FieldPositionConstants.LEFT_TRENCH_CENTER_X + TRENCH_END_OFFSET, FieldPositionConstants.LEFT_TRENCH_CENTER_Y, new Rotation2d(Math.PI));
 	    intakeStartPose = new Pose2d( // position to go before starting intake
 	 					FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y, new Rotation2d(Math.PI/2));
-		intakeMidPose = new Pose2d( // position to drive to while intaking
+	    intakeMidPose = new Pose2d( // position to drive to while intaking
 						FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET - INTAKE_INWARD_PUSH, FieldPositionConstants.BALLS_CLOSE_LEFT_Y + INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
 	    intakeEndPose = new Pose2d( // position to drive to while intaking
 	    				FieldPositionConstants.BALLS_CLOSE_LEFT_X + INTAKE_IN_OFFSET, FieldPositionConstants.BALLS_CLOSE_LEFT_Y - INTAKE_DISTANCE, new Rotation2d(Math.PI/2));
@@ -109,8 +109,9 @@ extends SequentialCommandGroup
 	new InstantCommand(() -> {
 	    shooter.setShooterMode(Shooter.ShooterMode.STANDBY);
 	    intake.extend();
+	    pose.manualSetPose(trenchStartPose);
 	}),
-	new WaitCommand(initialDelay / 1000)
+	new WaitCommand(1 + (initialDelay / 1000))
 	);
 
 	addCommands(
@@ -126,9 +127,6 @@ extends SequentialCommandGroup
 		    new WaitCommand(0.6),
 		    new GotoPose(intakeStartToEnd, GotoPose.Profile.INTAKE,  4, drivetrain, pose), // drive forward
 		    new AutoIntakeCommand(intake, false), // disable intake
-		    new InstantCommand(() -> {
-			    intake.retract();
-		    }),
 		    new GotoPose(intakeEndToTrenchEnd, GotoPose.Profile.FAST,  8, drivetrain, pose), 	// go to shooting position
 		    new InstantCommand(() -> {
 			    intake.extend();
