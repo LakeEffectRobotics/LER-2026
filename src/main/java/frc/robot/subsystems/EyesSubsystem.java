@@ -13,7 +13,8 @@ public class EyesSubsystem extends SubsystemBase {
         DEFENCE(1),
         SCRAMBLED(2),
         RANDOM_MODE(3),
-        AUTONOMOUS(4);
+        AUTONOMOUS(4),
+        SHOOTING(5);
 
         public final int value;
 

@@ -107,6 +107,9 @@ public class RobotContainer
         new Trigger(() -> gyro.getAccelerationMagnitude() > SmartDashboard.getNumber("Impact Threshold", 2.0))
         .onTrue(Commands.run(() -> eyes.setLEDState(EyesSubsystem.LEDState.SCRAMBLED), eyes).withTimeout(2.0));
 
+        new Trigger(() -> shooter.getShooterMode() == Shooter.ShooterMode.FIRE || shooter.getShooterMode() == Shooter.ShooterMode.OVERRIDE)
+        .whileTrue(Commands.run(() -> eyes.setLEDState(EyesSubsystem.LEDState.SHOOTING), eyes));
+
         OI.driveControllerA.onTrue(new InstantCommand(() ->
         {
             gyro.reset();
