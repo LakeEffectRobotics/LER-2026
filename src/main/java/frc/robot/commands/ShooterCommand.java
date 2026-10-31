@@ -2,9 +2,10 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.CompressorController;
 import frc.robot.subsystems.Pose;
 
 
@@ -15,6 +16,7 @@ public class ShooterCommand extends Command
 {
     private Shooter shooter;
     private Pose pose;
+    private CompressorController compressorController;
     private Shooter.ConveyorMode conveyorMode;
 
     /** true if command was contructed with DoubleSuppliers for the target x and y **/
@@ -35,11 +37,12 @@ public class ShooterCommand extends Command
     /**
      * construct ShooterCommand with a target provided by DoubleSuppliers
      **/
-    public ShooterCommand(Shooter shooter, Pose pose, DoubleSupplier targetX, DoubleSupplier targetY, Shooter.ConveyorMode conveyorMode, DoubleSupplier triggerSupplier)
+    public ShooterCommand(Shooter shooter, Pose pose, CompressorController compressorController, DoubleSupplier targetX, DoubleSupplier targetY, Shooter.ConveyorMode conveyorMode, DoubleSupplier triggerSupplier)
     {
         addRequirements(shooter);
         this.shooter = shooter;
         this.pose = pose;
+        this.compressorController = compressorController;
         this.conveyorMode = conveyorMode;
         this.isSupplier = true;
         this.targetXSupplier = targetX;
@@ -50,11 +53,12 @@ public class ShooterCommand extends Command
     /**
      * construct ShooterCommand with a constant target
      **/
-    public ShooterCommand(Shooter shooter, Pose pose, double targetX, double targetY, Shooter.ConveyorMode conveyorMode, DoubleSupplier triggerSupplier)
+    public ShooterCommand(Shooter shooter, Pose pose, CompressorController compressorController, double targetX, double targetY, Shooter.ConveyorMode conveyorMode, DoubleSupplier triggerSupplier)
     {
         addRequirements(shooter);
         this.shooter = shooter;
         this.pose = pose;
+	this.compressorController = compressorController;
         this.conveyorMode = conveyorMode;
         this.conveyorMode = conveyorMode;
         this.isSupplier = false;
@@ -66,6 +70,7 @@ public class ShooterCommand extends Command
     @Override
     public void initialize()
     {
+	compressorController.setOverrideMode(CompressorController.OverrideMode.Off);
         if(isSupplier)
         {
             targetX = targetXSupplier.getAsDouble();
@@ -87,12 +92,12 @@ public class ShooterCommand extends Command
                 shooter.setShooterTarget(targetXSupplier.getAsDouble(), targetYSupplier.getAsDouble());
             }
             shooter.setShooterMode(Shooter.ShooterMode.FIRE); // allow conveyor to run
-            timeoutTimer = 0;				      
+            timeoutTimer = 0;
         }
         else
         {
             shooter.setShooterMode(Shooter.ShooterMode.STANDBY); // stop conveyor from running
-            timeoutTimer++;					 
+            timeoutTimer++;
         }
     }
 
@@ -105,6 +110,7 @@ public class ShooterCommand extends Command
     @Override
     public void end(boolean isInterrupted)
     {
+	compressorController.setOverrideMode(CompressorController.OverrideMode.None);
         shooter.setShooterMode(Shooter.ShooterMode.IDLE);
         pose.setNoCameraMode(false);
     }
