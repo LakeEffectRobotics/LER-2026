@@ -116,7 +116,9 @@ public class Shooter extends SubsystemBase
 
 
     private SparkMax topMotor;
+    private SparkMax topMotorFollower;
     private SparkMax bottomMotor;
+    private SparkMax bottomMotorFollower;
     private SparkMax conveyorMotor;
 
     private RelativeEncoder topMotorEncoder;
@@ -189,7 +191,9 @@ public class Shooter extends SubsystemBase
         bottomFollower.configure(bottomFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         this.topMotor = topLeader;
+	this.topMotorFollower = topFollower;
         this.bottomMotor = bottomLeader;
+	this.bottomMotorFollower = bottomFollower;
         this.conveyorMotor = conveyorMotor;
 
         // get encoders
