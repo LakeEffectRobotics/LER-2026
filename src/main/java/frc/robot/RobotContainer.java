@@ -95,9 +95,8 @@ public class RobotContainer
     private void configureBindings()
     {
         /** driver binds **/
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, OI.driveLeftStickXSupplier,
-                                     OI.driveLeftStickYSupplier, OI.driveRightStickXSupplier, OI.operatorRightTriggerSupplier));
-
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, shooter, OI.driveLeftStickXSupplier,
+                                     OI.driveLeftStickYSupplier, OI.driveRightStickXSupplier));
         eyes.setDefaultCommand(Commands.run(() -> eyes.setLEDState(EyesSubsystem.LEDState.RESTING_PURPLE), eyes));
 
         // Set eyes to DEFENCE (Red) while intake is retracted
